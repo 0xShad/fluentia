@@ -23,7 +23,7 @@ export function TestimonialCard({
   const Card = href ? 'a' : 'div'
   
   // Safe cast since href effectively turns the component into an anchor
-  // @ts-expect-error
+  // @ts-expect-error - href prop dynamically changes element type
   return (
     <Card
       {...(href ? { href } : {})}
