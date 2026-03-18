@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarImage } from "@/components/ui/avatar"
+import Image from "next/image"
 
 export interface TestimonialAuthor {
   name: string
@@ -22,8 +22,6 @@ export function TestimonialCard({
 }: TestimonialCardProps) {
   const Card = href ? 'a' : 'div'
   
-  // Safe cast since href effectively turns the component into an anchor
-  // @ts-expect-error - href prop dynamically changes element type
   return (
     <Card
       {...(href ? { href } : {})}
@@ -36,9 +34,16 @@ export function TestimonialCard({
       )}
     >
       <div className="flex items-center gap-3 mb-4">
-        <Avatar className="h-10 w-10 border border-white/10">
-          <AvatarImage src={author.avatar} alt={author.name} />
-        </Avatar>
+        {/* Next.js Image: auto WebP/AVIF, lazy-loaded, 30-day CDN cache */}
+        <div className="h-10 w-10 rounded-full border border-white/10 overflow-hidden shrink-0 relative">
+          <Image
+            src={author.avatar}
+            alt={author.name}
+            fill
+            sizes="40px"
+            className="object-cover"
+          />
+        </div>
         <div className="flex flex-col items-start">
           <h3 className="text-sm font-semibold leading-none text-white">
             {author.name}
