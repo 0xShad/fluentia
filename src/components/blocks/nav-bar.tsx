@@ -22,7 +22,7 @@ export function NavBar() {
         </motion.div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          {["Features", "Pricing", "Blog", "Docs", "Company"].map((item, i) => (
+          {["Features", "Testimonials", "Pricing", "FAQ"].map((item, i) => (
             <motion.a
               key={item}
               href={`#${item.toLowerCase()}`}
