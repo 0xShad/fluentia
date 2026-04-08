@@ -208,9 +208,9 @@ export function PricingCard({
         {plan.features.map((feature, index) => (
           <div key={index} className="flex items-start gap-3">
             <CheckCircleIcon className="text-primary h-4 w-4 shrink-0 mt-0.5" />
-            <TooltipProvider>
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
+            <TooltipProvider delay={0}>
+              <Tooltip>
+                <TooltipTrigger render={
                   <p
                     className={cn(
                       "text-zinc-300 leading-snug",
@@ -220,7 +220,7 @@ export function PricingCard({
                   >
                     {feature.text}
                   </p>
-                </TooltipTrigger>
+                } />
                 {feature.tooltip && (
                   <TooltipContent side="top" className="max-w-[200px] text-center">
                     <p>{feature.tooltip}</p>
