@@ -191,7 +191,7 @@ export default function DashboardPage() {
                 <XAxis type="number" axisLine={false} tickLine={false} tick={{fill: '#666', fontSize: 11}} orientation="bottom" />
                 <YAxis dataKey="category" type="category" axisLine={false} tickLine={false} tick={{fill: '#aaa', fontSize: 13}} width={80} />
                 <ChartTooltip cursor={{fill: 'rgba(255,255,255,0.02)'}} content={<ChartTooltipContent />} />
-                <Bar dataKey="score" fill="rgba(255,255,255,0.1)" radius={[0, 10, 10, 0]} barSize={12} activeBar={{ fill: 'rgba(255,255,255,0.3)' }} />
+                <Bar dataKey="score" fill="#8b5cf6" radius={[0, 10, 10, 0]} barSize={12} activeBar={{ fill: '#a78bfa' }} />
               </BarChart>
             </ChartContainer>
           </CardContent>
