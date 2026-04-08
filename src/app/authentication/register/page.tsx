@@ -8,6 +8,14 @@ import { OAuthButtons, AuthDivider } from "@/components/blocks/oauth-buttons";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/client";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 const NAME_REGEX = /^[A-Za-z\s]+$/;
 const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
@@ -23,6 +31,12 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [showOTP, setShowOTP] = useState(false);
+  const [otp, setOtp] = useState("");
 
   // Real-time validation handlers
   const handleFirstNameChange = (v: string) => {
@@ -66,7 +80,7 @@ export default function RegisterPage() {
     else { const { confirmPassword, ...rest } = errors; setErrors(rest); }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // Force validation of all fields on submit
     handleFirstNameChange(firstName);
@@ -82,7 +96,53 @@ export default function RegisterPage() {
                       !confirmPassword || password !== confirmPassword;
 
     if (!hasErrors) {
-      console.log("Registration submitted");
+      setIsLoading(true);
+      setAuthError("");
+      
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+          }
+        }
+      });
+
+      setIsLoading(false);
+
+      if (error) {
+        setAuthError(error.message);
+      } else {
+        toast("An OTP code was sent to your email..");
+        setShowOTP(true);
+      }
+    }
+  };
+
+  const handleVerifyOTP = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (otp.length < 6) return;
+    
+    setIsLoading(true);
+    setAuthError("");
+    
+    const supabase = createClient();
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token: otp,
+      type: 'signup'
+    });
+    
+    setIsLoading(false);
+    
+    if (error) {
+      setAuthError(error.message);
+    } else {
+      toast.success("Registered successfully!");
+      router.push("/dashboard");
     }
   };
 
@@ -109,142 +169,185 @@ export default function RegisterPage() {
         <AuthDivider text="or register with email" />
 
         {/* Form */}
-        <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-          {/* Name row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {!showOTP ? (
+          <form className="space-y-4" onSubmit={handleSubmit} noValidate>
+            {/* Name row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <label htmlFor="firstName" className={cn("block text-xs font-medium tracking-wide", errors.firstName ? "text-red-500" : "text-white/60")}>
+                  First name
+                </label>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  autoComplete="given-name"
+                  placeholder="Alex"
+                  value={firstName}
+                  onChange={(e) => handleFirstNameChange(e.target.value)}
+                  className={cn(
+                    "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
+                    errors.firstName && "border-red-500 focus-visible:border-red-500"
+                  )}
+                />
+                {errors.firstName && <p className="text-red-500 text-[10px] mt-1 pr-1">{errors.firstName}</p>}
+              </div>
+              <div className="space-y-1.5">
+                <label htmlFor="lastName" className={cn("block text-xs font-medium tracking-wide", errors.lastName ? "text-red-500" : "text-white/60")}>
+                  Last name
+                </label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  autoComplete="family-name"
+                  placeholder="Taylor"
+                  value={lastName}
+                  onChange={(e) => handleLastNameChange(e.target.value)}
+                  className={cn(
+                    "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
+                    errors.lastName && "border-red-500 focus-visible:border-red-500"
+                  )}
+                />
+                {errors.lastName && <p className="text-red-500 text-[10px] mt-1 pr-1">{errors.lastName}</p>}
+              </div>
+            </div>
+
+            {/* Email */}
             <div className="space-y-1.5">
-              <label htmlFor="firstName" className={cn("block text-xs font-medium tracking-wide", errors.firstName ? "text-red-500" : "text-white/60")}>
-                First name
+              <label htmlFor="email" className={cn("block text-xs font-medium tracking-wide", errors.email ? "text-red-500" : "text-white/60")}>
+                Email
               </label>
               <Input
-                id="firstName"
-                name="firstName"
-                type="text"
-                autoComplete="given-name"
-                placeholder="Alex"
-                value={firstName}
-                onChange={(e) => handleFirstNameChange(e.target.value)}
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => handleEmailChange(e.target.value)}
                 className={cn(
                   "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
-                  errors.firstName && "border-red-500 focus-visible:border-red-500"
+                  errors.email && "border-red-500 focus-visible:border-red-500"
                 )}
               />
-              {errors.firstName && <p className="text-red-500 text-[10px] mt-1 pr-1">{errors.firstName}</p>}
+              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
+
+            {/* Password */}
             <div className="space-y-1.5">
-              <label htmlFor="lastName" className={cn("block text-xs font-medium tracking-wide", errors.lastName ? "text-red-500" : "text-white/60")}>
-                Last name
+              <label htmlFor="password" className={cn("block text-xs font-medium tracking-wide", errors.password ? "text-red-500" : "text-white/60")}>
+                Password
               </label>
-              <Input
-                id="lastName"
-                name="lastName"
-                type="text"
-                autoComplete="family-name"
-                placeholder="Taylor"
-                value={lastName}
-                onChange={(e) => handleLastNameChange(e.target.value)}
-                className={cn(
-                  "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
-                  errors.lastName && "border-red-500 focus-visible:border-red-500"
-                )}
-              />
-              {errors.lastName && <p className="text-red-500 text-[10px] mt-1 pr-1">{errors.lastName}</p>}
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="Min. 8 characters"
+                  value={password}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  className={cn(
+                    "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10 pr-10",
+                    errors.password && "border-red-500 focus-visible:border-red-500"
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
-          </div>
 
-          {/* Email */}
-          <div className="space-y-1.5">
-            <label htmlFor="email" className={cn("block text-xs font-medium tracking-wide", errors.email ? "text-red-500" : "text-white/60")}>
-              Email
-            </label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => handleEmailChange(e.target.value)}
-              className={cn(
-                "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
-                errors.email && "border-red-500 focus-visible:border-red-500"
-              )}
-            />
-            {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
-          </div>
+            {/* Confirm Password */}
+            <div className="space-y-1.5">
+              <label htmlFor="confirmPassword" className={cn("block text-xs font-medium tracking-wide", errors.confirmPassword ? "text-red-500" : "text-white/60")}>
+                Re-type your password
+              </label>
+              <div className="relative">
+                <Input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
+                  placeholder="Min. 8 characters"
+                  value={confirmPassword}
+                  onChange={(e) => handleConfirmPasswordChange(e.target.value)}
+                  className={cn(
+                    "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10 pr-10",
+                    errors.confirmPassword && "border-red-500 focus-visible:border-red-500"
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
+                  tabIndex={-1}
+                >
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              {errors.confirmPassword && (errors.confirmPassword !== "") && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
+            </div>
 
-          {/* Password */}
-          <div className="space-y-1.5">
-            <label htmlFor="password" className={cn("block text-xs font-medium tracking-wide", errors.password ? "text-red-500" : "text-white/60")}>
-              Password
-            </label>
-            <div className="relative">
-              <Input
-                id="password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder="Min. 8 characters"
-                value={password}
-                onChange={(e) => handlePasswordChange(e.target.value)}
-                className={cn(
-                  "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10 pr-10",
-                  errors.password && "border-red-500 focus-visible:border-red-500"
-                )}
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
-                tabIndex={-1}
+            {/* Submit */}
+            {authError && <p className="text-red-500 text-sm mt-2 text-center">{authError}</p>}
+            <div className="mt-6 flex flex-col gap-4">
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-all duration-300 rounded-lg mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+                {isLoading ? "Creating Account..." : "Create Account"}
+              </Button>
             </div>
-            {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
-          </div>
+          </form>
+        ) : (
+          <form className="space-y-6 flex flex-col items-center mt-4" onSubmit={handleVerifyOTP}>
+            <div className="text-center space-y-2 mb-4">
+              <p className="text-sm text-white/70">
+                Please enter the 6-digit code sent to your email.
+              </p>
+            </div>
+            
+            <InputOTP maxLength={6} value={otp} onChange={setOtp}>
+              <InputOTPGroup>
+                <InputOTPSlot index={0} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
+                <InputOTPSlot index={1} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
+                <InputOTPSlot index={2} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
+                <InputOTPSlot index={3} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
+                <InputOTPSlot index={4} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
+                <InputOTPSlot index={5} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
+              </InputOTPGroup>
+            </InputOTP>
 
-          {/* Confirm Password */}
-          <div className="space-y-1.5">
-            <label htmlFor="confirmPassword" className={cn("block text-xs font-medium tracking-wide", errors.confirmPassword ? "text-red-500" : "text-white/60")}>
-              Re-type your password
-            </label>
-            <div className="relative">
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type={showConfirmPassword ? "text" : "password"}
-                autoComplete="new-password"
-                placeholder="Min. 8 characters"
-                value={confirmPassword}
-                onChange={(e) => handleConfirmPasswordChange(e.target.value)}
-                className={cn(
-                  "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10 pr-10",
-                  errors.confirmPassword && "border-red-500 focus-visible:border-red-500"
-                )}
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white transition-colors"
-                tabIndex={-1}
+            {authError && <p className="text-red-500 text-sm text-center">{authError}</p>}
+            
+            <div className="w-full max-w-[300px] mt-4 flex flex-col gap-2">
+              <Button
+                type="submit"
+                disabled={isLoading || otp.length < 6}
+                className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-all duration-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
+                {isLoading ? "Verifying..." : "Verify OTP"}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setShowOTP(false)}
+                className="w-full h-11 text-white/50 hover:text-white"
+              >
+                Back to registration
+              </Button>
             </div>
-            {errors.confirmPassword && (errors.confirmPassword !== "") && <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>}
-          </div>
-
-          {/* Submit */}
-          <div className="mt-6 flex flex-col gap-4">
-            <Button
-              type="submit"
-              className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-all duration-300 rounded-lg mt-2"
-            >
-              Create Account
-            </Button>
-          </div>
-        </form>
+          </form>
+        )}
 
         {/* Footer links */}
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
