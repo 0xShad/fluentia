@@ -19,6 +19,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Camera, Save, Key, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { ProfileSkeleton } from "./components/profile-skeleton";
 
 const SPEAKING_GOALS = [
   "Job Interviews",
@@ -189,7 +190,7 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return <div className="p-8 text-white">Loading profile...</div>;
+    return <ProfileSkeleton />;
   }
 
   const initials = fullName ? fullName.trim().split(" ").filter(n => n.length > 0).map(n => n[0]).join("").substring(0, 2).toUpperCase() : "US";
