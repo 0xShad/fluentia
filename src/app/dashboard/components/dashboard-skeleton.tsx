@@ -55,7 +55,7 @@ export function DashboardSkeleton() {
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center gap-3">
                   <Skeleton className="h-4 w-20 bg-white/5" />
-                  <Skeleton className="h-3 flex-1 bg-white/10 rounded-full" style={{ width: `${60 + Math.random() * 30}%` }} />
+                  <Skeleton className="h-3 flex-1 bg-white/10 rounded-full" style={{ width: `${65 + (i * 5)}%` }} />
                 </div>
               ))}
             </div>
@@ -81,7 +81,7 @@ export function DashboardSkeleton() {
               <Skeleton
                 key={i}
                 className="flex-1 bg-white/10 rounded-t-md"
-                style={{ height: `${30 + Math.random() * 60}%` }}
+                style={{ height: `${35 + ((i % 6) * 10)}%` }}
               />
             ))}
           </div>
