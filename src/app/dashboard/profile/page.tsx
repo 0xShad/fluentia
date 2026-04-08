@@ -43,6 +43,11 @@ export default function ProfilePage() {
   const [skillLevel, setSkillLevel] = useState<string | null>("intermediate");
   const [coachingStyle, setCoachingStyle] = useState<string | null>("encouraging");
 
+  // Security states
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+
   useEffect(() => {
     const fetchProfileData = async () => {
       const supabase = createClient();
@@ -78,6 +83,53 @@ export default function ProfilePage() {
 
     fetchProfileData();
   }, []);
+
+  const handleUpdatePassword = async () => {
+    if (!currentPassword || !newPassword) {
+      toast.error("Error", { description: "You must provide both your current and new password." });
+      return;
+    }
+
+    const supabase = createClient();
+    // Use an assertion or object spread to bypass strict TypeScript if it complains, but current_password is valid in Supabase JS v2
+    const { error } = await supabase.auth.updateUser({
+      password: newPassword,
+      // current_password is required by strict backend settings
+      current_password: currentPassword,
+    });
+
+    if (error) {
+      toast.error("Failed to update password", {
+        description: error.message,
+        style: { background: "#050505", border: "1px solid rgba(255,0,0,0.2)", color: "white" }
+      });
+      return;
+    }
+
+    toast.success("Password Updated", { description: "Your password has been securely changed." });
+    setIsChangingPassword(false);
+    setCurrentPassword("");
+    setNewPassword("");
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm("Are you absolutely sure you want to permanently delete your account?");
+    if (!confirmDelete) return;
+
+    const supabase = createClient();
+    const { error } = await supabase.rpc("delete_user");
+    
+    if (error) {
+      toast.error("Failed to delete account", {
+        description: "RPC 'delete_user' not found or blocked. " + error.message,
+        style: { background: "#050505", border: "1px solid rgba(255,0,0,0.2)", color: "white" }
+      });
+      return;
+    }
+    
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  };
 
   const toggleGoal = (goal: string) => {
     setSelectedGoals(prev => 
@@ -307,15 +359,62 @@ export default function ProfilePage() {
               <CardDescription className="text-zinc-400">Manage your account security and data retention.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <Label className="text-zinc-400">Password</Label>
-                <Button variant="outline" className="w-full border-white/10 bg-[#050505] hover:bg-white/5 text-white justify-start gap-3">
-                  <Key className="w-4 h-4 text-zinc-400" />
-                  Change Password
-                </Button>
+                
+                {!isChangingPassword ? (
+                  <Button 
+                    onClick={() => setIsChangingPassword(true)}
+                    variant="outline" 
+                    className="w-full border-white/10 bg-[#050505] hover:bg-white/5 text-white justify-start gap-3"
+                  >
+                    <Key className="w-4 h-4 text-zinc-400" />
+                    Change Password
+                  </Button>
+                ) : (
+                  <div className="bg-[#050505] p-4 rounded-md border border-white/10 space-y-4">
+                    <div className="space-y-2">
+                       <Label className="text-xs text-zinc-400">Current Password</Label>
+                       <Input 
+                         type="password" 
+                         value={currentPassword} 
+                         onChange={(e) => setCurrentPassword(e.target.value)}
+                         className="bg-[#111] border-white/10 text-white" 
+                       />
+                    </div>
+                    <div className="space-y-2">
+                       <Label className="text-xs text-zinc-400">New Password</Label>
+                       <Input 
+                         type="password" 
+                         value={newPassword} 
+                         onChange={(e) => setNewPassword(e.target.value)}
+                         className="bg-[#111] border-white/10 text-white" 
+                       />
+                    </div>
+                    <div className="flex gap-2 justify-end pt-2">
+                       <Button 
+                         variant="ghost" 
+                         className="text-zinc-400 hover:text-white"
+                         onClick={() => setIsChangingPassword(false)}
+                       >
+                         Cancel
+                       </Button>
+                       <Button 
+                         onClick={handleUpdatePassword}
+                         className="bg-[#00F38D] text-black hover:bg-[#00F38D]/90"
+                       >
+                         Update
+                       </Button>
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="pt-4 mt-4 border-t border-white/5">
-                <Button variant="outline" className="w-full border-red-500/30 bg-red-500/5 hover:bg-red-500/20 hover:text-red-500 text-red-500/80 justify-start gap-3 transition-colors">
+                <Button 
+                  onClick={handleDeleteAccount}
+                  variant="outline" 
+                  className="w-full border-red-500/30 bg-red-500/5 hover:bg-red-500/20 hover:text-red-500 text-red-500/80 justify-start gap-3 transition-colors"
+                >
                   <Trash2 className="w-4 h-4" />
                   Delete Account
                 </Button>
