@@ -64,6 +64,10 @@ export default function ProfilePage() {
           .eq("id", user.id)
           .single();
 
+        if (error) {
+          console.error("Failed to fetch profile from database:", error);
+        }
+
         if (profile) {
           const derivedFullName = profile.full_name || 
                                   [profile.first_name, profile.last_name].filter(Boolean).join(" ") || 
@@ -87,6 +91,16 @@ export default function ProfilePage() {
   const handleUpdatePassword = async () => {
     if (!currentPassword || !newPassword) {
       toast.error("Error", { description: "You must provide both your current and new password." });
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error("Error", { description: "New password must be at least 8 characters long." });
+      return;
+    }
+
+    if (currentPassword === newPassword) {
+      toast.error("Error", { description: "New password must be different from your current password." });
       return;
     }
 
@@ -118,15 +132,15 @@ export default function ProfilePage() {
 
     const supabase = createClient();
     const { error } = await supabase.rpc("delete_user");
-    
+
     if (error) {
       toast.error("Failed to delete account", {
-        description: "RPC 'delete_user' not found or blocked. " + error.message,
+        description: "Account deletion is not currently available. Please contact support for assistance.",
         style: { background: "#050505", border: "1px solid rgba(255,0,0,0.2)", color: "white" }
       });
       return;
     }
-    
+
     await supabase.auth.signOut();
     window.location.href = "/";
   };
@@ -178,7 +192,7 @@ export default function ProfilePage() {
     return <div className="p-8 text-white">Loading profile...</div>;
   }
 
-  const initials = fullName ? fullName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase() : "US";
+  const initials = fullName ? fullName.trim().split(" ").filter(n => n.length > 0).map(n => n[0]).join("").substring(0, 2).toUpperCase() : "US";
   const avatarUrl = user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
 
   return (
