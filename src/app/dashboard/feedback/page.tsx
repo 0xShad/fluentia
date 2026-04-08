@@ -1,13 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { MetricCard } from "./components/metric-card";
 import { AISuggestionCard } from "./components/ai-suggestion-card";
+import { FeedbackSkeleton } from "./components/feedback-skeleton";
 import { TranscriptHighlights } from "./components/transcript-highlights";
 import { FeedbackHeader } from "./components/feedback-header";
 import { mockMetrics, mockSuggestions, mockTranscriptSegments } from "./data/mock-feedback";
 import { Volume2, Clock, Shield, AlertTriangle, Hourglass, Activity } from "lucide-react";
 
 export default function FeedbackPage() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Brief delay to show skeleton for UX polish
+    const timer = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <FeedbackSkeleton />;
+  }
+
   return (
     <div className="flex-1 p-6 md:p-8 space-y-8 animate-in fade-in duration-500 w-full max-w-6xl mx-auto">
       <FeedbackHeader 

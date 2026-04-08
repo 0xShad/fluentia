@@ -1,13 +1,25 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { ScenarioCard } from "@/components/dashboard/scenario-card";
-import { useState } from "react";
+import { PracticeSkeleton } from "./components/practice-skeleton";
 import { cn } from "@/lib/utils";
 
 const filters = ["All Scenarios", "Business", "Social", "Technical", "Leadership", "Crisis"];
 
 export default function ScenariosPage() {
+  const [loading, setLoading] = useState(true);
   const [activeFilter, setActiveFilter] = useState("All Scenarios");
+
+  useEffect(() => {
+    // Brief delay to show skeleton for UX polish
+    const timer = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <PracticeSkeleton />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-[#0A0A0A] relative pb-20">
