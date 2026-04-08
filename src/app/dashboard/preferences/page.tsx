@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { PreferencesSkeleton } from "./components/preferences-skeleton";
 import { Save, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,6 +14,7 @@ import { CoachingBehaviorCard } from "@/components/dashboard/preferences/coachin
 import { NotificationsCard } from "@/components/dashboard/preferences/notifications-card";
 
 export default function SystemPreferencesPage() {
+  const [pageLoading, setPageLoading] = useState(true);
   const [loading, setLoading] = useState(false);
 
   // Audio Settings State (Includes null safety for Base UI strict constraints)
@@ -87,6 +89,16 @@ export default function SystemPreferencesPage() {
       description: "You should hear a brief tone through your selected output device."
     });
   };
+
+  useEffect(() => {
+    // Brief delay to show skeleton for UX polish
+    const timer = setTimeout(() => setPageLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (pageLoading) {
+    return <PreferencesSkeleton />;
+  }
 
   return (
     <div className="flex-1 p-6 md:p-8 space-y-8 animate-in fade-in duration-500 w-full max-w-5xl mx-auto pb-24">
