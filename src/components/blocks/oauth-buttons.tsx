@@ -1,4 +1,7 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/client";
 
 // Inline SVG icons to avoid extra dependencies
 function GoogleIcon() {
@@ -41,12 +44,23 @@ function DiscordIcon() {
 }
 
 export function OAuthButtons({ label = "sign in" }: { label?: string }) {
+  const handleOAuth = async (provider: 'github' | 'google') => {
+    const supabase = createClient();
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${location.origin}/auth/callback?next=/dashboard`,
+      },
+    });
+  };
+
   return (
     <div className="grid grid-cols-2 gap-3">
       <Button
         variant="outline"
         className="flex items-center gap-2 border-white/10 bg-white/[0.03] hover:bg-white/[0.07] text-white hover:text-white transition-colors text-xs"
         type="button"
+        onClick={() => handleOAuth('google')}
       >
         <GoogleIcon />
         <span className="hidden sm:inline">Google</span>
@@ -55,6 +69,7 @@ export function OAuthButtons({ label = "sign in" }: { label?: string }) {
         variant="outline"
         className="flex items-center gap-2 border-white/10 bg-white/[0.03] hover:bg-white/[0.07] text-white hover:text-white transition-colors text-xs"
         type="button"
+        onClick={() => handleOAuth('github')}
       >
         <GithubIcon />
         <span className="hidden sm:inline">GitHub</span>
