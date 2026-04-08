@@ -66,7 +66,7 @@ export function AppSidebar() {
   const pathname = usePathname();
 
   return (
-    <Sidebar variant="inset" collapsible="icon" className="bg-[#050505] border-r border-white/10 hidden md:flex">
+    <Sidebar variant="inset" collapsible="icon" className="bg-[#050505] border-r border-white/10 hidden md:flex" suppressHydrationWarning>
       <SidebarHeader className="p-4 pt-6">
         <Link href="/dashboard" className="flex items-center gap-2 mb-2 transition-transform hover:scale-105 px-2">
           <Hexagon className="w-6 h-6 text-[#00F38D]" />
