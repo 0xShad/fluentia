@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { ReportsSkeleton } from "./components/reports-skeleton";
 
 import { ReportsHeader } from "./components/reports-header";
 import { ReportCard, type ReportTemplate } from "./components/report-card";
@@ -12,7 +13,18 @@ import { ProgressHintCard } from "./components/progress-hint-card";
 import { reportTemplates } from "./data/report-templates";
 
 export default function ReportsPage() {
+  const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Brief delay to show skeleton for UX polish
+    const timer = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <ReportsSkeleton />;
+  }
 
   const handleGenerate = (id: string) => {
     setGenerating(id);
