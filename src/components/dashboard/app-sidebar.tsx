@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Mic, History, Settings, HelpCircle, Hexagon, User } from "lucide-react";
+import { TrendingUp, Mic2, Clock, Brain, FileText, Settings, HelpCircle, Hexagon, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -18,19 +18,29 @@ import {
 
 const mainLinks = [
   {
-    title: "Dashboard",
+    title: "Progress",
     href: "/dashboard",
-    icon: LayoutDashboard,
+    icon: TrendingUp,
   },
   {
-    title: "Scenarios",
-    href: "/dashboard/scenarios",
-    icon: Mic,
+    title: "Practice",
+    href: "/dashboard/practice",
+    icon: Mic2,
   },
   {
-    title: "History",
-    href: "/dashboard/history",
-    icon: History,
+    title: "Sessions",
+    href: "/dashboard/sessions",
+    icon: Clock,
+  },
+  {
+    title: "Feedback",
+    href: "/dashboard/feedback",
+    icon: Brain,
+  },
+  {
+    title: "Reports",
+    href: "/dashboard/reports",
+    icon: FileText,
   },
 ];
 
@@ -41,14 +51,14 @@ const systemLinks = [
     icon: User,
   },
   {
-    title: "Help Center",
-    href: "/dashboard/help-center",
-    icon: HelpCircle,
-  },
-  {
     title: "Preferences",
     href: "/dashboard/preferences",
     icon: Settings,
+  },
+  {
+    title: "Help Center",
+    href: "/dashboard/help-center",
+    icon: HelpCircle,
   },
 ];
 
