@@ -69,7 +69,7 @@ export function DashboardNav() {
   const avatarUrl = user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
 
   return (
-    <header className="sticky top-0 z-10 flex items-center justify-between px-6 py-4 bg-[#0A0A0A] border-b border-white/[0.05]">
+    <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/[0.05]">
       <div className="flex items-center gap-4">
         <SidebarTrigger className="text-muted-foreground hover:text-white transition-colors" />
         
