@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -128,7 +129,9 @@ export default function HistoryPage() {
                         <MoreHorizontal className="h-4 w-4" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-[#111] border-white/10 text-white shadow-xl shadow-black">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuGroup>
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        </DropdownMenuGroup>
                         <DropdownMenuItem className="cursor-pointer focus:bg-white/5 focus:text-[#00F38D] gap-2">
                           <BarChart2 className="w-4 h-4" />
                           View Detailed Report
