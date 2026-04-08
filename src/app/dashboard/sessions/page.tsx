@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Filter, MoreHorizontal, Download, Play, BarChart2 } from "lucide-react";
+import { SessionsSkeleton } from "./components/sessions-skeleton";
 import { 
   Table, 
   TableBody, 
@@ -52,7 +53,18 @@ const formatDate = (dateString: string) => {
 };
 
 export default function HistoryPage() {
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    // Brief delay to show skeleton for UX polish
+    const timer = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <SessionsSkeleton />;
+  }
 
   const filteredHistory = MOCK_HISTORY.filter(s => 
     s.title.toLowerCase().includes(search.toLowerCase()) || 
