@@ -72,7 +72,7 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {mainLinks.map((item) => {
-                const isActive = pathname === item.href || (pathname.startsWith('/dashboard/') && item.href !== '/dashboard' && pathname.includes(item.href));
+                const isActive = pathname === item.href || pathname === `${item.href}/`;
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton render={<Link href={item.href} />} isActive={isActive} tooltip={item.title} className={cn(
