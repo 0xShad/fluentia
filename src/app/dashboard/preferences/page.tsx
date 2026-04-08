@@ -18,7 +18,7 @@ export default function SystemPreferencesPage() {
   // Audio Settings State (Includes null safety for Base UI strict constraints)
   const [micInput, setMicInput] = useState<string | null>("default");
   const [speakerOutput, setSpeakerOutput] = useState<string | null>("default");
-  const [micSensitivity, setMicSensitivity] = useState<number[]>([75]);
+  const [micSensitivity, setMicSensitivity] = useState<readonly number[]>([75]);
   const [voicePlayback, setVoicePlayback] = useState(true);
 
   // Appearance State
@@ -40,7 +40,7 @@ export default function SystemPreferencesPage() {
   const [realtimeHints, setRealtimeHints] = useState(true);
   const [feedbackDetail, setFeedbackDetail] = useState<string | null>("standard");
   const [coachingTone, setCoachingTone] = useState<string | null>("encouraging");
-  const [correctionSensitivity, setCorrectionSensitivity] = useState<number[]>([60]);
+  const [correctionSensitivity, setCorrectionSensitivity] = useState<readonly number[]>([60]);
 
   const handleSavePreferences = () => {
     setLoading(true);
@@ -59,8 +59,8 @@ export default function SystemPreferencesPage() {
     if (!confirmReset) return;
     
     // Reset defaults directly
-    setMicSensitivity([75]);
-    setCorrectionSensitivity([60]);
+    setMicSensitivity([75] as const);
+    setCorrectionSensitivity([60] as const);
     setMicInput("default");
     setSpeakerOutput("default");
     setVoicePlayback(true);
@@ -154,7 +154,7 @@ export default function SystemPreferencesPage() {
       </div>
 
       {/* Floating Action Bar equivalent block */}
-      <div className="fixed bottom-0 right-0 left-0 md:left-[260px] p-4 bg-[#0A0A0A]/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-end gap-4 z-50">
+      <div className="fixed bottom-0 right-0 left-0 md:left-[var(--sidebar-width)] p-4 bg-[#0A0A0A]/90 backdrop-blur-xl border-t border-white/5 flex items-center justify-end gap-4 z-50">
         <Button 
           onClick={handleReset} 
           variant="ghost" 
