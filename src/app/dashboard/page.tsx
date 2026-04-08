@@ -1,6 +1,8 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { DashboardSkeleton } from "./components/dashboard-skeleton";
 import { ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, AlertTriangle, TrendingUp } from "lucide-react";
 import {
   ChartConfig,
@@ -59,6 +61,18 @@ const monthlyConfig = {
 } satisfies ChartConfig;
 
 export default function DashboardPage() {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Brief delay to show skeleton for UX polish
+    const timer = setTimeout(() => setLoading(false), 400);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return <DashboardSkeleton />;
+  }
+
   return (
     <div className="flex-1 p-6 md:p-8 space-y-6 animate-in fade-in duration-500 w-full">
       <div className="mb-8">
