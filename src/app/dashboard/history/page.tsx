@@ -45,6 +45,9 @@ const getStatusColor = (status: string) => {
 
 const formatDate = (dateString: string) => {
   const d = new Date(dateString);
+  if (isNaN(d.getTime())) {
+    return "Invalid Date";
+  }
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) + " " + d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
 };
 
@@ -124,9 +127,11 @@ export default function HistoryPage() {
                   </TableCell>
                   <TableCell className="text-right pr-6">
                     <DropdownMenu>
-                      <DropdownMenuTrigger render={<Button variant="ghost" className="h-8 w-8 p-0 hover:bg-white/10 text-muted-foreground hover:text-white" />}>
-                        <span className="sr-only">Open menu</span>
-                        <MoreHorizontal className="h-4 w-4" />
+                      <DropdownMenuTrigger>
+                        <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-white/10 text-muted-foreground hover:text-white">
+                          <span className="sr-only">Open menu</span>
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="bg-[#111] border-white/10 text-white shadow-xl shadow-black">
                         <DropdownMenuGroup>
