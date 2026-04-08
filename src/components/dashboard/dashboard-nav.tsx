@@ -107,13 +107,11 @@ export function DashboardNav() {
         </button>
         
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <button className="w-8 h-8 rounded-full overflow-hidden border border-white/20 hover:border-[#00F38D] transition-colors outline-none focus:ring-2 focus:ring-[#00F38D]/50 flex items-center justify-center bg-[#111]">
-              <Avatar className="w-full h-full">
-                <AvatarImage src={avatarUrl} alt={name} />
-                <AvatarFallback className="bg-[#111] text-xs">{initials}</AvatarFallback>
-              </Avatar>
-            </button>
+          <DropdownMenuTrigger className="w-8 h-8 rounded-full overflow-hidden border border-white/20 hover:border-[#00F38D] transition-colors outline-none focus:ring-2 focus:ring-[#00F38D]/50 flex items-center justify-center bg-[#111]">
+            <Avatar className="w-full h-full">
+              <AvatarImage src={avatarUrl} alt={name} />
+              <AvatarFallback className="bg-[#111] text-xs">{initials}</AvatarFallback>
+            </Avatar>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 bg-[#111] border-white/10 text-white">
             <DropdownMenuGroup>
