@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Mic, History, Settings, HelpCircle, Hexagon } from "lucide-react";
+import { LayoutDashboard, Mic, History, Settings, HelpCircle, Hexagon, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -35,6 +35,11 @@ const mainLinks = [
 ];
 
 const systemLinks = [
+  {
+    title: "Profile",
+    href: "/dashboard/profile",
+    icon: User,
+  },
   {
     title: "Help Center",
     href: "/dashboard/help-center",

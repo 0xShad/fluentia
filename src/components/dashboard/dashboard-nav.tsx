@@ -123,7 +123,10 @@ export function DashboardNav() {
               </DropdownMenuLabel>
             </DropdownMenuGroup>
             <DropdownMenuSeparator className="bg-white/10" />
-            <DropdownMenuItem className="cursor-pointer focus:bg-white/5 focus:text-white transition-colors gap-2">
+            <DropdownMenuItem 
+              onClick={() => router.push("/dashboard/profile")}
+              className="cursor-pointer focus:bg-white/5 focus:text-white transition-colors gap-2"
+            >
               <UserIcon className="w-4 h-4" />
               Profile
             </DropdownMenuItem>
