@@ -55,3 +55,7 @@ A clean, geometric sans-serif typeface that looks native to modern IDEs and deve
 ### Accents & Effects
 - **Glows:** Strategic use of blurred radial gradients (`blur-3xl`) beneath key elements (like the hero text, Spline 3D elements, or primary highlights) using the primary Neon Green to create a "glowing" effect against the black background.
 - **Background Textures:** Faint, repeating matrix-like code arrays or subtle grid patterns embedded in the deep background of hero sections or empty board states.
+
+
+
+-- STRICTLY USE SHADCN COMPONENTS AND MAKE IT REUSABLE AS MUCH AS POSSIBLE. 
