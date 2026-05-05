@@ -23,16 +23,28 @@ const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
   EXPERT: "text-red-400",
 };
 
-type SessionState = "ready" | "active" | "ended";
+import { useVapiSession } from "@/hooks/use-vapi-session";
 
 export default function SessionPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const scenario = scenarios.find((s) => s.id === id);
 
-  const [sessionState, setSessionState] = useState<SessionState>("ready");
-  const [muted, setMuted] = useState(false);
+  const {
+    status: sessionState,
+    isSpeaking,
+    isMuted,
+    volumeLevel,
+    transcript,
+    error,
+    startCall,
+    endCall,
+    toggleMute,
+    sendTextMessage,
+  } = useVapiSession();
+
   const [elapsed, setElapsed] = useState(0);
+  const [textInput, setTextInput] = useState("");
 
   // Timer while session is active
   useEffect(() => {
@@ -154,8 +166,8 @@ export default function SessionPage() {
           {/* Ambient glow */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,243,141,0.04)_0%,transparent_70%)] pointer-events-none" />
 
-          {/* ── READY STATE ─────────────────────────────────────────────── */}
-          {sessionState === "ready" && (
+          {/* ── READY/CONNECTING STATE ─────────────────────────────────────── */}
+          {(sessionState === "idle" || sessionState === "connecting") && (
             <div className="relative z-10 flex flex-col items-center text-center max-w-sm animate-in fade-in duration-500">
               <div className="w-20 h-20 rounded-full bg-[#00F38D]/10 border border-[#00F38D]/20 flex items-center justify-center mb-6">
                 <Bot className="w-9 h-9 text-[#00F38D]" />
@@ -166,13 +178,26 @@ export default function SessionPage() {
                 <span className="text-white font-semibold">{scenario.aiRole}</span> and respond
                 dynamically to everything you say. Speak naturally.
               </p>
+              
               <button
                 id="begin-session"
-                onClick={() => setSessionState("active")}
-                className="flex items-center gap-2.5 px-8 py-3.5 rounded-xl bg-[#00F38D] text-black font-bold text-base hover:bg-[#00f38d]/90 transition-all hover:shadow-[0_0_32px_rgba(0,243,141,0.35)] active:scale-95"
+                onClick={() => startCall(scenario)}
+                disabled={sessionState === "connecting"}
+                className={cn(
+                  "flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-black font-bold text-base transition-all",
+                  sessionState === "connecting"
+                    ? "bg-white/20 cursor-not-allowed"
+                    : "bg-[#00F38D] hover:bg-[#00f38d]/90 hover:shadow-[0_0_32px_rgba(0,243,141,0.35)] active:scale-95"
+                )}
               >
-                <Mic className="w-4 h-4" />
-                Begin Session
+                {sessionState === "connecting" ? (
+                  <>Connecting...</>
+                ) : (
+                  <>
+                    <Mic className="w-4 h-4" />
+                    Begin Session
+                  </>
+                )}
               </button>
               <p className="text-xs text-white/20 mt-4">
                 Your microphone will be requested when you click Begin.
@@ -182,52 +207,149 @@ export default function SessionPage() {
 
           {/* ── ACTIVE STATE ─────────────────────────────────────────────── */}
           {sessionState === "active" && (
-            <div className="relative z-10 flex flex-col items-center w-full max-w-lg animate-in fade-in duration-500">
+            <div className="relative z-10 flex flex-col items-center w-full max-w-2xl animate-in fade-in duration-500 h-full max-h-full py-8">
               {/* AI speaking indicator */}
-              <div className="relative mb-8">
-                <div className="w-24 h-24 rounded-full bg-[#00F38D]/10 border-2 border-[#00F38D]/30 flex items-center justify-center">
-                  <Bot className="w-10 h-10 text-[#00F38D]" />
+              <div className="relative mb-6 shrink-0">
+                <div className={cn(
+                  "w-20 h-20 rounded-full bg-[#00F38D]/10 border-2 flex items-center justify-center transition-all duration-300",
+                  isSpeaking ? "border-[#00F38D]/50 shadow-[0_0_20px_rgba(0,243,141,0.4)]" : "border-[#00F38D]/20"
+                )}>
+                  <Bot className="w-8 h-8 text-[#00F38D]" />
                 </div>
                 {/* Pulse rings */}
-                <div className="absolute inset-0 rounded-full border border-[#00F38D]/20 animate-ping" />
-                <div className="absolute -inset-3 rounded-full border border-[#00F38D]/10 animate-ping [animation-delay:0.3s]" />
+                {isSpeaking && (
+                  <>
+                    <div className="absolute inset-0 rounded-full border border-[#00F38D]/30 animate-ping" />
+                    <div className="absolute -inset-2 rounded-full border border-[#00F38D]/10 animate-ping [animation-delay:0.3s]" />
+                  </>
+                )}
               </div>
 
-              <p className="text-sm font-semibold text-[#00F38D] mb-1">AI is listening…</p>
-              <p className="text-xs text-white/30 mb-10">{scenario.aiRole}</p>
+              <p className="text-xs font-semibold text-[#00F38D] mb-1">
+                {isSpeaking ? "AI is speaking…" : "AI is listening…"}
+              </p>
+              <p className="text-xs text-white/30 mb-6">{scenario.aiRole}</p>
 
-              {/* Transcript placeholder */}
-              {/* TODO: Replace with real Vapi/Gemini transcript stream */}
-              <div className="w-full p-4 rounded-xl bg-white/[0.03] border border-white/8 mb-8 min-h-[100px] flex items-center justify-center">
-                <p className="text-sm text-white/20 italic text-center">
-                  Transcript will appear here during the session…
-                </p>
+              {/* Transcript Area */}
+              <div className="w-full flex-1 overflow-y-auto p-4 rounded-xl bg-white/[0.02] border border-white/8 mb-6 flex flex-col gap-3">
+                {transcript.length === 0 ? (
+                  <div className="h-full flex items-center justify-center">
+                    <p className="text-sm text-white/20 italic text-center">
+                      Transcript will appear here...
+                    </p>
+                  </div>
+                ) : (
+                  transcript.map((line, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "flex flex-col gap-1 max-w-[85%]",
+                        line.speaker === "User" ? "self-end items-end" : "self-start items-start"
+                      )}
+                    >
+                      <span className={cn(
+                        "text-[10px] font-bold uppercase tracking-wider",
+                        line.speaker === "AI" ? "text-[#00F38D]" : "text-white/30"
+                      )}>
+                        {line.speaker === "AI" ? "AI" : "You"}
+                      </span>
+                      <div className={cn(
+                        "px-3 py-2 rounded-xl text-sm leading-relaxed",
+                        line.speaker === "AI"
+                          ? "bg-white/5 border border-white/8 text-white/80 rounded-tl-sm"
+                          : "bg-[#00F38D]/10 border border-[#00F38D]/15 text-[#00F38D]/90 rounded-tr-sm"
+                      )}>
+                        {line.text}
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               {/* Controls */}
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setMuted((m) => !m)}
-                  className={cn(
-                    "w-12 h-12 rounded-full flex items-center justify-center border transition-all",
-                    muted
-                      ? "bg-red-500/15 border-red-500/30 text-red-400"
-                      : "bg-white/8 border-white/15 text-white/60 hover:bg-white/12"
-                  )}
-                  aria-label={muted ? "Unmute" : "Mute"}
-                >
-                  {muted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
-                </button>
+              <div className="flex flex-col items-center shrink-0">
+                <div className="flex items-center gap-6 mb-3">
+                  <button
+                    onClick={toggleMute}
+                    className={cn(
+                      "w-12 h-12 rounded-full flex items-center justify-center border transition-all",
+                      isMuted
+                        ? "bg-red-500/15 border-red-500/30 text-red-400"
+                        : "bg-white/8 border-white/15 text-white/60 hover:bg-white/12"
+                    )}
+                    aria-label={isMuted ? "Unmute" : "Mute"}
+                  >
+                    {isMuted ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                  </button>
 
-                <button
-                  onClick={() => setSessionState("ended")}
-                  className="w-14 h-14 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 hover:bg-red-500/25 transition-all"
-                  aria-label="End session"
-                >
-                  <PhoneOff className="w-5 h-5" />
-                </button>
+                  <button
+                    onClick={endCall}
+                    className="w-14 h-14 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 hover:bg-red-500/25 transition-all"
+                    aria-label="End session"
+                  >
+                    <PhoneOff className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                {/* Volume bar visualizer */}
+                <div className="w-24 h-1 bg-white/10 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-[#00F38D] transition-all duration-75"
+                    style={{ width: `${Math.min(volumeLevel * 100 * 3, 100)}%` }}
+                  />
+                </div>
               </div>
-              <p className="text-xs text-white/20 mt-4">Press the red button to end the session.</p>
+            </div>
+          )}
+
+          {/* ── ERROR & TEXT FALLBACK STATE ──────────────────────────────── */}
+          {sessionState === "error" && (
+            <div className="relative z-10 flex flex-col items-center text-center max-w-sm animate-in fade-in duration-500">
+              <div className="w-16 h-16 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-6">
+                <MicOff className="w-7 h-7 text-red-400" />
+              </div>
+              <h2 className="text-2xl font-extrabold text-white mb-2">Microphone Unavailable</h2>
+              <p className="text-sm text-white/40 mb-6">{error || "Could not access microphone."}</p>
+              
+              <div className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-left mb-6">
+                <p className="text-[11px] font-bold text-white/30 uppercase tracking-widest mb-3">Text Fallback Mode</p>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={textInput}
+                    onChange={(e) => setTextInput(e.target.value)}
+                    placeholder="Type your response here..."
+                    className="flex-1 bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00F38D]/50"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && textInput.trim()) {
+                        sendTextMessage(textInput);
+                        setTextInput("");
+                      }
+                    }}
+                  />
+                  <button
+                    onClick={() => {
+                      if (textInput.trim()) {
+                        sendTextMessage(textInput);
+                        setTextInput("");
+                      }
+                    }}
+                    className="px-4 py-2 bg-[#00F38D]/10 text-[#00F38D] rounded-lg text-sm font-semibold hover:bg-[#00F38D]/20 transition-all"
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+              
+              <button
+                onClick={() => {
+                  // Attempt to restart
+                  window.location.reload();
+                }}
+                className="py-2.5 px-6 rounded-lg bg-white/5 border border-white/10 text-sm text-white/60 font-semibold hover:bg-white/10 hover:text-white transition-all"
+              >
+                Reload and Try Mic Again
+              </button>
             </div>
           )}
 
@@ -241,13 +363,26 @@ export default function SessionPage() {
               <p className="text-sm text-white/40 mb-2">
                 Duration: <span className="text-white font-mono">{formatTime(elapsed)}</span>
               </p>
-              <p className="text-sm text-white/40 mb-8">
-                {/* TODO: Replace with real AI feedback summary from Vapi/Gemini session result */}
-                Your feedback report will appear here after session analysis is complete.
-              </p>
+              
+              {transcript.length > 0 ? (
+                <div className="text-left w-full max-h-48 overflow-y-auto mb-8 p-4 bg-white/5 border border-white/10 rounded-xl">
+                  <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-3 text-center">Transcript Summary</p>
+                  {transcript.slice(-3).map((line, i) => (
+                    <p key={i} className="text-xs text-white/60 mb-2 last:mb-0">
+                      <strong className="text-white/40">{line.speaker === "AI" ? "AI" : "You"}: </strong>
+                      {line.text}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-white/40 mb-8">
+                  Your feedback report will appear here after session analysis is complete.
+                </p>
+              )}
+
               <div className="flex flex-col sm:flex-row gap-3 w-full">
                 <button
-                  onClick={() => { setSessionState("ready"); setElapsed(0); }}
+                  onClick={() => window.location.reload()}
                   className="flex-1 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white/60 font-semibold hover:bg-white/10 hover:text-white transition-all"
                 >
                   Practice Again
