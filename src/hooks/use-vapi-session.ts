@@ -23,6 +23,7 @@ export function useVapiSession() {
   const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const [callId, setCallId] = useState<string | null>(null);
   const silenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSessionActive = useRef(false);
 
@@ -142,7 +143,12 @@ export function useVapiSession() {
       setError(e.message || "An unexpected error occurred");
     };
 
+    const onCallStartSuccess = (event: { callId?: string }) => {
+      if (event.callId) setCallId(event.callId);
+    };
+
     vapi.on("call-start", onCallStart);
+    vapi.on("call-start-success", onCallStartSuccess);
     vapi.on("call-end", onCallEnd);
     vapi.on("volume-level", onVolumeLevel);
     vapi.on("speech-start", onSpeechStart);
@@ -153,6 +159,7 @@ export function useVapiSession() {
     return () => {
       clearSilenceTimer();
       vapi.removeAllListeners("call-start");
+      vapi.removeAllListeners("call-start-success");
       vapi.removeAllListeners("call-end");
       vapi.removeAllListeners("volume-level");
       vapi.removeAllListeners("speech-start");
@@ -171,8 +178,10 @@ export function useVapiSession() {
       const systemPrompt = buildScenarioPrompt(scenario);
       const vapi = getVapiClient();
 
+      setCallId(null);
       await vapi.start({
         name: scenario.title,
+        artifactPlan: { recordingEnabled: true, recordingFormat: "mp3" },
         transcriber: {
           provider: "deepgram",
           model: "nova-2",
@@ -226,6 +235,7 @@ export function useVapiSession() {
     volumeLevel,
     transcript,
     error,
+    callId,
     startCall,
     endCall,
     toggleMute,

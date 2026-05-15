@@ -252,6 +252,7 @@ export default function SessionPage() {
     volumeLevel,
     transcript,
     error,
+    callId,
     startCall,
     endCall,
     toggleMute,
@@ -270,7 +271,7 @@ export default function SessionPage() {
     return () => clearInterval(interval);
   }, [sessionState]);
 
-  // Fetch feedback when session ends
+  // Fetch feedback when session ends, then kick off recording upload
   useEffect(() => {
     if (sessionState !== "ended" || feedback || feedbackLoading || !scenario) return;
     setFeedbackLoading(true);
@@ -284,12 +285,21 @@ export default function SessionPage() {
         category: scenario.category,
         scenarioId: id,
         elapsedSeconds: elapsed,
+        vapiCallId: callId,
       }),
     })
       .then((r) => r.json())
       .then((data) => {
         if (data.error) throw new Error(data.error);
         setFeedback(data);
+        // Fire-and-forget: upload recording to Supabase Storage in the background
+        if (data.sessionId) {
+          fetch("/api/recording", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sessionId: data.sessionId }),
+          }).catch((e) => console.error("Recording upload error:", e));
+        }
       })
       .catch((e) => console.error("Feedback error:", e))
       .finally(() => setFeedbackLoading(false));

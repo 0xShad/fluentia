@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
-    const { transcript, scenarioTitle, aiRole, category, scenarioId, elapsedSeconds } = await req.json();
+    const { transcript, scenarioTitle, aiRole, category, scenarioId, elapsedSeconds, vapiCallId } = await req.json();
 
     const userLines = (transcript as { speaker: string; text: string }[]).filter(
       (l) => l.speaker === "User"
@@ -84,32 +84,39 @@ Rules:
 
     const feedback = JSON.parse(json) as SessionFeedback;
 
-    // Save to DB without blocking the response
+    // Save to DB and return the session ID so the client can trigger recording upload
+    let sessionId: string | null = null;
     try {
       const supabase = await createClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
-        await supabase.from("session_feedback").insert({
-          user_id: user.id,
-          scenario_id: scenarioId ?? "unknown",
-          scenario_title: scenarioTitle,
-          category,
-          overall_score: feedback.overallScore,
-          grade: feedback.grade,
-          summary: feedback.summary,
-          strengths: feedback.strengths,
-          improvements: feedback.improvements,
-          filler_words: feedback.fillerWords,
-          categories: feedback.categories,
-          transcript,
-          elapsed_seconds: elapsedSeconds ?? 0,
-        });
+        const { data: inserted } = await supabase
+          .from("session_feedback")
+          .insert({
+            user_id: user.id,
+            scenario_id: scenarioId ?? "unknown",
+            scenario_title: scenarioTitle,
+            category,
+            overall_score: feedback.overallScore,
+            grade: feedback.grade,
+            summary: feedback.summary,
+            strengths: feedback.strengths,
+            improvements: feedback.improvements,
+            filler_words: feedback.fillerWords,
+            categories: feedback.categories,
+            transcript,
+            elapsed_seconds: elapsedSeconds ?? 0,
+            vapi_call_id: vapiCallId ?? null,
+          })
+          .select("id")
+          .single();
+        sessionId = inserted?.id ?? null;
       }
     } catch (dbErr) {
       console.error("Failed to save feedback to DB:", dbErr);
     }
 
-    return NextResponse.json(feedback);
+    return NextResponse.json({ ...feedback, sessionId });
   } catch (err: any) {
     console.error("Feedback API error:", err);
     return NextResponse.json({ error: err.message ?? "Analysis failed" }, { status: 500 });
