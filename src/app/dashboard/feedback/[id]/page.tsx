@@ -139,30 +139,43 @@ export default function FeedbackDetailPage() {
             {(session.transcript ?? []).length === 0 ? (
               <p className="text-sm text-white/20 italic text-center py-8">No transcript recorded.</p>
             ) : (
-              (session.transcript ?? []).map((line, i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    "flex flex-col gap-1 max-w-[85%]",
-                    line.speaker === "User" ? "self-end items-end ml-auto" : "self-start items-start"
-                  )}
-                >
-                  <span className={cn(
-                    "text-[10px] font-bold uppercase tracking-wider",
-                    line.speaker === "AI" ? "text-[#00F38D]" : "text-white/30"
-                  )}>
-                    {line.speaker === "AI" ? "AI" : "You"}
-                  </span>
-                  <div className={cn(
-                    "px-3 py-2 rounded-xl text-sm leading-relaxed",
-                    line.speaker === "AI"
-                      ? "bg-white/5 border border-white/8 text-white/80 rounded-tl-sm"
-                      : "bg-[#00F38D]/10 border border-[#00F38D]/15 text-[#00F38D]/90 rounded-tr-sm"
-                  )}>
-                    {line.text}
+              (session.transcript ?? []).map((line, i) => {
+                if (line.speaker === "System") {
+                  return (
+                    <div key={i} className="flex items-center gap-3 self-center w-full opacity-40 py-1">
+                      <div className="flex-1 h-px bg-white/20" />
+                      <span className="text-[10px] text-white/50 uppercase tracking-widest font-medium whitespace-nowrap">
+                        dead air
+                      </span>
+                      <div className="flex-1 h-px bg-white/20" />
+                    </div>
+                  );
+                }
+                return (
+                  <div
+                    key={i}
+                    className={cn(
+                      "flex flex-col gap-1 max-w-[85%]",
+                      line.speaker === "User" ? "self-end items-end ml-auto" : "self-start items-start"
+                    )}
+                  >
+                    <span className={cn(
+                      "text-[10px] font-bold uppercase tracking-wider",
+                      line.speaker === "AI" ? "text-[#00F38D]" : "text-white/30"
+                    )}>
+                      {line.speaker === "AI" ? "AI" : "You"}
+                    </span>
+                    <div className={cn(
+                      "px-3 py-2 rounded-xl text-sm leading-relaxed",
+                      line.speaker === "AI"
+                        ? "bg-white/5 border border-white/8 text-white/80 rounded-tl-sm"
+                        : "bg-[#00F38D]/10 border border-[#00F38D]/15 text-[#00F38D]/90 rounded-tr-sm"
+                    )}>
+                      {line.text}
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>

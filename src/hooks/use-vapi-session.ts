@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getVapiClient } from "@/lib/voice/vapi-client";
 import { buildScenarioPrompt } from "@/lib/prompts/vapi-prompts";
 import type { Scenario } from "@/types/scenario.types";
@@ -7,11 +7,13 @@ export type SessionStatus = "idle" | "connecting" | "active" | "ended" | "error"
 
 export interface TranscriptLine {
   id: string;
-  speaker: "AI" | "User";
+  speaker: "AI" | "User" | "System";
   text: string;      // what's rendered (committed + live partial for AI)
   committed: string; // finalized segments only — used to append the next segment
   isFinal: boolean;
 }
+
+const DEAD_AIR_THRESHOLD_MS = 3000;
 
 export function useVapiSession() {
   const [status, setStatus] = useState<SessionStatus>("idle");
@@ -21,23 +23,64 @@ export function useVapiSession() {
   const [transcript, setTranscript] = useState<TranscriptLine[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  const silenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isSessionActive = useRef(false);
+
   useEffect(() => {
     const vapi = getVapiClient();
 
+    const clearSilenceTimer = () => {
+      if (silenceTimer.current) {
+        clearTimeout(silenceTimer.current);
+        silenceTimer.current = null;
+      }
+    };
+
+    const armSilenceTimer = () => {
+      clearSilenceTimer();
+      silenceTimer.current = setTimeout(() => {
+        if (!isSessionActive.current) return;
+        setTranscript((prev) => [
+          ...prev,
+          {
+            id: `${Date.now()}-silence`,
+            speaker: "System" as const,
+            text: "[ silence ]",
+            committed: "[ silence ]",
+            isFinal: true,
+          },
+        ]);
+        // Re-arm so repeated dead air keeps showing markers
+        armSilenceTimer();
+      }, DEAD_AIR_THRESHOLD_MS);
+    };
+
     const onCallStart = () => {
+      isSessionActive.current = true;
       setStatus("active");
       setError(null);
     };
 
     const onCallEnd = () => {
+      isSessionActive.current = false;
+      clearSilenceTimer();
       setStatus("ended");
       setIsSpeaking(false);
       setVolumeLevel(0);
     };
 
     const onVolumeLevel = (volume: number) => setVolumeLevel(volume);
-    const onSpeechStart = () => setIsSpeaking(true);
-    const onSpeechEnd = () => setIsSpeaking(false);
+
+    const onSpeechStart = () => {
+      clearSilenceTimer();
+      setIsSpeaking(true);
+    };
+
+    const onSpeechEnd = () => {
+      setIsSpeaking(false);
+      // Only arm after AI finishes speaking — that's when we expect the user to respond
+      if (isSessionActive.current) armSilenceTimer();
+    };
 
     const onMessage = (message: any) => {
       if (message.type !== "transcript") return;
@@ -50,10 +93,14 @@ export function useVapiSession() {
       const newText = (message.transcript || "").trim();
       if (!newText) return;
 
+      // User started talking — cancel the dead air timer
+      if (speaker === "User") clearSilenceTimer();
+
       const isFinal = message.transcriptType === "final";
 
       setTranscript((prev) => {
         const lastLine = prev.length > 0 ? prev[prev.length - 1] : null;
+        // Don't merge into a System (silence) line
         const isSameBubble = lastLine !== null && lastLine.speaker === speaker;
 
         if (isSameBubble) {
@@ -62,13 +109,11 @@ export function useVapiSession() {
           let displayText: string;
 
           if (isFinal) {
-            // Append this completed segment to committed text.
             newCommitted = prevCommitted ? prevCommitted + " " + newText : newText;
             displayText = newCommitted;
           } else {
             // AI partial: show committed text + streaming partial without advancing
-            // the committed pointer. Overwrites the partial from last tick so the
-            // bubble grows smoothly if partials are cumulative (Deepgram default).
+            // the committed pointer.
             displayText = prevCommitted ? prevCommitted + " " + newText : newText;
           }
 
@@ -77,8 +122,6 @@ export function useVapiSession() {
           return updated;
         }
 
-        // Speaker changed — start a new bubble.
-        // committed is set to newText only for finals; partials start uncommitted.
         return [
           ...prev,
           {
@@ -94,6 +137,7 @@ export function useVapiSession() {
 
     const onError = (e: any) => {
       console.error("Vapi error:", e);
+      clearSilenceTimer();
       setStatus("error");
       setError(e.message || "An unexpected error occurred");
     };
@@ -107,6 +151,7 @@ export function useVapiSession() {
     vapi.on("error", onError);
 
     return () => {
+      clearSilenceTimer();
       vapi.removeAllListeners("call-start");
       vapi.removeAllListeners("call-end");
       vapi.removeAllListeners("volume-level");
@@ -132,7 +177,6 @@ export function useVapiSession() {
           provider: "deepgram",
           model: "nova-2",
           language: "en",
-          // Wait 500ms of silence after the last word before finalizing the user's turn.
           endpointing: 500,
         },
         model: {
