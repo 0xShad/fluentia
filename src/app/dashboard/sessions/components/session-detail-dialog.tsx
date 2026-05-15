@@ -86,7 +86,7 @@ function ScoreRing({ score }: { score: number }) {
   );
 }
 
-function AudioPlayer({ url }: { url: string }) {
+function AudioPlayer({ url, onDurationLoad }: { url: string; onDurationLoad?: (seconds: number) => void }) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -121,7 +121,11 @@ function AudioPlayer({ url }: { url: string }) {
           setCurrentTime(a.currentTime);
           setProgress((a.currentTime / a.duration) * 100);
         }}
-        onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
+        onLoadedMetadata={() => {
+          const d = audioRef.current?.duration ?? 0;
+          setDuration(d);
+          onDurationLoad?.(Math.round(d));
+        }}
         onEnded={() => { setPlaying(false); setProgress(100); }}
       />
       <button onClick={togglePlay}
@@ -186,12 +190,14 @@ export function SessionDetailDialog({ sessionId, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [recordingState, setRecordingState] = useState<RecordingState>("idle");
   const [resolvedUrl, setResolvedUrl] = useState<string | null>(null);
+  const [audioDuration, setAudioDuration] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!sessionId) { setSession(null); setRecordingState("idle"); setResolvedUrl(null); return; }
+    if (!sessionId) { setSession(null); setRecordingState("idle"); setResolvedUrl(null); setAudioDuration(null); return; }
     setLoading(true);
     setRecordingState("idle");
     setResolvedUrl(null);
+    setAudioDuration(null);
     createClient()
       .from("session_feedback")
       .select("*")
@@ -300,7 +306,7 @@ export function SessionDetailDialog({ sessionId, onClose }: Props) {
                   <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "0.375rem" }}>
                     <span style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>
                       <Clock style={{ width: 13, height: 13 }} />
-                      {formatDuration(session.elapsed_seconds)}
+                      {formatDuration(audioDuration ?? session.elapsed_seconds)}
                     </span>
                     <span style={{ display: "flex", alignItems: "center", gap: "0.375rem", fontSize: "12px", color: "rgba(255,255,255,0.35)" }}>
                       <Calendar style={{ width: 13, height: 13 }} />
@@ -321,7 +327,7 @@ export function SessionDetailDialog({ sessionId, onClose }: Props) {
               {/* Full-width recording row */}
               <div style={{ padding: "0 2rem 1.5rem" }}>
                 {recordingState === "ready" && resolvedUrl ? (
-                  <AudioPlayer url={resolvedUrl} />
+                  <AudioPlayer url={resolvedUrl} onDurationLoad={setAudioDuration} />
                 ) : recordingState === "loading" ? (
                   <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white/[0.03] border border-white/8 text-sm text-white/40">
                     <Loader2 className="w-4 h-4 animate-spin text-[#00F38D] shrink-0" />
