@@ -8,7 +8,8 @@ export type SessionStatus = "idle" | "connecting" | "active" | "ended" | "error"
 export interface TranscriptLine {
   id: string;
   speaker: "AI" | "User";
-  text: string;
+  text: string;      // what's rendered (committed + live partial for AI)
+  committed: string; // finalized segments only — used to append the next segment
   isFinal: boolean;
 }
 
@@ -23,7 +24,6 @@ export function useVapiSession() {
   useEffect(() => {
     const vapi = getVapiClient();
 
-    // Event listeners
     const onCallStart = () => {
       setStatus("active");
       setError(null);
@@ -35,54 +35,61 @@ export function useVapiSession() {
       setVolumeLevel(0);
     };
 
-    const onVolumeLevel = (volume: number) => {
-      setVolumeLevel(volume);
-    };
-
+    const onVolumeLevel = (volume: number) => setVolumeLevel(volume);
     const onSpeechStart = () => setIsSpeaking(true);
     const onSpeechEnd = () => setIsSpeaking(false);
 
     const onMessage = (message: any) => {
-      if (message.type === "transcript") {
-        setTranscript((prev) => {
-          const speaker = message.role === "assistant" ? "AI" : "User";
-          const newText = message.transcript || "";
+      if (message.type !== "transcript") return;
 
-          if (prev.length === 0) {
-            return [{
-              id: Date.now().toString(),
-              speaker,
-              text: newText,
-              isFinal: true
-            }];
+      // Skip user partials — only commit when the user finishes speaking.
+      // AI partials are kept so the response streams in real-time.
+      if (message.role !== "assistant" && message.transcriptType !== "final") return;
+
+      const speaker: "AI" | "User" = message.role === "assistant" ? "AI" : "User";
+      const newText = (message.transcript || "").trim();
+      if (!newText) return;
+
+      const isFinal = message.transcriptType === "final";
+
+      setTranscript((prev) => {
+        const lastLine = prev.length > 0 ? prev[prev.length - 1] : null;
+        const isSameBubble = lastLine !== null && lastLine.speaker === speaker;
+
+        if (isSameBubble) {
+          const prevCommitted = lastLine.committed;
+          let newCommitted = prevCommitted;
+          let displayText: string;
+
+          if (isFinal) {
+            // Append this completed segment to committed text.
+            newCommitted = prevCommitted ? prevCommitted + " " + newText : newText;
+            displayText = newCommitted;
+          } else {
+            // AI partial: show committed text + streaming partial without advancing
+            // the committed pointer. Overwrites the partial from last tick so the
+            // bubble grows smoothly if partials are cumulative (Deepgram default).
+            displayText = prevCommitted ? prevCommitted + " " + newText : newText;
           }
 
-          const lastIndex = prev.length - 1;
-          const lastLine = prev[lastIndex];
+          const updated = [...prev];
+          updated[updated.length - 1] = { ...lastLine, text: displayText, committed: newCommitted };
+          return updated;
+        }
 
-          // Foolproof merge: If it's the same speaker's turn, always overwrite their current bubble.
-          // This handles growing text ("Hello" -> "Hello there") seamlessly without relying on Vapi flags.
-          if (lastLine.speaker === speaker) {
-            const newPrev = [...prev];
-            newPrev[lastIndex] = {
-              ...lastLine,
-              text: newText,
-            };
-            return newPrev;
-          }
-
-          // Otherwise, it's a new turn, so make a new bubble
-          return [
-            ...prev,
-            {
-              id: Date.now().toString() + Math.random(),
-              speaker,
-              text: newText,
-              isFinal: true
-            }
-          ];
-        });
-      }
+        // Speaker changed — start a new bubble.
+        // committed is set to newText only for finals; partials start uncommitted.
+        return [
+          ...prev,
+          {
+            id: Date.now().toString() + Math.random(),
+            speaker,
+            text: newText,
+            committed: isFinal ? newText : "",
+            isFinal: true,
+          },
+        ];
+      });
     };
 
     const onError = (e: any) => {
@@ -100,7 +107,6 @@ export function useVapiSession() {
     vapi.on("error", onError);
 
     return () => {
-      // Cleanup listeners
       vapi.removeAllListeners("call-start");
       vapi.removeAllListeners("call-end");
       vapi.removeAllListeners("volume-level");
@@ -122,6 +128,13 @@ export function useVapiSession() {
 
       await vapi.start({
         name: scenario.title,
+        transcriber: {
+          provider: "deepgram",
+          model: "nova-2",
+          language: "en",
+          // Wait 500ms of silence after the last word before finalizing the user's turn.
+          endpointing: 500,
+        },
         model: {
           provider: "openai",
           model: "gpt-4o",
@@ -129,7 +142,7 @@ export function useVapiSession() {
         },
         voice: {
           provider: "11labs",
-          voiceId: "burt", // Using a guaranteed valid default 11labs voice
+          voiceId: "burt",
         },
         firstMessage: `Hello, I'm ready to begin the ${scenario.title} scenario.`,
       });
@@ -154,19 +167,12 @@ export function useVapiSession() {
   const sendTextMessage = useCallback((text: string) => {
     getVapiClient().send({
       type: "add-message",
-      message: {
-        role: "user",
-        content: text
-      }
+      message: { role: "user", content: text },
     });
-    
-    // Optimistically add to transcript
-    setTranscript(prev => [...prev, {
-      id: Date.now().toString(),
-      speaker: "User",
-      text: text,
-      isFinal: true
-    }]);
+    setTranscript((prev) => [
+      ...prev,
+      { id: Date.now().toString(), speaker: "User", text, committed: text, isFinal: true },
+    ]);
   }, []);
 
   return {
@@ -179,6 +185,6 @@ export function useVapiSession() {
     startCall,
     endCall,
     toggleMute,
-    sendTextMessage
+    sendTextMessage,
   };
 }
