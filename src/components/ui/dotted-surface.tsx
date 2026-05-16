@@ -37,6 +37,7 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 		let count = 0;
 		let animId = 0;
 		let lastTime = 0;
+		let inView = true;
 
 		const draw = (time: number) => {
 			animId = requestAnimationFrame(draw);
@@ -67,23 +68,30 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 			count += 0.035;
 		};
 
-		animId = requestAnimationFrame(draw);
+		const start = () => { lastTime = 0; animId = requestAnimationFrame(draw); };
+		const stop = () => cancelAnimationFrame(animId);
+
+		start();
+
+		// Pause when hero scrolls out of view — no point animating off-screen
+		const observer = new IntersectionObserver(([entry]) => {
+			inView = entry.isIntersecting;
+			if (inView) start(); else stop();
+		}, { threshold: 0 });
+		observer.observe(container);
 
 		const onResize = () => setSize();
 		const onVisibility = () => {
-			if (document.hidden) {
-				cancelAnimationFrame(animId);
-			} else {
-				lastTime = 0;
-				animId = requestAnimationFrame(draw);
-			}
+			if (document.hidden) stop();
+			else if (inView) start();
 		};
 
 		window.addEventListener('resize', onResize);
 		document.addEventListener('visibilitychange', onVisibility);
 
 		return () => {
-			cancelAnimationFrame(animId);
+			stop();
+			observer.disconnect();
 			window.removeEventListener('resize', onResize);
 			document.removeEventListener('visibilitychange', onVisibility);
 			canvas.remove();

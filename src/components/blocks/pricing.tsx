@@ -160,7 +160,7 @@ export function PricingCard({
         )}
       >
         {/* Subtle background glow for highlighted card */}
-        {plan.highlighted && <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-[50px] rounded-full pointer-events-none"></div>}
+        {plan.highlighted && <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 blur-3xl rounded-full pointer-events-none"></div>}
 
         <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
           {plan.highlighted && (
