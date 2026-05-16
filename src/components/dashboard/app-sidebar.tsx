@@ -27,7 +27,7 @@ const mainLinks = [
 const systemLinks = [
   { title: "Profile",            href: "/dashboard/profile",     icon: User },
   { title: "Preferences",        href: "/dashboard/preferences", icon: Settings },
-  { title: "Terms & Conditions", href: "/terms",                 icon: FileText },
+  { title: "Terms & Conditions", href: "/dashboard/terms",       icon: FileText },
 ];
 
 export function AppSidebar() {
