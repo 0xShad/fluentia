@@ -27,7 +27,7 @@ const pricingPlans = [
     },
     features: [
       { text: 'Unlimited Voice Scenarios' },
-      { text: 'Real-Time Live Hints', tooltip: 'Instant visual cues for filler words and pacing' },
+      { text: 'Full Session Transcripts', tooltip: 'Complete word-for-word transcript after every session' },
       { text: 'Custom Roleplays', tooltip: 'Build custom prompts for exact situations' },
       { text: 'Detailed Session Insights', tooltip: 'Word usage, clarity, and pacing over time' },
       { text: 'Priority Email Support' },

@@ -18,8 +18,8 @@ export default function Home() {
         <FeaturesSection />
         <ShowcaseSection />
         <TestimonialsSection
-          title="Loved by Users"
-          description="Join thousands gaining confidence in their daily conversations."
+          title="What Users Are Saying"
+          description="People using Fluentia to prepare for interviews, presentations, and everyday conversations."
           testimonials={testimonials}
         />
         <PricingBlock />

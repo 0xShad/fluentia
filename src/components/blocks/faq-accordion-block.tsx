@@ -10,32 +10,32 @@ const faqs = [
   {
     question: "What scenarios can I practice?",
     answer:
-      "Fluentia covers a wide range of professional and academic situations. You can practice job interviews, performance reviews, salary negotiations, academic defenses, or even casual everyday chats. We also allow you to create custom scenarios tailored to your specific needs.",
+      "Fluentia has five categories: Interview, Business, Social, Public Speaking, and Everyday. Inside each category you'll find specific scenarios like job interviews, salary negotiations, client pitches, presentations, and casual conversations. You can also build a custom scenario for any situation you're preparing for.",
   },
   {
-    question: "How does the real-time feedback work?",
+    question: "How does a practice session work?",
     answer:
-      "As you speak, our AI analyzes your audio stream instantly. If you speak too quickly, use too many filler words (like 'um' or 'uh'), or hesitate for long periods, unobtrusive visual hints appear on your dashboard to help you adjust your pacing.",
+      "Pick a scenario from the library and hit start. You'll have a live voice conversation with the AI, which plays the other person in the scenario. When the session ends, your full transcript and session metrics are saved to your dashboard automatically — ready for you to review at your own pace.",
   },
   {
     question: "Is my voice data saved or shared?",
     answer:
-      "Your privacy is our priority. Voice streams are processed securely and your practice sessions are kept entirely private. You have full control to review or delete your session transcripts and analytics at any time.",
+      "Your sessions are private to your account. Voice is processed to generate your transcript and is not shared with third parties. You can delete any session and its transcript from your dashboard at any time.",
   },
   {
     question: "Can Fluentia help non-native English speakers?",
     answer:
-      "Absolutely. Our judgment-free AI provides a safe environment to practice and build confidence. The analytics dashboard helps you track metrics like clarity and pacing over time, making it an excellent tool for improving your conversational English.",
+      "Yes. Fluentia is a good fit for anyone who wants more speaking practice in English. The AI keeps the conversation going at a natural pace, and the transcript lets you review vocabulary and sentence structure after the fact.",
   },
   {
     question: "Do I need any special equipment?",
     answer:
-      "No specialized equipment is required! As long as you have a modern web browser and a working microphone (built-in or external), you can start practicing immediately.",
+      "Just a browser and a microphone. A built-in laptop mic works fine. A headset gives you cleaner audio and a better transcript, but it's not required to get started.",
   },
   {
-    question: "Is there a free tier available?",
+    question: "Is there a free tier?",
     answer:
-      "Yes, we offer a free tier that gives you access to basic practice scenarios and essential communication analytics so you can start building your confidence right away.",
+      "Yes. The free plan gives you 3 voice sessions per month along with basic transcripts and an overall confidence score — enough to try the full loop and see if Fluentia fits your workflow.",
   },
 ];
 
@@ -47,7 +47,6 @@ export function FAQAccordionBlock() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-36 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="mx-auto max-w-4xl relative z-10">
-        {/* Header */}
         <div className="mb-12 text-center md:mb-16">
           <div className="mb-4 inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
             <HelpCircle className="h-3 w-3" />
@@ -57,11 +56,10 @@ export function FAQAccordionBlock() {
             Frequently Asked Questions
           </h2>
           <p className="mx-auto max-w-2xl text-base text-muted-foreground md:text-lg">
-            Find answers to common questions about our AI communication coach.
+            Quick answers about how Fluentia works.
           </p>
         </div>
 
-        {/* FAQ Accordion */}
         <div className="space-y-4">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
@@ -108,7 +106,6 @@ export function FAQAccordionBlock() {
           })}
         </div>
 
-        {/* Bottom CTA */}
         <div className="mt-12 text-center md:mt-16">
           <Card className="border border-white/10 bg-[#080808] p-6 md:p-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent" />
@@ -118,7 +115,7 @@ export function FAQAccordionBlock() {
                 Still have questions?
               </h3>
               <p className="mb-6 text-sm text-zinc-400 md:text-base">
-                Our team is here to help you dial in your communication practice.
+                Reach out and we&apos;ll get back to you.
               </p>
               <div className="flex flex-col justify-center gap-3 sm:flex-row">
                 <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 uppercase tracking-wider text-xs transition-transform hover:scale-105 active:scale-95">

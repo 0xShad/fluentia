@@ -4,6 +4,13 @@ import { Play } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
+const navLinks = [
+  { label: "Features", href: "#features" },
+  { label: "How It Works", href: "#how-it-works" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "FAQ", href: "#faq" },
+];
+
 export function NavBar() {
   return (
     <motion.nav
@@ -18,13 +25,13 @@ export function NavBar() {
         </Link>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
-          {["Features", "Testimonials", "Pricing", "FAQ"].map((item) => (
+          {navLinks.map((link) => (
             <a
-              key={item}
-              href={`#${item.toLowerCase()}`}
+              key={link.label}
+              href={link.href}
               className="hover:text-white transition-colors"
             >
-              {item}
+              {link.label}
             </a>
           ))}
         </div>
@@ -37,7 +44,7 @@ export function NavBar() {
             href="/authentication/register"
             className="inline-flex items-center justify-center rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 py-2 h-9 text-xs uppercase tracking-wider transition-colors"
           >
-            Try Now <Play className="w-3 h-3 ml-1" />
+            Start Practicing <Play className="w-3 h-3 ml-1" />
           </Link>
         </div>
       </div>

@@ -19,7 +19,7 @@ export function TestimonialsSection({
   className 
 }: TestimonialsSectionProps) {
   return (
-    <section className={cn(
+    <section id="testimonials" className={cn(
       "bg-background text-foreground",
       "py-24 relative px-6 border-t border-white/5 overflow-hidden",
       className
