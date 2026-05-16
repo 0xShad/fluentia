@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Search, Filter, MoreHorizontal, Download, BarChart2, Mic, Play, Trash2, Loader2 } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import {
+  Search, Filter, MoreHorizontal, Download, BarChart2, Mic, Play,
+  Trash2, Loader2, Check, ChevronLeft, ChevronRight,
+} from "lucide-react";
 import { toast } from "sonner";
 import { SessionsSkeleton } from "./components/sessions-skeleton";
 import { SessionDetailDialog } from "./components/session-detail-dialog";
@@ -13,9 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuGroup,
-  DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
+  DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator,
+  DropdownMenuTrigger, DropdownMenuCheckboxItem,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/lib/client";
+import { cn } from "@/lib/utils";
 
 interface SessionRow {
   id: string;
@@ -29,6 +34,9 @@ interface SessionRow {
   recording_url: string | null;
   recording_enabled: boolean;
 }
+
+const PAGE_SIZE = 15;
+const ALL_STATUSES = ["Excellent", "Good", "Needs Focus", "Poor"] as const;
 
 function getStatus(score: number) {
   if (score >= 90) return "Excellent";
@@ -73,6 +81,9 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [search, setSearch] = useState("");
+  const [filterCategories, setFilterCategories] = useState<string[]>([]);
+  const [filterStatuses, setFilterStatuses] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
@@ -90,25 +101,68 @@ export default function HistoryPage() {
     load();
   }, []);
 
+  // Reset to page 1 whenever search or filters change
+  useEffect(() => {
+    setPage(1);
+  }, [search, filterCategories, filterStatuses]);
+
+  const categories = useMemo(
+    () => [...new Set(sessions.map((s) => s.category))].sort(),
+    [sessions]
+  );
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return sessions.filter((s) => {
+      const matchesSearch =
+        !q ||
+        s.scenario_title.toLowerCase().includes(q) ||
+        s.category.toLowerCase().includes(q);
+      const matchesCategory =
+        filterCategories.length === 0 || filterCategories.includes(s.category);
+      const matchesStatus =
+        filterStatuses.length === 0 || filterStatuses.includes(getStatus(s.overall_score));
+      return matchesSearch && matchesCategory && matchesStatus;
+    });
+  }, [sessions, search, filterCategories, filterStatuses]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const activeFilterCount = filterCategories.length + filterStatuses.length;
+  const hasActiveFilters = activeFilterCount > 0;
+
+  const toggleCategory = (cat: string) =>
+    setFilterCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+
+  const toggleStatus = (status: string) =>
+    setFilterStatuses((prev) =>
+      prev.includes(status) ? prev.filter((s) => s !== status) : [...prev, status]
+    );
+
+  const clearFilters = () => {
+    setFilterCategories([]);
+    setFilterStatuses([]);
+  };
+
   const handleDelete = async () => {
     if (!deleteId) return;
     setDeleting(true);
     try {
       const supabase = createClient();
 
-      // Fetch recording path before deleting
       const { data: row } = await supabase
         .from("session_feedback")
         .select("recording_url")
         .eq("id", deleteId)
         .maybeSingle();
 
-      // Remove recording from storage (non-fatal)
       if (row?.recording_url) {
         await supabase.storage.from("recordings").remove([row.recording_url]);
       }
 
-      // Delete the DB row
       const { error: deleteErr } = await supabase
         .from("session_feedback")
         .delete()
@@ -119,7 +173,7 @@ export default function HistoryPage() {
       setSessions((prev) => prev.filter((s) => s.id !== deleteId));
       if (selectedId === deleteId) setSelectedId(null);
       toast.success("Session deleted successfully.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Session delete error:", err);
       toast.error("Failed to delete session. Please try again.");
     } finally {
@@ -130,10 +184,8 @@ export default function HistoryPage() {
 
   if (loading) return <SessionsSkeleton />;
 
-  const filtered = sessions.filter((s) =>
-    s.scenario_title.toLowerCase().includes(search.toLowerCase()) ||
-    s.category.toLowerCase().includes(search.toLowerCase())
-  );
+  const showFrom = filtered.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const showTo = Math.min(page * PAGE_SIZE, filtered.length);
 
   return (
     <>
@@ -150,6 +202,7 @@ export default function HistoryPage() {
         </div>
 
         <div className="bg-[#111] border border-white/10 rounded-xl shadow-2xl relative">
+          {/* Toolbar */}
           <div className="p-4 border-b border-white/10 flex flex-col sm:flex-row sm:items-center gap-4 justify-between bg-[#0A0A0A] rounded-t-xl">
             <div className="relative w-full sm:max-w-sm group">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-[#00F38D] transition-colors" />
@@ -160,12 +213,79 @@ export default function HistoryPage() {
                 className="pl-9 bg-[#1a1a1a] border-white/10 text-white placeholder:text-muted-foreground focus-visible:ring-[#00F38D]/50 focus-visible:border-[#00F38D]/50 h-10 transition-all"
               />
             </div>
-            <Button variant="outline" className="border-white/10 text-white bg-[#1a1a1a] hover:bg-white/5 hover:text-white h-10 gap-2">
-              <Filter className="w-4 h-4" />
-              Filter
-            </Button>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={cn(
+                  "inline-flex items-center gap-2 h-10 px-4 rounded-md border border-white/10 text-white bg-[#1a1a1a] hover:bg-white/5 text-sm font-medium transition-colors outline-none focus:ring-2 focus:ring-[#00F38D]/50",
+                  hasActiveFilters && "border-[#00F38D]/40"
+                )}
+              >
+                <Filter className="w-4 h-4" />
+                Filter
+                {hasActiveFilters && (
+                  <span className="ml-0.5 bg-[#00F38D] text-black text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center leading-none">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-52 bg-[#111] border-white/10 text-white shadow-xl shadow-black"
+              >
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-xs text-white/40 font-bold uppercase tracking-wider">
+                    Category
+                  </DropdownMenuLabel>
+                  {categories.map((cat) => (
+                    <DropdownMenuCheckboxItem
+                      key={cat}
+                      checked={filterCategories.includes(cat)}
+                      onCheckedChange={() => toggleCategory(cat)}
+                      className="cursor-pointer focus:bg-white/5 focus:text-white"
+                    >
+                      {cat}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuGroup>
+
+                <DropdownMenuSeparator className="bg-white/10" />
+
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-xs text-white/40 font-bold uppercase tracking-wider">
+                    Status
+                  </DropdownMenuLabel>
+                  {ALL_STATUSES.map((status) => (
+                    <DropdownMenuCheckboxItem
+                      key={status}
+                      checked={filterStatuses.includes(status)}
+                      onCheckedChange={() => toggleStatus(status)}
+                      className="cursor-pointer focus:bg-white/5 focus:text-white"
+                    >
+                      {status}
+                    </DropdownMenuCheckboxItem>
+                  ))}
+                </DropdownMenuGroup>
+
+                {hasActiveFilters && (
+                  <>
+                    <DropdownMenuSeparator className="bg-white/10" />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem
+                        onClick={clearFilters}
+                        className="cursor-pointer focus:bg-white/5 text-white/50 focus:text-white gap-2 text-xs"
+                      >
+                        <Check className="w-3.5 h-3.5 opacity-0" />
+                        Clear all filters
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
+          {/* Table */}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-[#050505] hover:bg-[#050505]">
@@ -182,7 +302,7 @@ export default function HistoryPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((session) => {
+                {paginated.map((session) => {
                   const status = getStatus(session.overall_score);
                   return (
                     <TableRow
@@ -265,17 +385,49 @@ export default function HistoryPage() {
                   );
                 })}
 
-                {filtered.length === 0 && (
+                {paginated.length === 0 && (
                   <TableRow className="hover:bg-transparent border-0">
                     <TableCell colSpan={9} className="h-48 text-center text-muted-foreground">
                       {sessions.length === 0
                         ? "No sessions yet. Complete a practice session to see your history."
-                        : "No sessions found matching your search."}
+                        : "No sessions match your search or filters."}
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          {/* Pagination footer */}
+          <div className="px-4 py-3 border-t border-white/10 flex items-center justify-between gap-4 bg-[#0A0A0A] rounded-b-xl">
+            <p className="text-xs text-white/30">
+              {filtered.length === 0
+                ? "No results"
+                : `Showing ${showFrom}–${showTo} of ${filtered.length} session${filtered.length !== 1 ? "s" : ""}`}
+            </p>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={page === 1}
+                onClick={() => setPage((p) => p - 1)}
+                className="h-7 w-7 border-white/10 bg-transparent text-white/50 hover:bg-white/5 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </Button>
+              <span className="text-xs text-white/40 px-2 tabular-nums">
+                {page} / {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="icon"
+                disabled={page === totalPages}
+                onClick={() => setPage((p) => p + 1)}
+                className="h-7 w-7 border-white/10 bg-transparent text-white/50 hover:bg-white/5 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
