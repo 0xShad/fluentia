@@ -27,6 +27,7 @@ interface SessionRow {
   created_at: string;
   vapi_call_id: string | null;
   recording_url: string | null;
+  recording_enabled: boolean;
 }
 
 function getStatus(score: number) {
@@ -81,7 +82,7 @@ export default function HistoryPage() {
       const supabase = createClient();
       const { data, error } = await supabase
         .from("session_feedback")
-        .select("id, scenario_title, category, overall_score, grade, elapsed_seconds, created_at, vapi_call_id, recording_url")
+        .select("id, scenario_title, category, overall_score, grade, elapsed_seconds, created_at, vapi_call_id, recording_url, recording_enabled")
         .order("created_at", { ascending: false });
       if (!error && data) setSessions(data as SessionRow[]);
       setLoading(false);
@@ -216,7 +217,9 @@ export default function HistoryPage() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {session.recording_url ? (
+                        {!session.recording_enabled ? (
+                          <span className="text-xs text-white/20">Off</span>
+                        ) : session.recording_url ? (
                           <span className="flex items-center gap-1 text-[#00F38D]/70 text-xs">
                             <Play className="w-3 h-3" />
                             Ready

@@ -311,6 +311,7 @@ export default function SessionPage() {
         scenarioId: id,
         elapsedSeconds: elapsed,
         vapiCallId: callId,
+        recordingEnabled: isRecording,
       }),
     })
       .then((r) => r.json())

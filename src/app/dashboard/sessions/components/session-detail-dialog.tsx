@@ -24,6 +24,7 @@ interface SessionDetail {
   created_at: string;
   vapi_call_id: string | null;
   recording_url: string | null;
+  recording_enabled: boolean;
 }
 
 type RecordingState = "idle" | "loading" | "ready" | "processing" | "unavailable";
@@ -171,7 +172,7 @@ function CategoryBar({ name, score, feedback, delay }: { name: string; score: nu
         <span className="text-sm font-semibold text-white/70">{name}</span>
         <span className="text-sm font-bold tabular-nums" style={{ color: scoreColor(score) }}>{score}</span>
       </div>
-      <div className="h-2 bg-white/[0.06] rounded-full overflow-hidden">
+      <div className="h-2 bg-white/6 rounded-full overflow-hidden">
         <div className={`h-full rounded-full transition-all duration-1000 ease-out ${barColor}`}
           style={{ width: `${w}%`, transitionDelay: `${delay}ms` }} />
       </div>
@@ -211,6 +212,10 @@ export function SessionDetailDialog({ sessionId, onClose }: Props) {
 
   useEffect(() => {
     if (!session) return;
+    if (!session.recording_enabled) {
+      setRecordingState("unavailable");
+      return;
+    }
     if (!session.vapi_call_id && !session.recording_url) {
       setRecordingState("unavailable");
       return;
@@ -329,7 +334,7 @@ export function SessionDetailDialog({ sessionId, onClose }: Props) {
                 {recordingState === "ready" && resolvedUrl ? (
                   <AudioPlayer url={resolvedUrl} onDurationLoad={setAudioDuration} />
                 ) : recordingState === "loading" ? (
-                  <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white/[0.03] border border-white/8 text-sm text-white/40">
+                  <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white/3 border border-white/8 text-sm text-white/40">
                     <Loader2 className="w-4 h-4 animate-spin text-[#00F38D] shrink-0" />
                     {session.recording_url ? "Loading recording…" : "Saving recording to storage for the first time…"}
                   </div>
@@ -339,9 +344,11 @@ export function SessionDetailDialog({ sessionId, onClose }: Props) {
                     Recording is still processing — check back in a minute.
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white/[0.02] border border-white/8 text-sm text-white/20">
+                  <div className="flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-white/2 border border-white/8 text-sm text-white/20">
                     <Mic className="w-4 h-4 shrink-0" />
-                    No recording available for this session.
+                    {session.recording_enabled === false
+                      ? "Recording was disabled for this session."
+                      : "No recording available for this session."}
                   </div>
                 )}
               </div>

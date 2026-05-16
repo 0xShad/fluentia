@@ -7,7 +7,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 export async function POST(req: NextRequest) {
   try {
-    const { transcript, scenarioTitle, aiRole, category, scenarioId, elapsedSeconds, vapiCallId } = await req.json();
+    const { transcript, scenarioTitle, aiRole, category, scenarioId, elapsedSeconds, vapiCallId, recordingEnabled } = await req.json();
 
     const userLines = (transcript as { speaker: string; text: string }[]).filter(
       (l) => l.speaker === "User"
@@ -237,6 +237,7 @@ Rules:
             transcript,
             elapsed_seconds: elapsedSeconds ?? 0,
             vapi_call_id: vapiCallId ?? null,
+            recording_enabled: recordingEnabled !== false,
           })
           .select("id")
           .single();
