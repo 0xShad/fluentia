@@ -9,16 +9,20 @@ import {
   Clock,
   User,
   Settings,
+  FileText,
   ChevronRight,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { scenarios } from "@/data/scenarios";
+import { termsSections, privacySections } from "@/lib/terms-data";
 import { createClient } from "@/lib/client";
+
+// ── Types ────────────────────────────────────────────────────────────────────
 
 interface SearchResult {
   id: string;
-  type: "page" | "scenario" | "session";
+  type: "page" | "scenario" | "session" | "content";
   label: string;
   sublabel?: string;
   href: string;
@@ -31,13 +35,86 @@ interface SessionRow {
   category: string;
 }
 
+interface ContentEntry {
+  id: string;
+  pageLabel: string;
+  pageHref: string;
+  icon: LucideIcon;
+  sectionTitle: string;
+  searchText: string;
+}
+
+// ── Static nav items ─────────────────────────────────────────────────────────
+
 const PAGE_ITEMS: SearchResult[] = [
   { id: "page-dashboard",   type: "page", label: "Progress",    sublabel: "Dashboard overview",   href: "/dashboard",             icon: TrendingUp },
   { id: "page-practice",    type: "page", label: "Practice",    sublabel: "Browse scenarios",     href: "/dashboard/practice",    icon: Mic2 },
   { id: "page-sessions",    type: "page", label: "Sessions",    sublabel: "Session history",      href: "/dashboard/sessions",    icon: Clock },
   { id: "page-profile",     type: "page", label: "Profile",     sublabel: "Your account details", href: "/dashboard/profile",     icon: User },
   { id: "page-preferences", type: "page", label: "Preferences", sublabel: "App settings",         href: "/dashboard/preferences", icon: Settings },
+  { id: "page-terms",       type: "page", label: "Terms & Conditions", sublabel: "Legal & privacy", href: "/dashboard/terms",   icon: FileText },
 ];
+
+// ── Content index ─────────────────────────────────────────────────────────────
+// Each entry represents a searchable section inside a page.
+
+const CONTENT_INDEX: ContentEntry[] = [
+  // Preferences sections
+  {
+    id: "content-pref-language",
+    pageLabel: "Preferences",
+    pageHref: "/dashboard/preferences#language-region",
+    icon: Settings,
+    sectionTitle: "Language & Region",
+    searchText: "interface language ai voice language timezone region locale english spanish french accent speech neural",
+  },
+  {
+    id: "content-pref-notifications",
+    pageLabel: "Preferences",
+    pageHref: "/dashboard/preferences#notifications",
+    icon: Settings,
+    sectionTitle: "Notifications",
+    searchText: "session reminders weekly reports realtime alerts email notifications push notification reminder alert",
+  },
+  {
+    id: "content-pref-coaching",
+    pageLabel: "Preferences",
+    pageHref: "/dashboard/preferences#coaching-behavior",
+    icon: Settings,
+    sectionTitle: "Coaching Behavior",
+    searchText: "skill level coaching style speaking goals feedback detail coaching tone correction sensitivity preferred voice beginner intermediate advanced balanced direct formal casual",
+  },
+  {
+    id: "content-pref-recording",
+    pageLabel: "Preferences",
+    pageHref: "/dashboard/preferences#notifications",
+    icon: Settings,
+    sectionTitle: "Recording Preference",
+    searchText: "audio recording consent recording preference remember choice session recording opt in opt out",
+  },
+
+  // Terms of Service sections (built from terms-data)
+  ...termsSections.map((s) => ({
+    id: `content-terms-${s.id}`,
+    pageLabel: "Terms & Conditions",
+    pageHref: `/dashboard/terms#${s.id}`,
+    icon: FileText as LucideIcon,
+    sectionTitle: s.title.replace(/^\d+\.\s*/, ""),
+    searchText: s.body.join(" "),
+  })),
+
+  // Privacy Policy sections
+  ...privacySections.map((s) => ({
+    id: `content-privacy-${s.id}`,
+    pageLabel: "Terms & Conditions",
+    pageHref: `/dashboard/terms#${s.id}`,
+    icon: FileText as LucideIcon,
+    sectionTitle: s.title,
+    searchText: s.body.join(" "),
+  })),
+];
+
+// ── Highlight ────────────────────────────────────────────────────────────────
 
 function Highlight({ text, query }: { text: string; query: string }) {
   if (!query.trim()) return <>{text}</>;
@@ -51,6 +128,16 @@ function Highlight({ text, query }: { text: string; query: string }) {
     </>
   );
 }
+
+// ── Component ────────────────────────────────────────────────────────────────
+
+const GROUP_ORDER = ["page", "scenario", "content", "session"] as const;
+const GROUP_LABELS: Record<typeof GROUP_ORDER[number], string> = {
+  page: "Pages",
+  scenario: "Scenarios",
+  content: "In Page",
+  session: "Sessions",
+};
 
 export function GlobalSearch() {
   const router = useRouter();
@@ -119,6 +206,25 @@ export function GlobalSearch() {
         icon: Mic2,
       }));
 
+    // Content-level results: match inside Terms sections and Preferences sections.
+    // Deduplicate by pageHref+sectionTitle so each section only appears once.
+    const contentResults: SearchResult[] = CONTENT_INDEX
+      .filter(
+        (entry) =>
+          entry.sectionTitle.toLowerCase().includes(q) ||
+          entry.searchText.toLowerCase().includes(q) ||
+          entry.pageLabel.toLowerCase().includes(q)
+      )
+      .slice(0, 4)
+      .map((entry) => ({
+        id: entry.id,
+        type: "content" as const,
+        label: entry.pageLabel,
+        sublabel: entry.sectionTitle,
+        href: entry.pageHref,
+        icon: entry.icon,
+      }));
+
     const sessionResults: SearchResult[] = sessions
       .filter(
         (s) =>
@@ -135,7 +241,7 @@ export function GlobalSearch() {
         icon: Clock,
       }));
 
-    return [...pages, ...scenarioResults, ...sessionResults];
+    return [...pages, ...scenarioResults, ...contentResults, ...sessionResults];
   })();
 
   useEffect(() => {
@@ -168,15 +274,12 @@ export function GlobalSearch() {
   };
 
   const grouped = {
-    page: results.filter((r) => r.type === "page"),
+    page:     results.filter((r) => r.type === "page"),
     scenario: results.filter((r) => r.type === "scenario"),
-    session: results.filter((r) => r.type === "session"),
+    content:  results.filter((r) => r.type === "content"),
+    session:  results.filter((r) => r.type === "session"),
   };
 
-  const GROUP_ORDER = ["page", "scenario", "session"] as const;
-  const GROUP_LABELS = { page: "Pages", scenario: "Scenarios", session: "Sessions" };
-
-  // Build a flat ordered list matching results[] order for keyboard index tracking
   const orderedResults = GROUP_ORDER.flatMap((type) => grouped[type]);
 
   return (

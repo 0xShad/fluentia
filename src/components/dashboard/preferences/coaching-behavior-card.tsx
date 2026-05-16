@@ -124,7 +124,7 @@ export function CoachingBehaviorCard({
   };
 
   return (
-    <Card className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20">
+    <Card id="coaching-behavior" className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20 scroll-mt-24">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Volume2 className="w-5 h-5 text-purple-400" />
@@ -280,11 +280,14 @@ export function CoachingBehaviorCard({
               const isPlaying = playingId === voice.id;
 
               return (
-                <button
+                <div
                   key={voice.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setPreferredVoice(voice.id)}
+                  onKeyDown={(e) => e.key === "Enter" || e.key === " " ? setPreferredVoice(voice.id) : undefined}
                   className={cn(
-                    "relative flex items-center gap-3 p-3 rounded-lg border text-left transition-all duration-200",
+                    "relative flex items-center gap-3 p-3 rounded-lg border text-left transition-all duration-200 cursor-pointer",
                     isSelected
                       ? "bg-[#00F38D]/8 border-[#00F38D]/40"
                       : "bg-[#050505] border-white/8 hover:border-white/20 hover:bg-white/5"
@@ -343,7 +346,7 @@ export function CoachingBehaviorCard({
                       ))}
                     </span>
                   )}
-                </button>
+                </div>
               );
             })}
           </div>

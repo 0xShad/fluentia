@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { DashboardNav } from "@/components/dashboard/dashboard-nav";
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { ScrollToHash } from "@/components/scroll-to-hash";
 
 export default function DashboardLayout({
   children,
@@ -13,6 +14,7 @@ export default function DashboardLayout({
         <AppSidebar />
         <main className="flex-1 flex flex-col min-w-0 bg-[#0A0A0A] overflow-y-auto">
           <DashboardNav />
+          <ScrollToHash />
           {children}
         </main>
       </div>

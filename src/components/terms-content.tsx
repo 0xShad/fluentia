@@ -1,22 +1,14 @@
-interface Section {
-  title: string;
-  body: string[];
-}
-
-interface Commitment {
-  title: string;
-  body: string;
-}
+import type { TermsSection, Commitment } from "@/lib/terms-data";
 
 interface TermsContentProps {
-  termsSections: Section[];
-  privacySections: Section[];
+  termsSections: TermsSection[];
+  privacySections: TermsSection[];
   commitments: Commitment[];
 }
 
-function SectionBlock({ title, body }: Section) {
+function SectionBlock({ id, title, body }: TermsSection) {
   return (
-    <div>
+    <div id={id} className="scroll-mt-24">
       <h2 className="text-sm font-bold text-white mb-3">{title}</h2>
       <ul className="space-y-2.5">
         {body.map((item, i) => (
@@ -43,7 +35,6 @@ function Divider({ label }: { label: string }) {
 export function TermsContent({ termsSections, privacySections, commitments }: TermsContentProps) {
   return (
     <>
-      {/* Header */}
       <div className="mb-12">
         <p className="text-[11px] font-bold text-[#00F38D] uppercase tracking-widest mb-2">Legal</p>
         <h1 className="text-3xl font-extrabold text-white mb-3">Terms & Conditions</h1>
@@ -54,27 +45,24 @@ export function TermsContent({ termsSections, privacySections, commitments }: Te
         <p className="text-xs text-white/25 mt-3">Last updated: May 2026 · Effective immediately</p>
       </div>
 
-      {/* Terms of Service */}
       <div className="mb-12">
         <Divider label="Terms of Service" />
         <div className="space-y-8">
           {termsSections.map((section) => (
-            <SectionBlock key={section.title} {...section} />
+            <SectionBlock key={section.id} {...section} />
           ))}
         </div>
       </div>
 
-      {/* Privacy Policy */}
       <div className="mb-12">
         <Divider label="Privacy Policy" />
         <div className="space-y-8">
           {privacySections.map((section) => (
-            <SectionBlock key={section.title} {...section} />
+            <SectionBlock key={section.id} {...section} />
           ))}
         </div>
       </div>
 
-      {/* Commitments */}
       <div className="pt-10 border-t border-white/8">
         <p className="text-[11px] font-bold text-[#00F38D] uppercase tracking-widest mb-2">Our Commitments</p>
         <h2 className="text-xl font-extrabold text-white mb-1">What we hold ourselves to</h2>
@@ -91,7 +79,6 @@ export function TermsContent({ termsSections, privacySections, commitments }: Te
         </div>
       </div>
 
-      {/* Footer */}
       <div className="mt-12 pt-8 border-t border-white/8 space-y-2">
         <p className="text-xs text-white/25 leading-relaxed">
           Questions about these Terms or your privacy?{" "}

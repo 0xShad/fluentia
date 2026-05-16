@@ -1,5 +1,17 @@
-export const termsSections = [
+export interface TermsSection {
+  id: string;
+  title: string;
+  body: string[];
+}
+
+export interface Commitment {
+  title: string;
+  body: string;
+}
+
+export const termsSections: TermsSection[] = [
   {
+    id: "acceptance-of-terms",
     title: "1. Acceptance of Terms",
     body: [
       "By accessing or using Fluentia (the \"Service\"), you agree to be bound by these Terms & Conditions and our Privacy Policy. If you do not agree to these terms, you must not use the Service.",
@@ -8,6 +20,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "service-description",
     title: "2. Service Description",
     body: [
       "Fluentia is an AI-powered communication coaching platform that enables users to practice verbal communication through scenario-based roleplay sessions with an AI agent powered by Vapi and GPT-4o.",
@@ -16,6 +29,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "eligibility-account-registration",
     title: "3. Eligibility & Account Registration",
     body: [
       "You must be at least 13 years of age to use Fluentia. If you are under 16 and located in the European Economic Area (EEA), you must have verifiable parental or guardian consent.",
@@ -25,6 +39,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "acceptable-use",
     title: "4. Acceptable Use",
     body: [
       "You agree to use Fluentia only for lawful purposes and in a manner consistent with these Terms. You must not use the Service to upload, transmit, or generate content that is illegal, harmful, threatening, abusive, defamatory, obscene, or otherwise objectionable.",
@@ -34,6 +49,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "ai-content-disclaimer",
     title: "5. AI-Generated Content & Disclaimer",
     body: [
       "Coaching feedback, performance scores, and all AI-generated analysis are produced by large language models (including OpenAI GPT-4o) and are provided for informational and educational purposes only.",
@@ -43,6 +59,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "intellectual-property",
     title: "6. Intellectual Property",
     body: [
       "The Fluentia name, logo, branding, software, interface design, scenario content, and all related intellectual property are owned by or licensed to Fluentia and are protected by applicable copyright, trademark, and other intellectual property laws.",
@@ -51,6 +68,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "limitation-of-liability",
     title: "7. Limitation of Liability",
     body: [
       "To the maximum extent permitted by applicable law, Fluentia and its officers, directors, employees, and agents shall not be liable for any indirect, incidental, special, consequential, or punitive damages arising from your use of, or inability to use, the Service.",
@@ -59,6 +77,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "disclaimer-of-warranties",
     title: "8. Disclaimer of Warranties",
     body: [
       "The Service is provided \"as is\" and \"as available\" without warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement.",
@@ -67,6 +86,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "termination",
     title: "9. Termination",
     body: [
       "You may delete your account at any time by contacting support@fluentia.app. Upon deletion, your personal data will be removed in accordance with our data retention policy.",
@@ -75,6 +95,7 @@ export const termsSections = [
     ],
   },
   {
+    id: "governing-law",
     title: "10. Governing Law & Disputes",
     body: [
       "These Terms are governed by and construed in accordance with applicable law. Any disputes arising from or relating to these Terms or the Service shall first be attempted to be resolved through good-faith negotiation.",
@@ -84,8 +105,9 @@ export const termsSections = [
   },
 ];
 
-export const privacySections = [
+export const privacySections: TermsSection[] = [
   {
+    id: "what-we-collect",
     title: "What We Collect",
     body: [
       "Account information — your name, email address, and password (stored as a secure hash) when you register. If you sign up via OAuth (Google, GitHub), we receive only the information that provider shares with us.",
@@ -96,6 +118,7 @@ export const privacySections = [
     ],
   },
   {
+    id: "how-we-use-data",
     title: "How We Use Your Data",
     body: [
       "To operate the Service — delivering voice sessions, generating AI coaching feedback, storing your history, and providing your personalised dashboard.",
@@ -106,6 +129,7 @@ export const privacySections = [
     ],
   },
   {
+    id: "audio-recording-consent",
     title: "Audio Recording Consent",
     body: [
       "Recording is strictly opt-in. You are shown a clear consent dialog before every session. No audio is ever captured without your explicit confirmation.",
@@ -115,6 +139,7 @@ export const privacySections = [
     ],
   },
   {
+    id: "data-retention",
     title: "Data Retention & Deletion",
     body: [
       "Session transcripts and recordings are retained for as long as your account is active. There is no automatic expiry.",
@@ -124,6 +149,7 @@ export const privacySections = [
     ],
   },
   {
+    id: "privacy-rights",
     title: "Your Privacy Rights",
     body: [
       "Depending on your jurisdiction, you may have the right to access, correct, port, restrict processing of, or delete your personal data. To exercise any of these rights, contact support@fluentia.app.",
@@ -133,6 +159,7 @@ export const privacySections = [
     ],
   },
   {
+    id: "cookies-tracking",
     title: "Cookies & Tracking",
     body: [
       "Fluentia uses strictly necessary cookies and browser storage to manage your authentication session (via Supabase Auth). These are required for the Service to function and cannot be disabled.",
@@ -141,6 +168,7 @@ export const privacySections = [
     ],
   },
   {
+    id: "third-party-processors",
     title: "Third-Party Processors",
     body: [
       "Vapi — real-time voice session infrastructure and AI agent orchestration. Processes your voice input during active sessions.",
@@ -151,6 +179,7 @@ export const privacySections = [
     ],
   },
   {
+    id: "international-transfers",
     title: "International Data Transfers",
     body: [
       "Fluentia's infrastructure is primarily hosted in the United States. If you access the Service from outside the US, your data will be transferred to and processed in the US.",
@@ -159,6 +188,7 @@ export const privacySections = [
     ],
   },
   {
+    id: "childrens-privacy",
     title: "Children's Privacy",
     body: [
       "Fluentia is not directed to children under the age of 13. We do not knowingly collect personal information from children under 13.",
@@ -167,7 +197,7 @@ export const privacySections = [
   },
 ];
 
-export const commitments = [
+export const commitments: Commitment[] = [
   {
     title: "Your data stays yours",
     body: "All session data is encrypted in transit (TLS 1.2+) and at rest. We do not sell, rent, or licence your voice recordings or transcripts to any third party. Your data is used solely to operate Fluentia for you.",
