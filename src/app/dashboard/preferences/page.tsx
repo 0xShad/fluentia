@@ -96,7 +96,7 @@ export default function SystemPreferencesPage() {
 
     if (error) {
       toast.error("Failed to save preferences", {
-        description: error.message,
+        description: "Something went wrong. Please try again.",
         style: { background: "#050505", border: "1px solid rgba(255,0,0,0.2)", color: "white" }
       });
       return;

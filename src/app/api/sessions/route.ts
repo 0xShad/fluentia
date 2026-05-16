@@ -33,7 +33,7 @@ export async function DELETE(req: NextRequest) {
 
     if (fetchErr) {
       console.error("Fetch session error:", fetchErr);
-      return NextResponse.json({ error: fetchErr.message }, { status: 500 });
+      return NextResponse.json({ error: "Failed to retrieve session" }, { status: 500 });
     }
     if (!session) {
       return NextResponse.json({ error: "Session not found" }, { status: 404 });
@@ -60,12 +60,12 @@ export async function DELETE(req: NextRequest) {
 
     if (deleteErr) {
       console.error("DB delete error:", deleteErr);
-      return NextResponse.json({ error: deleteErr.message }, { status: 500 });
+      return NextResponse.json({ error: "Failed to delete session" }, { status: 500 });
     }
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error("Session delete unhandled error:", err);
-    return NextResponse.json({ error: err?.message ?? "Delete failed" }, { status: 500 });
+    return NextResponse.json({ error: "An unexpected error occurred" }, { status: 500 });
   }
 }

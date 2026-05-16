@@ -91,7 +91,7 @@ export default function ProfilePage() {
 
     if (error) {
       toast.error("Failed to update password", {
-        description: error.message,
+        description: "Please check your current password and try again.",
         style: { background: "#050505", border: "1px solid rgba(255,0,0,0.2)", color: "white" }
       });
       return;
@@ -142,7 +142,7 @@ export default function ProfilePage() {
 
     if (error) {
       toast.error("Failed to update profile", {
-        description: error.message,
+        description: "Something went wrong. Please try again.",
         style: { background: "#050505", border: "1px solid rgba(255,0,0,0.2)", color: "white" }
       });
       return;

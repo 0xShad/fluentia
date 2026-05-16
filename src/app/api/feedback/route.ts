@@ -249,6 +249,6 @@ Rules:
     return NextResponse.json({ ...feedback, sessionId });
   } catch (err: any) {
     console.error("Feedback API error:", err);
-    return NextResponse.json({ error: err.message ?? "Analysis failed" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to analyse session. Please try again." }, { status: 500 });
   }
 }

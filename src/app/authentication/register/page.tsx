@@ -114,7 +114,7 @@ export default function RegisterPage() {
       setIsLoading(false);
 
       if (error) {
-        setAuthError(error.message);
+        setAuthError("Unable to create account. Please check your details and try again.");
       } else {
         toast("An OTP code was sent to your email..");
         setShowOTP(true);
@@ -139,7 +139,7 @@ export default function RegisterPage() {
     setIsLoading(false);
     
     if (error) {
-      setAuthError(error.message);
+      setAuthError("Invalid or expired code. Please request a new one.");
     } else {
       toast.success("Registered successfully!");
       router.push("/dashboard");

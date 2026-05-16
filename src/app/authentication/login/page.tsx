@@ -61,14 +61,14 @@ export default function SignInPage() {
 
       if (error) {
         setIsLoading(false);
-        
+
         // If they need to verify email still, we can trigger OTP verification
         if (error.message.toLowerCase().includes("email not confirmed")) {
            toast("Your email is not confirmed. Sending a new OTP...");
            await supabase.auth.resend({ type: 'signup', email });
            setShowOTP(true);
         } else {
-           setAuthError(error.message);
+           setAuthError("Invalid email or password. Please try again.");
         }
       } else {
         toast.success("Logged in successfully!");
@@ -111,7 +111,7 @@ export default function SignInPage() {
           return;
         }
       }
-      setAuthError(error.message);
+      setAuthError("Invalid or expired code. Please request a new one.");
     } else {
       toast.success("Logged in successfully!");
       router.push("/dashboard");

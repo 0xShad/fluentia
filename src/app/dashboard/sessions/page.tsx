@@ -119,7 +119,8 @@ export default function HistoryPage() {
       if (selectedId === deleteId) setSelectedId(null);
       toast.success("Session deleted successfully.");
     } catch (err: any) {
-      toast.error(err.message ?? "Failed to delete session.");
+      console.error("Session delete error:", err);
+      toast.error("Failed to delete session. Please try again.");
     } finally {
       setDeleting(false);
       setDeleteId(null);

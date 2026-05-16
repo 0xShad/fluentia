@@ -95,6 +95,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ status: "ready", signedUrl: signed?.signedUrl ?? null });
   } catch (err: any) {
     console.error("Recording API error:", err);
-    return NextResponse.json({ error: err.message ?? "Recording failed" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to process recording. Please try again." }, { status: 500 });
   }
 }

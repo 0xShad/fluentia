@@ -65,7 +65,7 @@ export function DashboardNav() {
 
   const name = user?.user_metadata?.full_name || "Guest User";
   const initials = name.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase() || "US";
-  const email = user?.email || "demo@fluentia.ai";
+  const email = user?.email || "";
   const avatarUrl = user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
 
   return (
