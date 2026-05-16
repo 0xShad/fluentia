@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVapiSession } from "@/hooks/use-vapi-session";
+import { useRecordingConsent } from "@/hooks/use-recording-consent";
+import { RecordingConsentDialog } from "@/components/dashboard/recording-consent-dialog";
 import { createClient } from "@/lib/client";
 
 const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
@@ -255,11 +257,15 @@ export default function SessionPage() {
     transcript,
     error,
     callId,
+    isRecording,
     startCall,
     endCall,
     toggleMute,
     sendTextMessage,
   } = useVapiSession();
+
+  const { consent, saveConsent } = useRecordingConsent();
+  const [showConsentDialog, setShowConsentDialog] = useState(false);
 
   const [elapsed, setElapsed] = useState(0);
   const [textInput, setTextInput] = useState("");
@@ -305,14 +311,15 @@ export default function SessionPage() {
         scenarioId: id,
         elapsedSeconds: elapsed,
         vapiCallId: callId,
+        recordingEnabled: isRecording,
       }),
     })
       .then((r) => r.json())
       .then((data) => {
         if (data.error) throw new Error(data.error);
         setFeedback(data);
-        // Fire-and-forget: upload recording to Supabase Storage in the background
-        if (data.sessionId) {
+        // Fire-and-forget: upload recording only if user consented
+        if (data.sessionId && isRecording) {
           fetch("/api/recording", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -358,9 +365,17 @@ export default function SessionPage() {
         </button>
 
         {sessionState === "active" && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-xs font-bold text-red-400 font-mono">{formatTime(elapsed)}</span>
+          <div className="flex items-center gap-2.5">
+            {isRecording && (
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-[10px] font-semibold text-white/40 uppercase tracking-wider">Recording</span>
+              </div>
+            )}
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+              <span className="text-xs font-bold text-red-400 font-mono">{formatTime(elapsed)}</span>
+            </div>
           </div>
         )}
       </div>
@@ -436,6 +451,23 @@ export default function SessionPage() {
           {/* Ambient glow */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,243,141,0.04)_0%,transparent_70%)] pointer-events-none" />
 
+          {/* Consent dialog */}
+          <RecordingConsentDialog
+            open={showConsentDialog}
+            initialDontRecord={consent === "never"}
+            initialRemember={consent === "always" || consent === "never"}
+            onConfirm={(recordingEnabled, remember) => {
+              setShowConsentDialog(false);
+              if (remember) {
+                saveConsent(recordingEnabled ? "always" : "never");
+              } else {
+                saveConsent("ask");
+              }
+              startCall(scenario, userPrefs, recordingEnabled);
+            }}
+            onCancel={() => setShowConsentDialog(false)}
+          />
+
           {/* ── IDLE / CONNECTING ─────────────────────────────────────── */}
           {(sessionState === "idle" || sessionState === "connecting") && (
             <div className="relative z-10 flex flex-col items-center text-center max-w-sm animate-in fade-in duration-500">
@@ -449,11 +481,11 @@ export default function SessionPage() {
                 dynamically to everything you say. Speak naturally.
               </p>
               <button
-                onClick={() => startCall(scenario, userPrefs)}
-                disabled={sessionState === "connecting"}
+                onClick={() => setShowConsentDialog(true)}
+                disabled={sessionState === "connecting" || consent === null}
                 className={cn(
                   "flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-black font-bold text-base transition-all",
-                  sessionState === "connecting"
+                  sessionState === "connecting" || consent === null
                     ? "bg-white/20 cursor-not-allowed"
                     : "bg-[#00F38D] hover:bg-[#00f38d]/90 hover:shadow-[0_0_32px_rgba(0,243,141,0.35)] active:scale-95"
                 )}
