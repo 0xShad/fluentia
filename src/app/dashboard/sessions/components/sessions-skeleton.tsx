@@ -29,11 +29,11 @@ export function SessionsSkeleton() {
         <div className="p-4">
           {/* Table Header Row */}
           <div className="flex gap-4 pb-4 border-b border-white/10">
-            {[...Array(8)].map((_, i) => (
+            {["12%", "300px", "14%", "16%", "10%", "13%", "15%", "40px"].map((w, i) => (
               <Skeleton
                 key={i}
                 className="h-4 bg-white/5"
-                style={{ width: i === 1 ? "300px" : i === 7 ? "40px" : `${12 + Math.random() * 8}%` }}
+                style={{ width: w }}
               />
             ))}
           </div>

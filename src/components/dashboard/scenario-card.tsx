@@ -1,123 +1,267 @@
 import { cn } from "@/lib/utils";
-import { Play, Sparkles, Building2, Users, Code, ShieldAlert, ArrowRight } from "lucide-react";
+import type { ScenarioCategory, DifficultyLevel } from "@/types/scenario.types";
+import {
+  Play,
+  Sparkles,
+  Building2,
+  Users,
+  Code,
+  ArrowRight,
+  Coffee,
+  Briefcase,
+  Bot,
+  Mic,
+  Eye,
+} from "lucide-react";
 
-export type ScenarioCategory = "Business" | "Social" | "Technical" | "Leadership" | "Crisis";
+export type { ScenarioCategory };
 
 interface ScenarioCardProps {
   title: string;
   description: string;
+  aiRole?: string;
+  trains?: string[];
   category: ScenarioCategory;
   duration: string;
-  difficulty?: "EASY" | "MEDIUM" | "HARD" | "EXPERT";
-  tag?: string;
+  difficulty?: DifficultyLevel;
   isFeatured?: boolean;
   isNewRequest?: boolean;
   className?: string;
+  /** Called when user clicks "Preview" */
+  onPreview?: () => void;
+  /** Called when user clicks "Start Session" directly */
+  onStart?: () => void;
 }
 
-const CategoryIcon = ({ category, className }: { category: ScenarioCategory, className?: string }) => {
+const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
+  EASY:   "text-emerald-400",
+  MEDIUM: "text-yellow-400",
+  HARD:   "text-orange-400",
+  EXPERT: "text-red-400",
+};
+
+const DIFFICULTY_BG: Record<DifficultyLevel, string> = {
+  EASY:   "bg-emerald-400/10 border-emerald-400/20",
+  MEDIUM: "bg-yellow-400/10 border-yellow-400/20",
+  HARD:   "bg-orange-400/10 border-orange-400/20",
+  EXPERT: "bg-red-400/10 border-red-400/20",
+};
+
+export const CategoryIcon = ({
+  category,
+  className,
+}: {
+  category: ScenarioCategory;
+  className?: string;
+}) => {
   switch (category) {
-    case "Business": return <Building2 className={className} />;
-    case "Social": return <Users className={className} />;
-    case "Technical": return <Code className={className} />;
-    case "Leadership": return <Sparkles className={className} />;
-    case "Crisis": return <ShieldAlert className={className} />;
-    default: return <Building2 className={className} />;
+    case "Interview":       return <Briefcase className={className} />;
+    case "Business":        return <Building2 className={className} />;
+    case "Social":          return <Users className={className} />;
+    case "Public Speaking": return <Mic className={className} />;
+    case "Everyday":        return <Coffee className={className} />;
+    default:                return <Sparkles className={className} />;
   }
 };
 
 export function ScenarioCard({
   title,
   description,
+  aiRole,
+  trains,
   category,
   duration,
   difficulty,
-  tag,
   isFeatured,
   isNewRequest,
-  className
+  className,
+  onPreview,
+  onStart,
 }: ScenarioCardProps) {
+  // ── Custom Session Request Card ──────────────────────────────────────────────
   if (isNewRequest) {
     return (
-      <div className={cn("group flex flex-col justify-between p-6 rounded-xl bg-[#111] border gap-4 border-dashed border-white/20 hover:border-[#00F38D]/50 transition-all cursor-pointer relative overflow-hidden", className)}>
+      <div
+        className={cn(
+          "group flex flex-col justify-between p-6 rounded-xl bg-[#0d0d0d] border border-dashed border-white/15 hover:border-[#00F38D]/40 transition-all cursor-pointer relative overflow-hidden",
+          className
+        )}
+      >
         <div>
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-[10px] font-bold text-[#00F38D] tracking-wider uppercase">Request New</span>
+          <div className="w-9 h-9 rounded-lg bg-[#00F38D]/10 border border-[#00F38D]/20 flex items-center justify-center mb-5">
+            <Code className="w-4 h-4 text-[#00F38D]" />
           </div>
-          <h3 className="text-xl font-bold text-white mb-2 leading-tight">Can't find your specific scenario?</h3>
-          <p className="text-sm text-white/50 mb-6">
-            Our AI can generate a custom training environment tailored to your upcoming meeting, date, or event.
+          <h3 className="text-lg font-bold text-white mb-2 leading-snug">
+            Need a custom scenario?
+          </h3>
+          <p className="text-sm text-white/40 leading-relaxed">
+            Describe your situation and the AI builds a tailored session —
+            upcoming interview, presentation, or difficult conversation.
           </p>
         </div>
-        <div className="flex items-center text-sm font-semibold text-[#00F38D] group-hover:translate-x-1 transition-transform">
-          Generate Custom Scenario <ArrowRight className="w-4 h-4 ml-2" />
+        <div className="flex items-center mt-6 text-sm font-semibold text-[#00F38D] group-hover:translate-x-1 transition-transform">
+          Generate Custom Session <ArrowRight className="w-4 h-4 ml-2" />
         </div>
       </div>
     );
   }
 
+  // ── Featured Card ────────────────────────────────────────────────────────────
   if (isFeatured) {
     return (
-      <div className={cn("group flex flex-col justify-between p-8 rounded-xl bg-gradient-to-br from-[#1A1A1A] to-[#0D0D0D] border border-white/10 hover:border-white/20 transition-all cursor-pointer relative overflow-hidden min-h-[360px]", className)}>
-        {/* Faint Abstract Background Graphic overlay would go here */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-[#00F38D]/5 blur-[100px] rounded-full pointer-events-none" />
-        
-        <div className="relative z-10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-1 bg-[#00F38D] text-black text-[10px] font-bold uppercase tracking-wider rounded-sm">Featured</span>
-              <span className="px-2 py-1 bg-white/10 text-white text-[10px] font-bold uppercase tracking-wider rounded-sm">High Stakes</span>
-            </div>
-            {difficulty && (
-              <div className="text-right">
-                <p className="text-[10px] text-white/50 uppercase font-semibold">Difficulty</p>
-                <p className="text-sm font-bold text-white">{difficulty}</p>
-              </div>
-            )}
+      <div
+        onClick={onPreview}
+        className={cn(
+          "group relative flex flex-col justify-between p-8 rounded-xl bg-gradient-to-br from-[#181818] to-[#0d0d0d] border border-white/10 hover:border-[#00F38D]/20 transition-all overflow-hidden cursor-pointer",
+          className
+        )}
+      >
+        <div className="absolute top-0 right-0 w-72 h-72 bg-[#00F38D]/5 blur-[120px] rounded-full pointer-events-none" />
+
+        {/* Top badges */}
+        <div className="relative z-10 flex items-start justify-between mb-6">
+          <div className="flex items-center gap-2">
+            <span className="px-2.5 py-1 bg-[#00F38D] text-black text-[10px] font-bold uppercase tracking-wider rounded-sm">
+              Featured
+            </span>
+            <span className="px-2.5 py-1 bg-white/8 text-white/70 text-[10px] font-bold uppercase tracking-wider rounded-sm border border-white/10">
+              {category}
+            </span>
           </div>
+          {difficulty && (
+            <span className={cn("px-2.5 py-1 rounded-sm text-[10px] font-bold uppercase tracking-wider border", DIFFICULTY_BG[difficulty], DIFFICULTY_COLORS[difficulty])}>
+              {difficulty}
+            </span>
+          )}
         </div>
 
-        <div className="relative z-10 mt-auto">
-          <h2 className="text-3xl font-bold text-white mb-3 max-w-[80%] leading-tight">{title}</h2>
-          <p className="text-sm text-white/60 mb-8 max-w-[75%] leading-relaxed">{description}</p>
-          
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-6 text-xs text-white/50 font-medium">
-              <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#00F38D]" />{duration}</div>
-              {tag && <div className="flex items-center gap-2"><span className="w-2 h-2 rounded-full bg-[#00F38D]" />{tag}</div>}
+        {/* AI Role */}
+        {aiRole && (
+          <div className="relative z-10 flex items-center gap-2 mb-5">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#00F38D]/10 border border-[#00F38D]/20">
+              <Bot className="w-3.5 h-3.5 text-[#00F38D]" />
+              <span className="text-xs font-semibold text-[#00F38D]">AI plays: {aiRole}</span>
             </div>
-            <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 hover:text-[#00F38D] transition-colors border border-white/10">
-              <Play className="w-4 h-4 fill-current" />
-            </button>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="relative z-10">
+          <h2 className="text-2xl md:text-3xl font-extrabold text-white mb-3 leading-tight">
+            {title}
+          </h2>
+          <p className="text-sm text-white/55 leading-relaxed mb-5 max-w-[85%]">
+            {description}
+          </p>
+
+          {trains && trains.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-8">
+              {trains.map((skill) => (
+                <span key={skill} className="px-2.5 py-1 rounded-md bg-white/5 border border-white/10 text-[11px] text-white/50 font-medium">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          )}
+
+          {/* Action row */}
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-white/35 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#00F38D]" />
+              {duration}
+            </span>
+            <div className="flex items-center gap-2">
+              {onPreview && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onPreview(); }}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white/60 text-sm font-semibold hover:bg-white/10 hover:text-white transition-all"
+                >
+                  <Eye className="w-3.5 h-3.5" />
+                  Preview
+                </button>
+              )}
+              <button
+                onClick={(e) => { e.stopPropagation(); onStart?.(); }}
+                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00F38D] text-black text-sm font-bold hover:bg-[#00f38d]/90 transition-all hover:shadow-[0_0_24px_rgba(0,243,141,0.3)] active:scale-95"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                Start Session
+              </button>
+            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  // Standard Card
+  // ── Standard Card ────────────────────────────────────────────────────────────
   return (
-    <div className={cn("group flex flex-col justify-between p-6 rounded-xl bg-[#111] border border-white/10 hover:border-white/20 transition-all cursor-pointer", className)}>
+    <div
+      onClick={onPreview}
+      className={cn(
+        "group flex flex-col justify-between p-6 rounded-xl bg-[#111] border border-white/10 hover:border-[#00F38D]/20 hover:bg-white/[0.02] transition-all cursor-pointer",
+        className
+      )}
+    >
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center border border-white/10">
+        {/* Header */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center border border-white/10 shrink-0">
             <CategoryIcon category={category} className="w-4 h-4 text-[#00F38D]" />
           </div>
-          <span className="text-[10px] font-bold text-white/50 tracking-wider uppercase">{category}</span>
+          {difficulty && (
+            <span className={cn("text-[10px] font-bold tracking-wider uppercase", DIFFICULTY_COLORS[difficulty])}>
+              {difficulty}
+            </span>
+          )}
         </div>
-        <h3 className="text-lg font-bold text-white mb-2 leading-tight">{title}</h3>
-        <p className="text-sm text-white/50 line-clamp-3 mb-6">
-          {description}
-        </p>
+
+        <h3 className="text-base font-bold text-white mb-2 leading-snug">{title}</h3>
+        <p className="text-sm text-white/45 line-clamp-2 leading-relaxed mb-3">{description}</p>
+
+        {/* AI Role */}
+        {aiRole && (
+          <div className="flex items-center gap-1.5 mb-3">
+            <Bot className="w-3 h-3 text-[#00F38D] shrink-0" />
+            <span className="text-[11px] text-[#00F38D] font-medium truncate">AI: {aiRole}</span>
+          </div>
+        )}
+
+        {/* Skills */}
+        {trains && trains.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {trains.map((skill) => (
+              <span key={skill} className="px-2 py-0.5 rounded bg-white/5 border border-white/8 text-[10px] text-white/40 font-medium">
+                {skill}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
-      <div className="flex items-center justify-between mt-auto">
-        <div className="flex items-center gap-2 text-xs font-semibold text-[#00F38D]">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#00F38D]" /> {duration}
-        </div>
-        <div className="flex gap-1">
-          <span className="w-4 h-[3px] rounded-full bg-[#00F38D]" />
-          <span className="w-4 h-[3px] rounded-full bg-[#00F38D]" />
-          <span className="w-4 h-[3px] rounded-full bg-white/20" />
+
+      {/* Footer */}
+      <div className="mt-5 pt-4 border-t border-white/5 flex items-center justify-between gap-2">
+        <span className="flex items-center gap-1.5 text-xs text-white/30 shrink-0">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#00F38D]" />
+          {duration}
+        </span>
+        <div className="flex items-center gap-2">
+          {onPreview && (
+            <button
+              onClick={(e) => { e.stopPropagation(); onPreview(); }}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs text-white/50 font-semibold hover:bg-white/8 hover:text-white transition-all"
+            >
+              <Eye className="w-3 h-3" />
+              Preview
+            </button>
+          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); onStart?.(); }}
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#00F38D]/10 border border-[#00F38D]/20 text-xs text-[#00F38D] font-bold hover:bg-[#00F38D]/20 transition-all"
+          >
+            <Play className="w-3 h-3 fill-current" />
+            Start
+          </button>
         </div>
       </div>
     </div>

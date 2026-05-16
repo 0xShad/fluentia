@@ -1,6 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Exclude browser-only WebRTC packages from the server bundle.
+  // @daily-co/daily-js (pulled in by @vapi-ai/web) crashes webpack workers
+  // when Next.js tries to compile it server-side.
+  serverExternalPackages: ["@daily-co/daily-js", "@vapi-ai/web"],
+
   images: {
     // Allow Next.js Image optimization for external avatar/photo domains
     remotePatterns: [

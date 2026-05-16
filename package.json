@@ -9,13 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.96.0",
     "@base-ui/react": "^1.2.0",
+    "@google/generative-ai": "^0.24.1",
     "@radix-ui/react-avatar": "^1.1.11",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@splinetool/react-spline": "^4.1.0",
     "@splinetool/runtime": "^1.12.68",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.3",
+    "@vapi-ai/web": "^2.5.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.18.2",

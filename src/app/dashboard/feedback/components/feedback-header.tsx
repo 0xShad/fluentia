@@ -6,9 +6,10 @@ import { Brain, Sparkles } from "lucide-react";
 interface FeedbackHeaderProps {
   sessionTitle?: string;
   sessionDate?: string;
+  overallScore?: number;
 }
 
-export function FeedbackHeader({ sessionTitle, sessionDate }: FeedbackHeaderProps) {
+export function FeedbackHeader({ sessionTitle, sessionDate, overallScore }: FeedbackHeaderProps) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
@@ -35,7 +36,7 @@ export function FeedbackHeader({ sessionTitle, sessionDate }: FeedbackHeaderProp
         </div>
         <div>
           <p className="text-xs text-zinc-500 uppercase tracking-wider">Overall Score</p>
-          <p className="text-2xl font-bold text-white">78<span className="text-sm text-zinc-500">/100</span></p>
+          <p className="text-2xl font-bold text-white">{overallScore ?? "—"}<span className="text-sm text-zinc-500">/100</span></p>
         </div>
       </div>
     </div>
