@@ -16,7 +16,7 @@ export function ShowcaseSection() {
           Whether you&apos;re preparing for a critical job interview or leading a team meeting, Fluentia gives you the real-time feedback and structured practice to communicate flawlessly.
         </p>
 
-        <div className="w-full aspect-[16/9] md:aspect-[21/9] bg-[#080808] border border-white/10 rounded-2xl flex items-center justify-center relative shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden group">
+        <div className="w-full aspect-video md:aspect-21/9 bg-[#080808] border border-white/10 rounded-2xl flex items-center justify-center relative shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden group">
           {/* Fake UI mockup header */}
           <div className="absolute top-0 w-full h-10 border-b border-white/5 flex items-center px-4 bg-[#0a0a0a]">
             <p className="text-xs text-muted-foreground mx-auto flex items-center gap-2">

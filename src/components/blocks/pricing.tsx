@@ -215,7 +215,7 @@ export function PricingCard({
                   </p>
                 } />
                 {feature.tooltip && (
-                  <TooltipContent side="top" className="max-w-[200px] text-center">
+                  <TooltipContent side="top" className="max-w-50 text-center">
                     <p>{feature.tooltip}</p>
                   </TooltipContent>
                 )}

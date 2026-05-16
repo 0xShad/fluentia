@@ -12,7 +12,7 @@ export function HeroSection() {
 
       <div className="relative z-10 flex flex-col items-center w-full pt-32">
         {/* Static green glow — no JS animation */}
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-primary/8 rounded-full blur-3xl -z-10 pointer-events-none" />
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-150 h-50 bg-primary/8 rounded-full blur-3xl -z-10 pointer-events-none" />
 
         {/* Badge pill */}
         <motion.div
@@ -80,9 +80,9 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 1.25, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="w-full max-w-[1000px] mx-auto aspect-[16/10] relative rounded-xl border border-white/10 bg-[#070707] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,243,141,0.1)] group cursor-pointer z-10"
+          className="w-full max-w-250 mx-auto aspect-16/10 relative rounded-xl border border-white/10 bg-[#070707] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,243,141,0.1)] group cursor-pointer z-10"
         >
-          <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-primary/5 opacity-50" />
+          <div className="absolute inset-0 bg-linear-to-tr from-primary/5 via-transparent to-primary/5 opacity-50" />
 
           {/* Fake UI Header */}
           <div className="absolute top-0 w-full h-8 border-b border-white/5 flex items-center px-4 gap-2 bg-[#0a0a0a]">
@@ -100,10 +100,10 @@ export function HeroSection() {
 
           {/* UI mockup lines */}
           <div className="absolute inset-8 top-16 border-l border-white/5 flex gap-4">
-            <div className="w-64 h-full border-r border-white/5 opacity-50 rounded bg-white/[0.02]" />
+            <div className="w-64 h-full border-r border-white/5 opacity-50 rounded bg-white/2" />
             <div className="flex-1 h-full opacity-50 flex flex-col gap-4">
-              <div className="w-full h-1/2 rounded bg-white/[0.02] border border-white/5" />
-              <div className="w-full h-1/2 rounded bg-white/[0.02] border border-white/5 relative overflow-hidden">
+              <div className="w-full h-1/2 rounded bg-white/2 border border-white/5" />
+              <div className="w-full h-1/2 rounded bg-white/2 border border-white/5 relative overflow-hidden">
                 <div className="absolute bottom-0 right-0 p-4">
                   <div className="bg-primary/20 text-primary border border-primary/30 rounded px-2 py-1 text-[10px] font-mono uppercase">AI Ready</div>
                 </div>
