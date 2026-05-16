@@ -26,6 +26,7 @@ export function useVapiSession() {
   const [error, setError] = useState<string | null>(null);
 
   const [callId, setCallId] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const silenceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isSessionActive = useRef(false);
 
@@ -173,7 +174,8 @@ export function useVapiSession() {
 
   const startCall = useCallback(async (
     scenario: Scenario,
-    prefs?: Partial<UserPreferences>
+    prefs?: Partial<UserPreferences>,
+    recordingEnabled: boolean = true
   ) => {
     try {
       setStatus("connecting");
@@ -185,9 +187,10 @@ export function useVapiSession() {
       const vapi = getVapiClient();
 
       setCallId(null);
+      setIsRecording(recordingEnabled);
       await vapi.start({
         name: scenario.title,
-        artifactPlan: { recordingEnabled: true, recordingFormat: "mp3" },
+        artifactPlan: { recordingEnabled, recordingFormat: "mp3" },
         transcriber: {
           provider: "deepgram",
           model: "nova-2",
@@ -242,6 +245,7 @@ export function useVapiSession() {
     transcript,
     error,
     callId,
+    isRecording,
     startCall,
     endCall,
     toggleMute,
