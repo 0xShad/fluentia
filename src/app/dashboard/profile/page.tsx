@@ -9,26 +9,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { cn } from "@/lib/utils";
 import { Camera, Save, Key, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { ProfileSkeleton } from "./components/profile-skeleton";
-
-const SPEAKING_GOALS = [
-  "Job Interviews",
-  "Presentations",
-  "Casual Conversation",
-  "Negotiation",
-  "Public Speaking",
-  "Accent Reduction"
-];
 
 export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
@@ -39,10 +22,6 @@ export default function ProfilePage() {
   const [email, setEmail] = useState("");
   const [bio, setBio] = useState("");
   
-  // Fluentia specific states
-  const [selectedGoals, setSelectedGoals] = useState<string[]>(["Casual Conversation"]);
-  const [skillLevel, setSkillLevel] = useState<string | null>("intermediate");
-  const [coachingStyle, setCoachingStyle] = useState<string | null>("encouraging");
 
   // Security states
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -70,15 +49,12 @@ export default function ProfilePage() {
         }
 
         if (profile) {
-          const derivedFullName = profile.full_name || 
-                                  [profile.first_name, profile.last_name].filter(Boolean).join(" ") || 
-                                  user.user_metadata?.full_name || 
+          const derivedFullName = profile.full_name ||
+                                  [profile.first_name, profile.last_name].filter(Boolean).join(" ") ||
+                                  user.user_metadata?.full_name ||
                                   "";
           setFullName(derivedFullName);
           setBio(profile.bio || "");
-          if (profile.speaking_goals && profile.speaking_goals.length > 0) setSelectedGoals(profile.speaking_goals);
-          if (profile.skill_level) setSkillLevel(profile.skill_level);
-          if (profile.coaching_style) setCoachingStyle(profile.coaching_style);
         } else {
           setFullName(user.user_metadata?.full_name || "");
         }
@@ -146,14 +122,6 @@ export default function ProfilePage() {
     window.location.href = "/";
   };
 
-  const toggleGoal = (goal: string) => {
-    setSelectedGoals(prev => 
-      prev.includes(goal) 
-        ? prev.filter(g => g !== goal)
-        : [...prev, goal]
-    );
-  };
-
   const handleSaveProfile = async () => {
     if (!user) return;
     
@@ -169,9 +137,6 @@ export default function ProfilePage() {
         first_name: firstName,
         last_name: lastName,
         bio: bio,
-        speaking_goals: selectedGoals,
-        skill_level: skillLevel,
-        coaching_style: coachingStyle,
       })
       .eq("id", user.id);
 
@@ -271,77 +236,6 @@ export default function ProfilePage() {
             </CardFooter>
           </Card>
 
-          {/* Fluentia Setup Card */}
-          <Card className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20">
-            <CardHeader>
-              <CardTitle>AI Coaching Preferences</CardTitle>
-              <CardDescription className="text-zinc-400">Tailor the feedback and focus areas of your Fluentia sessions.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-8">
-              
-              <div className="space-y-3">
-                <Label className="text-zinc-400">Speaking Goals</Label>
-                <div className="flex flex-wrap gap-2">
-                  {SPEAKING_GOALS.map((goal) => {
-                    const isSelected = selectedGoals.includes(goal);
-                    return (
-                      <button
-                        key={goal}
-                        onClick={() => toggleGoal(goal)}
-                        className={cn(
-                          "px-4 py-2 rounded-md border text-sm font-medium transition-all",
-                          isSelected 
-                            ? "bg-[#00F38D]/10 border-[#00F38D]/50 text-[#00F38D]" 
-                            : "bg-[#050505] border-white/10 text-zinc-400 hover:border-white/30 hover:text-zinc-200"
-                        )}
-                      >
-                        {goal}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label className="text-zinc-400">Current Skill Level</Label>
-                  <Select value={skillLevel} onValueChange={setSkillLevel}>
-                    <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-[#00F38D]/20 focus:border-[#00F38D]">
-                      <SelectValue placeholder="Select level" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#111] border-white/10 text-white">
-                      <SelectItem value="beginner" className="focus:bg-white/10 focus:text-white">Beginner</SelectItem>
-                      <SelectItem value="intermediate" className="focus:bg-white/10 focus:text-white">Intermediate</SelectItem>
-                      <SelectItem value="advanced" className="focus:bg-white/10 focus:text-white">Advanced</SelectItem>
-                      <SelectItem value="native" className="focus:bg-white/10 focus:text-white">Native/Fluent</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label className="text-zinc-400">Preferred Coaching Style</Label>
-                  <Select value={coachingStyle} onValueChange={setCoachingStyle}>
-                    <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-[#00F38D]/20 focus:border-[#00F38D]">
-                      <SelectValue placeholder="Select style" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-[#111] border-white/10 text-white">
-                      <SelectItem value="encouraging" className="focus:bg-white/10 focus:text-white">Encouraging & Gentle</SelectItem>
-                      <SelectItem value="balanced" className="focus:bg-white/10 focus:text-white">Balanced Feedback</SelectItem>
-                      <SelectItem value="analytical" className="focus:bg-white/10 focus:text-white">Direct & Analytical</SelectItem>
-                      <SelectItem value="strict" className="focus:bg-white/10 focus:text-white">Strict Remediation</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
-            </CardContent>
-            <CardFooter className="border-t border-white/5 bg-[#0A0A0A] p-4 flex justify-end rounded-b-xl">
-              <Button onClick={handleSaveProfile} className="bg-[#00F38D] text-black hover:bg-[#00F38D]/90 font-bold gap-2">
-                <Save className="w-4 h-4" />
-                Save Preferences
-              </Button>
-            </CardFooter>
-          </Card>
 
         </div>
 
