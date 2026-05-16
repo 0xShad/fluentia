@@ -30,7 +30,7 @@ export function LanguageRegionCard({
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
             <Label className="text-xs text-zinc-400">Interface Language</Label>
-            <Select value={interfaceLanguage || undefined} onValueChange={setInterfaceLanguage}>
+            <Select value={interfaceLanguage || undefined} onValueChange={(val) => val && setInterfaceLanguage(val)}>
               <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-[#00F38D]/20 focus:border-[#00F38D]">
                 <SelectValue placeholder="Language" />
               </SelectTrigger>
@@ -44,7 +44,7 @@ export function LanguageRegionCard({
           
           <div className="space-y-2">
             <Label className="text-xs text-zinc-400">AI Voice Model</Label>
-            <Select value={aiVoiceLanguage || undefined} onValueChange={setAiVoiceLanguage}>
+            <Select value={aiVoiceLanguage || undefined} onValueChange={(val) => val && setAiVoiceLanguage(val)}>
               <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-[#00F38D]/20 focus:border-[#00F38D]">
                 <SelectValue placeholder="AI Voice" />
               </SelectTrigger>
@@ -59,7 +59,7 @@ export function LanguageRegionCard({
 
         <div className="space-y-2 pt-2">
           <Label className="text-xs text-zinc-400">Timezone</Label>
-          <Select value={timezone || undefined} onValueChange={setTimezone}>
+          <Select value={timezone || undefined} onValueChange={(val) => val && setTimezone(val)}>
             <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-[#00F38D]/20 focus:border-[#00F38D]">
               <SelectValue placeholder="Select Timezone" />
             </SelectTrigger>

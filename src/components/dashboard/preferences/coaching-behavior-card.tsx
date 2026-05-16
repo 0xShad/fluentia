@@ -144,7 +144,7 @@ export function CoachingBehaviorCard({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label className="text-xs text-zinc-400">Skill Level</Label>
-              <Select value={skillLevel || undefined} onValueChange={setSkillLevel}>
+              <Select value={skillLevel || undefined} onValueChange={(val) => val && setSkillLevel(val)}>
                 <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-purple-500/20 focus:border-purple-500">
                   <SelectValue placeholder="Select Level" />
                 </SelectTrigger>
@@ -160,7 +160,7 @@ export function CoachingBehaviorCard({
 
             <div className="space-y-2">
               <Label className="text-xs text-zinc-400">Session Demeanor</Label>
-              <Select value={coachingStyle || undefined} onValueChange={setCoachingStyle}>
+              <Select value={coachingStyle || undefined} onValueChange={(val) => val && setCoachingStyle(val)}>
                 <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-purple-500/20 focus:border-purple-500">
                   <SelectValue placeholder="Select Style" />
                 </SelectTrigger>
@@ -212,7 +212,7 @@ export function CoachingBehaviorCard({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <Label className="text-xs text-zinc-400">Feedback Detail Level</Label>
-              <Select value={feedbackDetail || undefined} onValueChange={setFeedbackDetail}>
+              <Select value={feedbackDetail || undefined} onValueChange={(val) => val && setFeedbackDetail(val)}>
                 <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-purple-500/20 focus:border-purple-500">
                   <SelectValue placeholder="Select Detail" />
                 </SelectTrigger>
@@ -226,7 +226,7 @@ export function CoachingBehaviorCard({
 
             <div className="space-y-2">
               <Label className="text-xs text-zinc-400">Feedback Tone</Label>
-              <Select value={coachingTone || undefined} onValueChange={setCoachingTone}>
+              <Select value={coachingTone || undefined} onValueChange={(val) => val && setCoachingTone(val)}>
                 <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-purple-500/20 focus:border-purple-500">
                   <SelectValue placeholder="Select Tone" />
                 </SelectTrigger>
