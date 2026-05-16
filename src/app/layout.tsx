@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Analytics } from "@vercel/analytics/next";
 
 const outfit = Outfit({
   variable: "--font-sans",
@@ -26,6 +27,7 @@ export default function RootLayout({
           {children}
           <Toaster />
         </TooltipProvider>
+        <Analytics />
       </body>
     </html>
   );
