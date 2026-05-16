@@ -148,9 +148,9 @@ export default function RegisterPage() {
 
   return (
     <AuthLayout>
-      <div className="bg-[#0A0A0A] border border-white/[0.08] rounded-2xl p-8 sm:p-10 w-full shadow-2xl relative overflow-hidden">
+      <div className="bg-[#0A0A0A] border border-white/8 rounded-2xl p-8 sm:p-10 w-full shadow-2xl relative overflow-hidden">
         {/* Subtle top highlight */}
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#00F38D]/20 to-transparent" />
+        <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-[#00F38D]/20 to-transparent" />
         
         {/* Heading */}
         <div className="mb-8">
@@ -186,7 +186,7 @@ export default function RegisterPage() {
                   value={firstName}
                   onChange={(e) => handleFirstNameChange(e.target.value)}
                   className={cn(
-                    "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
+                    "bg-white/4 border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
                     errors.firstName && "border-red-500 focus-visible:border-red-500"
                   )}
                 />
@@ -205,7 +205,7 @@ export default function RegisterPage() {
                   value={lastName}
                   onChange={(e) => handleLastNameChange(e.target.value)}
                   className={cn(
-                    "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
+                    "bg-white/4 border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
                     errors.lastName && "border-red-500 focus-visible:border-red-500"
                   )}
                 />
@@ -227,7 +227,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => handleEmailChange(e.target.value)}
                 className={cn(
-                  "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
+                  "bg-white/4 border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10",
                   errors.email && "border-red-500 focus-visible:border-red-500"
                 )}
               />
@@ -249,7 +249,7 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => handlePasswordChange(e.target.value)}
                   className={cn(
-                    "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10 pr-10",
+                    "bg-white/4 border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10 pr-10",
                     errors.password && "border-red-500 focus-visible:border-red-500"
                   )}
                 />
@@ -280,7 +280,7 @@ export default function RegisterPage() {
                   value={confirmPassword}
                   onChange={(e) => handleConfirmPasswordChange(e.target.value)}
                   className={cn(
-                    "bg-white/[0.04] border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10 pr-10",
+                    "bg-white/4 border-white/10 text-white placeholder:text-white/25 focus-visible:border-[#00F38D]/60 focus-visible:ring-0 h-10 pr-10",
                     errors.confirmPassword && "border-red-500 focus-visible:border-red-500"
                   )}
                 />
@@ -318,18 +318,18 @@ export default function RegisterPage() {
             
             <InputOTP maxLength={6} value={otp} onChange={setOtp}>
               <InputOTPGroup>
-                <InputOTPSlot index={0} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
-                <InputOTPSlot index={1} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
-                <InputOTPSlot index={2} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
-                <InputOTPSlot index={3} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
-                <InputOTPSlot index={4} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
-                <InputOTPSlot index={5} className="w-12 h-14 text-xl border-white/20 bg-white/[0.04]" />
+                <InputOTPSlot index={0} className="w-12 h-14 text-xl border-white/20 bg-white/4" />
+                <InputOTPSlot index={1} className="w-12 h-14 text-xl border-white/20 bg-white/4" />
+                <InputOTPSlot index={2} className="w-12 h-14 text-xl border-white/20 bg-white/4" />
+                <InputOTPSlot index={3} className="w-12 h-14 text-xl border-white/20 bg-white/4" />
+                <InputOTPSlot index={4} className="w-12 h-14 text-xl border-white/20 bg-white/4" />
+                <InputOTPSlot index={5} className="w-12 h-14 text-xl border-white/20 bg-white/4" />
               </InputOTPGroup>
             </InputOTP>
 
             {authError && <p className="text-red-500 text-sm text-center">{authError}</p>}
             
-            <div className="w-full max-w-[300px] mt-4 flex flex-col gap-2">
+            <div className="w-full max-w-75 mt-4 flex flex-col gap-2">
               <Button
                 type="submit"
                 disabled={isLoading || otp.length < 6}

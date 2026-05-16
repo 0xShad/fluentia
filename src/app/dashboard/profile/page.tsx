@@ -224,7 +224,7 @@ export default function ProfilePage() {
                   placeholder="Tell your AI coach a bit about your professional background..."
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
-                  className="bg-[#050505] border-white/10 focus-visible:border-[#00F38D] focus-visible:ring-[#00F38D]/20 text-white min-h-[100px] resize-none" 
+                  className="bg-[#050505] border-white/10 focus-visible:border-[#00F38D] focus-visible:ring-[#00F38D]/20 text-white min-h-25 resize-none" 
                 />
               </div>
             </CardContent>
@@ -252,7 +252,7 @@ export default function ProfilePage() {
                   <p className="text-2xl font-black text-white mb-1">Active</p>
                   <p className="text-xs text-zinc-400">Renews on May 24, 2026</p>
                 </div>
-                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#8b5cf6] blur-[40px] opacity-20 rounded-full" />
+                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#8b5cf6] blur-2xl opacity-20 rounded-full" />
               </div>
               <Button variant="outline" className="w-full mt-4 border-white/10 bg-transparent hover:bg-white/5 text-white">
                 Manage Billing
@@ -260,7 +260,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20 border-red-500/20">
+          <Card className="bg-[#111] border-red-500/20 text-white shadow-xl shadow-black/20">
             <CardHeader>
               <CardTitle className="text-red-500 flex items-center gap-2">
                 Security & Data

@@ -326,12 +326,12 @@ export function GlobalSearch() {
                           onClick={() => navigate(result.href)}
                           className={cn(
                             "w-full flex items-center gap-3 px-3 py-2 text-left transition-colors",
-                            isActive ? "bg-white/[0.06]" : "hover:bg-white/[0.03]"
+                            isActive ? "bg-white/6" : "hover:bg-white/3"
                           )}
                         >
                           <span
                             className={cn(
-                              "flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center",
+                              "shrink-0 w-7 h-7 rounded-md flex items-center justify-center",
                               isActive ? "bg-[#00F38D]/10" : "bg-white/5"
                             )}
                           >
@@ -353,7 +353,7 @@ export function GlobalSearch() {
                             )}
                           </span>
                           {isActive && (
-                            <ChevronRight className="w-3.5 h-3.5 text-white/20 flex-shrink-0" />
+                            <ChevronRight className="w-3.5 h-3.5 text-white/20 shrink-0" />
                           )}
                         </button>
                       );

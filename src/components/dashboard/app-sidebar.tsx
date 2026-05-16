@@ -63,7 +63,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton render={<Link href={item.href} />} isActive={isActive} tooltip={item.title} className={cn(
                       "transition-all duration-200",
-                      isActive ? "bg-white/[0.05] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.02]"
+                      isActive ? "bg-white/5 text-white" : "text-white/60 hover:text-white hover:bg-white/2"
                     )}>
                       <item.icon className={cn("w-4 h-4", isActive && "text-[#00F38D]")} />
                       <span>{item.title}</span>
@@ -85,7 +85,7 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton render={<Link href={item.href} />} isActive={isActive} tooltip={item.title} className={cn(
                       "transition-all duration-200",
-                      isActive ? "bg-white/[0.05] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.02]"
+                      isActive ? "bg-white/5 text-white" : "text-white/60 hover:text-white hover:bg-white/2"
                     )}>
                       <item.icon className={cn("w-4 h-4", isActive && "text-[#00F38D]")} />
                       <span>{item.title}</span>
@@ -104,7 +104,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               onClick={handleLogout}
               tooltip="Log out"
-              className="text-red-500/70 hover:text-red-400 hover:bg-red-500/[0.06] transition-all duration-200"
+              className="text-red-500/70 hover:text-red-400 hover:bg-red-500/6 transition-all duration-200"
             >
               <LogOut className="w-4 h-4" />
               <span>Log out</span>

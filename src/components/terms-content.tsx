@@ -71,7 +71,7 @@ export function TermsContent({ termsSections, privacySections, commitments }: Te
         </p>
         <div className="space-y-4">
           {commitments.map((c) => (
-            <div key={c.title} className="p-4 rounded-xl bg-white/[0.02] border border-white/8">
+            <div key={c.title} className="p-4 rounded-xl bg-white/2 border border-white/8">
               <p className="text-sm font-semibold text-white mb-1.5">{c.title}</p>
               <p className="text-sm text-white/40 leading-relaxed">{c.body}</p>
             </div>
