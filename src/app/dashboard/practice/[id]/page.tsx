@@ -6,6 +6,7 @@ import { scenarios } from "@/data/scenarios";
 import { CategoryIcon } from "@/components/dashboard/scenario-card";
 import type { DifficultyLevel } from "@/types/scenario.types";
 import type { SessionFeedback } from "@/types/feedback.types";
+import type { UserPreferences } from "@/types/user-preferences.types";
 import {
   ArrowLeft,
   Bot,
@@ -20,6 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useVapiSession } from "@/hooks/use-vapi-session";
+import { createClient } from "@/lib/client";
 
 const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
   EASY:   "text-emerald-400",
@@ -263,6 +265,23 @@ export default function SessionPage() {
   const [textInput, setTextInput] = useState("");
   const [feedback, setFeedback] = useState<SessionFeedback | null>(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [userPrefs, setUserPrefs] = useState<Partial<UserPreferences>>({});
+
+  // Load user preferences once on mount
+  useEffect(() => {
+    const load = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: prefs } = await supabase
+        .from("user_preferences")
+        .select("skill_level, coaching_style, speaking_goals, coaching_tone, feedback_detail, correction_sensitivity, realtime_hints, preferred_voice")
+        .eq("user_id", user.id)
+        .single();
+      if (prefs) setUserPrefs(prefs as Partial<UserPreferences>);
+    };
+    load();
+  }, []);
 
   // Timer while active
   useEffect(() => {
@@ -430,7 +449,7 @@ export default function SessionPage() {
                 dynamically to everything you say. Speak naturally.
               </p>
               <button
-                onClick={() => startCall(scenario)}
+                onClick={() => startCall(scenario, userPrefs)}
                 disabled={sessionState === "connecting"}
                 className={cn(
                   "flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-black font-bold text-base transition-all",

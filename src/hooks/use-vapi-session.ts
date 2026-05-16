@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { getVapiClient } from "@/lib/voice/vapi-client";
 import { buildScenarioPrompt } from "@/lib/prompts/vapi-prompts";
 import type { Scenario } from "@/types/scenario.types";
+import type { UserPreferences } from "@/types/user-preferences.types";
+import { getVoiceOption, DEFAULT_VOICE_ID } from "@/lib/voice/voice-options";
 
 export type SessionStatus = "idle" | "connecting" | "active" | "ended" | "error";
 
@@ -169,13 +171,17 @@ export function useVapiSession() {
     };
   }, []);
 
-  const startCall = useCallback(async (scenario: Scenario) => {
+  const startCall = useCallback(async (
+    scenario: Scenario,
+    prefs?: Partial<UserPreferences>
+  ) => {
     try {
       setStatus("connecting");
       setError(null);
       setTranscript([]);
 
-      const systemPrompt = buildScenarioPrompt(scenario);
+      const systemPrompt = buildScenarioPrompt(scenario, prefs);
+      const voice = getVoiceOption(prefs?.preferred_voice ?? DEFAULT_VOICE_ID);
       const vapi = getVapiClient();
 
       setCallId(null);
@@ -194,8 +200,8 @@ export function useVapiSession() {
           messages: [{ role: "system", content: systemPrompt }],
         },
         voice: {
-          provider: "11labs",
-          voiceId: "burt",
+          provider: voice.provider,
+          voiceId: voice.voiceId,
         },
         firstMessage: `Hello, I'm ready to begin the ${scenario.title} scenario.`,
       });
