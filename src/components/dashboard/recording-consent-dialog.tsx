@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Shield, Mic, FileText, ExternalLink } from "lucide-react";
 import {
   Dialog,
@@ -13,17 +13,29 @@ import { cn } from "@/lib/utils";
 
 interface RecordingConsentDialogProps {
   open: boolean;
+  initialDontRecord?: boolean;
+  initialRemember?: boolean;
   onConfirm: (recordingEnabled: boolean, remember: boolean) => void;
   onCancel: () => void;
 }
 
 export function RecordingConsentDialog({
   open,
+  initialDontRecord = false,
+  initialRemember = false,
   onConfirm,
   onCancel,
 }: RecordingConsentDialogProps) {
-  const [dontRecord, setDontRecord] = useState(false);
-  const [remember, setRemember] = useState(false);
+  const [dontRecord, setDontRecord] = useState(initialDontRecord);
+  const [remember, setRemember] = useState(initialRemember);
+
+  // Sync when dialog opens with a fresh saved preference
+  useEffect(() => {
+    if (open) {
+      setDontRecord(initialDontRecord);
+      setRemember(initialRemember);
+    }
+  }, [open, initialDontRecord, initialRemember]);
 
   const handleBegin = () => {
     onConfirm(!dontRecord, remember);
@@ -34,7 +46,7 @@ export function RecordingConsentDialog({
       <DialogContent className="bg-[#111111] border border-white/10 text-white max-w-md p-0 gap-0 rounded-2xl overflow-hidden">
 
         {/* Header accent bar */}
-        <div className="h-1 w-full bg-gradient-to-r from-[#00F38D]/60 via-[#00F38D] to-[#00F38D]/60" />
+        <div className="h-1 w-full bg-linear-to-r from-[#00F38D]/60 via-[#00F38D] to-[#00F38D]/60" />
 
         <div className="p-6">
           <DialogHeader className="mb-5">
@@ -53,7 +65,7 @@ export function RecordingConsentDialog({
 
           {/* Data collected items */}
           <div className="space-y-2.5 mb-5">
-            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/[0.03] border border-white/8">
+            <div className="flex items-start gap-3 p-3 rounded-xl bg-white/3 border border-white/8">
               <Mic className="w-3.5 h-3.5 text-white/40 mt-0.5 shrink-0" />
               <div>
                 <p className="text-xs font-semibold text-white/70">Voice transcript</p>
@@ -65,8 +77,8 @@ export function RecordingConsentDialog({
             <div className={cn(
               "flex items-start gap-3 p-3 rounded-xl border transition-all duration-200",
               dontRecord
-                ? "bg-white/[0.02] border-white/5 opacity-50"
-                : "bg-white/[0.03] border-white/8"
+                ? "bg-white/2 border-white/5 opacity-50"
+                : "bg-white/3 border-white/8"
             )}>
               <FileText className="w-3.5 h-3.5 text-white/40 mt-0.5 shrink-0" />
               <div>
@@ -80,7 +92,7 @@ export function RecordingConsentDialog({
           </div>
 
           {/* Don't record toggle */}
-          <label className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/8 cursor-pointer hover:bg-white/[0.04] transition-colors mb-2.5 select-none">
+          <label className="flex items-center gap-3 p-3 rounded-xl bg-white/2 border border-white/8 cursor-pointer hover:bg-white/4 transition-colors mb-2.5 select-none">
             <div
               className={cn(
                 "w-4 h-4 rounded border-2 flex items-center justify-center shrink-0 transition-all",

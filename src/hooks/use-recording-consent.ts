@@ -37,8 +37,7 @@ export function useRecordingConsent(): UseRecordingConsentReturn {
     if (!user) return;
     await supabase
       .from("user_preferences")
-      .update({ recording_consent: value })
-      .eq("user_id", user.id);
+      .upsert({ user_id: user.id, recording_consent: value }, { onConflict: "user_id" });
   }, []);
 
   return { consent, saveConsent };

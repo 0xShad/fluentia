@@ -453,10 +453,14 @@ export default function SessionPage() {
           {/* Consent dialog */}
           <RecordingConsentDialog
             open={showConsentDialog}
+            initialDontRecord={consent === "never"}
+            initialRemember={consent === "always" || consent === "never"}
             onConfirm={(recordingEnabled, remember) => {
               setShowConsentDialog(false);
               if (remember) {
                 saveConsent(recordingEnabled ? "always" : "never");
+              } else {
+                saveConsent("ask");
               }
               startCall(scenario, userPrefs, recordingEnabled);
             }}
@@ -476,15 +480,7 @@ export default function SessionPage() {
                 dynamically to everything you say. Speak naturally.
               </p>
               <button
-                onClick={() => {
-                  if (consent === "always") {
-                    startCall(scenario, userPrefs, true);
-                  } else if (consent === "never") {
-                    startCall(scenario, userPrefs, false);
-                  } else {
-                    setShowConsentDialog(true);
-                  }
-                }}
+                onClick={() => setShowConsentDialog(true)}
                 disabled={sessionState === "connecting" || consent === null}
                 className={cn(
                   "flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-black font-bold text-base transition-all",
