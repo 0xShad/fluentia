@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Search, Filter, MoreHorizontal, Download, BarChart2, Mic, Play } from "lucide-react";
+import { Search, Filter, MoreHorizontal, Download, BarChart2, Mic, Play, Trash2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { SessionsSkeleton } from "./components/sessions-skeleton";
 import { SessionDetailDialog } from "./components/session-detail-dialog";
 import {
@@ -49,11 +50,11 @@ function shortId(uuid: string) {
 
 const statusColor = (status: string) => {
   switch (status) {
-    case "Excellent":  return "bg-[#00F38D]/20 text-[#00F38D] border-[#00F38D]/30";
-    case "Good":       return "bg-[#6366f1]/20 text-[#6366f1] border-[#6366f1]/30";
-    case "Needs Focus":return "bg-yellow-500/20 text-yellow-500 border-yellow-500/30";
-    case "Poor":       return "bg-red-500/20 text-red-500 border-red-500/30";
-    default:           return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+    case "Excellent":   return "bg-[#00F38D]/20 text-[#00F38D] border-[#00F38D]/30";
+    case "Good":        return "bg-[#6366f1]/20 text-[#6366f1] border-[#6366f1]/30";
+    case "Needs Focus": return "bg-yellow-500/20 text-yellow-500 border-yellow-500/30";
+    case "Poor":        return "bg-red-500/20 text-red-500 border-red-500/30";
+    default:            return "bg-gray-500/20 text-gray-400 border-gray-500/30";
   }
 };
 
@@ -72,6 +73,8 @@ export default function HistoryPage() {
   const [sessions, setSessions] = useState<SessionRow[]>([]);
   const [search, setSearch] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -85,6 +88,43 @@ export default function HistoryPage() {
     };
     load();
   }, []);
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    setDeleting(true);
+    try {
+      const supabase = createClient();
+
+      // Fetch recording path before deleting
+      const { data: row } = await supabase
+        .from("session_feedback")
+        .select("recording_url")
+        .eq("id", deleteId)
+        .maybeSingle();
+
+      // Remove recording from storage (non-fatal)
+      if (row?.recording_url) {
+        await supabase.storage.from("recordings").remove([row.recording_url]);
+      }
+
+      // Delete the DB row
+      const { error: deleteErr } = await supabase
+        .from("session_feedback")
+        .delete()
+        .eq("id", deleteId);
+
+      if (deleteErr) throw new Error(deleteErr.message);
+
+      setSessions((prev) => prev.filter((s) => s.id !== deleteId));
+      if (selectedId === deleteId) setSelectedId(null);
+      toast.success("Session deleted successfully.");
+    } catch (err: any) {
+      toast.error(err.message ?? "Failed to delete session.");
+    } finally {
+      setDeleting(false);
+      setDeleteId(null);
+    }
+  };
 
   if (loading) return <SessionsSkeleton />;
 
@@ -207,7 +247,11 @@ export default function HistoryPage() {
                               View Details
                             </DropdownMenuItem>
                             <DropdownMenuSeparator className="bg-white/10" />
-                            <DropdownMenuItem className="cursor-pointer text-red-500 focus:bg-red-500/10 focus:text-red-500 gap-2">
+                            <DropdownMenuItem
+                              className="cursor-pointer text-red-500 focus:bg-red-500/10 focus:text-red-500 gap-2"
+                              onClick={() => setDeleteId(session.id)}
+                            >
+                              <Trash2 className="w-4 h-4" />
                               Delete Record
                             </DropdownMenuItem>
                           </DropdownMenuContent>
@@ -236,6 +280,60 @@ export default function HistoryPage() {
         sessionId={selectedId}
         onClose={() => setSelectedId(null)}
       />
+
+      {/* Delete confirmation */}
+      {deleteId && (
+        <>
+          <style>{`
+            @keyframes sdlg-fadein { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes sdlg-scalein { from { opacity: 0; transform: translate(-50%, -48%) scale(0.96); } to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+          `}</style>
+          <div
+            style={{ position: "fixed", inset: 0, zIndex: 10000, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)", animation: "sdlg-fadein 0.15s ease" }}
+            onClick={() => !deleting && setDeleteId(null)}
+          />
+          <div style={{
+            position: "fixed", top: "50%", left: "50%", zIndex: 10001,
+            transform: "translate(-50%, -50%)",
+            width: "min(92vw, 400px)",
+            background: "#0f0f0f",
+            border: "1px solid rgba(255,255,255,0.1)",
+            borderRadius: "14px",
+            padding: "1.75rem",
+            color: "white",
+            animation: "sdlg-scalein 0.15s ease",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
+              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Trash2 style={{ width: 16, height: 16, color: "#ef4444" }} />
+              </div>
+              <h2 style={{ margin: 0, fontSize: "1rem", fontWeight: 700, color: "white" }}>Delete Session?</h2>
+            </div>
+            <p style={{ margin: "0 0 1.5rem", fontSize: "0.875rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.6 }}>
+              This will permanently delete the session record and its recording from storage. This action cannot be undone.
+            </p>
+            <div style={{ display: "flex", gap: "0.625rem", justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setDeleteId(null)}
+                disabled={deleting}
+                style={{ padding: "0.5rem 1rem", borderRadius: 8, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.6)", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer" }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                style={{ padding: "0.5rem 1.125rem", borderRadius: 8, background: deleting ? "rgba(239,68,68,0.4)" : "#ef4444", border: "none", color: "white", fontSize: "0.875rem", fontWeight: 700, cursor: deleting ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}
+              >
+                {deleting
+                  ? <><Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> Deleting…</>
+                  : <><Trash2 style={{ width: 14, height: 14 }} /> Delete</>
+                }
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </>
   );
 }
