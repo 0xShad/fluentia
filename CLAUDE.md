@@ -74,6 +74,28 @@ Categories: `Interview` · `Business` · `Social` · `Public Speaking` · `Every
 
 The featured scenario renders full-width at the top of the practice grid; all others render in a 2-column grid.
 
+### Tailwind Class Conventions
+
+Always use canonical Tailwind v4 class names. Never use arbitrary bracket notation when a canonical equivalent exists:
+
+| Instead of | Write |
+|---|---|
+| `bg-white/[0.04]` | `bg-white/4` |
+| `bg-white/[0.06]` | `bg-white/6` |
+| `border-white/[0.08]` | `border-white/8` |
+| `hover:bg-white/[0.03]` | `hover:bg-white/3` |
+| `bg-gradient-to-r` | `bg-linear-to-r` |
+| `flex-shrink-0` | `shrink-0` |
+| `min-w-[96px]` | `min-w-24` |
+| `max-w-[300px]` | `max-w-75` |
+| `min-h-[100px]` | `min-h-25` |
+| `blur-[40px]` | `blur-2xl` |
+| `w-[280px]` | `w-70` |
+
+General rule: if the value maps to a Tailwind scale step (multiples of 4px for spacing/sizing, standard opacity steps), use the scale token, not `[value]`.
+
+Never put two conflicting border-color utilities on the same element (e.g. `border-white/10 border-red-500/20`). Use only the one that applies in context.
+
 ### Design System
 
 The app is dark-only (never light mode). Core design tokens used throughout:

@@ -20,7 +20,7 @@ export function LanguageRegionCard({
   setTimezone
 }: LanguageRegionCardProps) {
   return (
-    <Card className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20">
+    <Card id="language-region" className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20 scroll-mt-24">
       <CardHeader>
         <CardTitle>Language & Region</CardTitle>
         <CardDescription className="text-zinc-400">Set interface locales and AI translation capabilities.</CardDescription>

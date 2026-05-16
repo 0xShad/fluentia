@@ -291,7 +291,7 @@ export default function HistoryPage() {
               <TableHeader className="bg-[#050505] hover:bg-[#050505]">
                 <TableRow className="border-white/10 hover:bg-[#050505]">
                   <TableHead className="text-zinc-500 font-medium pl-6">Session ID</TableHead>
-                  <TableHead className="text-zinc-500 font-medium w-[280px]">Title</TableHead>
+                  <TableHead className="text-zinc-500 font-medium w-70">Title</TableHead>
                   <TableHead className="text-zinc-500 font-medium">Category</TableHead>
                   <TableHead className="text-zinc-500 font-medium">Date & Time</TableHead>
                   <TableHead className="text-zinc-500 font-medium whitespace-nowrap">Duration</TableHead>
@@ -307,7 +307,7 @@ export default function HistoryPage() {
                   return (
                     <TableRow
                       key={session.id}
-                      className="border-white/5 hover:bg-white/[0.03] transition-colors cursor-pointer group"
+                      className="border-white/5 hover:bg-white/3 transition-colors cursor-pointer group"
                       onClick={() => setSelectedId(session.id)}
                     >
                       <TableCell className="font-mono text-xs text-muted-foreground pl-6">

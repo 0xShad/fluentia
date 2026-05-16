@@ -113,7 +113,7 @@ export default function ScenariosPage() {
           </section>
 
           {/* ── Divider ───────────────────────────────────────────────────── */}
-          <div className="border-t border-white/[0.06] mb-8" />
+          <div className="border-t border-white/6 mb-8" />
 
           {/* ── Search + count ────────────────────────────────────────────── */}
           <div className="flex items-center justify-between mb-6 animate-in fade-in duration-700">
@@ -125,7 +125,7 @@ export default function ScenariosPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search scenarios or skills…"
-                className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-8 py-2 text-sm text-white placeholder:text-white/25 outline-none focus:border-[#00F38D]/40 focus:bg-white/[0.06] transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-8 py-2 text-sm text-white placeholder:text-white/25 outline-none focus:border-[#00F38D]/40 focus:bg-white/6 transition-all"
               />
               {searchQuery && (
                 <button

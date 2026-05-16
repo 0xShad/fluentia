@@ -24,7 +24,7 @@ export function NotificationsCard({
   setEmailNotifications
 }: NotificationsCardProps) {
   return (
-    <Card className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20">
+    <Card id="notifications" className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20 scroll-mt-24">
       <CardHeader>
         <CardTitle>Notifications</CardTitle>
         <CardDescription className="text-zinc-400">Control when Fluentia sends reminders and updates.</CardDescription>

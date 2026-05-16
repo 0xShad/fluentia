@@ -91,7 +91,7 @@ function CategoryBar({ name, score, feedback, delay }: { name: string; score: nu
         <span className="text-xs font-semibold text-white/50">{name}</span>
         <span className="text-xs font-bold" style={{ color: scoreColor(score) }}>{score}</span>
       </div>
-      <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden mb-1.5">
+      <div className="h-1.5 bg-white/6 rounded-full overflow-hidden mb-1.5">
         <div
           className={`h-full rounded-full transition-all duration-1000 ease-out ${color}`}
           style={{ width: `${w}%`, transitionDelay: `${delay}ms` }}
@@ -134,7 +134,7 @@ function FeedbackReport({
       </div>
 
       {/* Score + Grade */}
-      <div className="flex flex-col items-center gap-3 py-6 px-4 rounded-2xl bg-white/[0.02] border border-white/8">
+      <div className="flex flex-col items-center gap-3 py-6 px-4 rounded-2xl bg-white/2 border border-white/8">
         <ScoreRing score={feedback.overallScore} />
         <div className={cn("px-3 py-1 rounded-full border text-xs font-extrabold tracking-wide", gradeColor(feedback.grade))}>
           {feedback.grade}
@@ -147,7 +147,7 @@ function FeedbackReport({
       {/* Strengths + Improvements */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Strengths */}
-        <div className="p-4 rounded-xl bg-[#00F38D]/[0.04] border border-[#00F38D]/15">
+        <div className="p-4 rounded-xl bg-[#00F38D]/4 border border-[#00F38D]/15">
           <div className="flex items-center gap-2 mb-3">
             <TrendingUp className="w-3.5 h-3.5 text-[#00F38D]" />
             <span className="text-[11px] font-bold text-[#00F38D] uppercase tracking-wider">Strengths</span>
@@ -163,7 +163,7 @@ function FeedbackReport({
         </div>
 
         {/* Improvements */}
-        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/8">
+        <div className="p-4 rounded-xl bg-white/2 border border-white/8">
           <div className="flex items-center gap-2 mb-3">
             <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
             <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">Areas to Improve</span>
@@ -186,7 +186,7 @@ function FeedbackReport({
 
       {/* Filler Words */}
       {feedback.fillerWords.length > 0 && (
-        <div className="p-4 rounded-xl bg-white/[0.02] border border-white/8">
+        <div className="p-4 rounded-xl bg-white/2 border border-white/8">
           <p className="text-[11px] font-bold text-white/25 uppercase tracking-widest mb-3">
             Filler Words Detected
           </p>
@@ -208,7 +208,7 @@ function FeedbackReport({
       )}
 
       {/* Category Breakdown */}
-      <div className="p-4 rounded-xl bg-white/[0.02] border border-white/8">
+      <div className="p-4 rounded-xl bg-white/2 border border-white/8">
         <p className="text-[11px] font-bold text-white/25 uppercase tracking-widest mb-4">
           Performance Breakdown
         </p>
@@ -521,7 +521,7 @@ export default function SessionPage() {
               </p>
               <p className="text-xs text-white/30 mb-6">{scenario.aiRole}</p>
 
-              <div className="w-full flex-1 overflow-y-auto p-4 rounded-xl bg-white/[0.02] border border-white/8 mb-6 flex flex-col gap-3">
+              <div className="w-full flex-1 overflow-y-auto p-4 rounded-xl bg-white/2 border border-white/8 mb-6 flex flex-col gap-3">
                 {transcript.length === 0 ? (
                   <div className="h-full flex items-center justify-center">
                     <p className="text-sm text-white/20 italic text-center">
