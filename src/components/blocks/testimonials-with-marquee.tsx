@@ -39,7 +39,7 @@ export function TestimonialsSection({
             {[0, 1].map((arr) => (
               <div 
                 key={arr} 
-                className="flex shrink-0 items-center justify-around [gap:var(--gap)] animate-marquee flex-row group-hover:[animation-play-state:paused]"
+                className="flex shrink-0 items-center justify-around [gap:var(--gap)] animate-marquee flex-row group-hover:[animation-play-state:paused] [will-change:transform]"
                 aria-hidden={arr === 1 ? "true" : undefined}
               >
                 {[...Array(2)].map((_, setIndex) => (

@@ -43,19 +43,12 @@ export function FAQAccordionBlock() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section className="w-full bg-[#050505] border-t border-white/5 px-6 py-24 relative overflow-hidden">
-      {/* Background glow overlay */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+    <section id="faq" className="w-full bg-[#050505] border-t border-white/5 px-6 py-24 relative overflow-hidden">
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-36 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="mx-auto max-w-4xl relative z-10">
-        {/* Header — fires when scrolled into view */}
-        <motion.div
-          initial={{ opacity: 0, y: -20, filter: "blur(6px)" }}
-          whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.7, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="mb-12 text-center md:mb-16"
-        >
+        {/* Header */}
+        <div className="mb-12 text-center md:mb-16">
           <div className="mb-4 inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
             <HelpCircle className="h-3 w-3" />
             <span className="uppercase tracking-widest">FAQ</span>
@@ -66,35 +59,15 @@ export function FAQAccordionBlock() {
           <p className="mx-auto max-w-2xl text-base text-muted-foreground md:text-lg">
             Find answers to common questions about our AI communication coach.
           </p>
-        </motion.div>
+        </div>
 
-        {/* FAQ Accordion — staggered scroll reveal */}
-        <motion.div
-          className="space-y-4"
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-40px" }}
-          variants={{
-            hidden: {},
-            visible: {
-              transition: {
-                staggerChildren: 0.1,
-                delayChildren: 0.05,
-              },
-            },
-          }}
-        >
+        {/* FAQ Accordion */}
+        <div className="space-y-4">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
 
             return (
-              <motion.div
-                key={index}
-                variants={{
-                  hidden: { opacity: 0, y: 24 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] } },
-                }}
-              >
+              <div key={index}>
                 <Card className="overflow-hidden border border-white/10 bg-[#080808] transition-all hover:border-primary/30">
                   <button
                     onClick={() => setOpenIndex(isOpen ? null : index)}
@@ -106,7 +79,7 @@ export function FAQAccordionBlock() {
                     <motion.div
                       animate={{ rotate: isOpen ? 180 : 0 }}
                       transition={{ duration: 0.3, ease: "easeInOut" }}
-                      className="flex-shrink-0"
+                      className="shrink-0"
                     >
                       <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </motion.div>
@@ -122,45 +95,25 @@ export function FAQAccordionBlock() {
                         className="overflow-hidden"
                       >
                         <div className="border-t border-white/5 p-4 md:p-6">
-                          <motion.p
-                            initial={{ y: -10, opacity: 0 }}
-                            animate={{ y: 0, opacity: 1 }}
-                            transition={{ duration: 0.2, delay: 0.05 }}
-                            className="text-sm text-zinc-400 md:text-base leading-relaxed"
-                          >
+                          <p className="text-sm text-zinc-400 md:text-base leading-relaxed">
                             {faq.answer}
-                          </motion.p>
+                          </p>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </Card>
-              </motion.div>
+              </div>
             );
           })}
-        </motion.div>
+        </div>
 
-        {/* Bottom CTA — scroll reveal */}
-        <motion.div
-          initial={{ opacity: 0, y: 28 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="mt-12 text-center md:mt-16"
-        >
+        {/* Bottom CTA */}
+        <div className="mt-12 text-center md:mt-16">
           <Card className="border border-white/10 bg-[#080808] p-6 md:p-8 relative overflow-hidden">
-            {/* Subtle glow inside card */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
-
+            <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent" />
             <div className="relative z-10">
-              <motion.div
-                initial={{ scale: 0.7, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: 0.3, type: "spring", stiffness: 200 }}
-              >
-                <MessageCircle className="mx-auto mb-4 h-12 w-12 text-primary" />
-              </motion.div>
+              <MessageCircle className="mx-auto mb-4 h-12 w-12 text-primary" />
               <h3 className="mb-2 text-xl font-bold text-white md:text-2xl">
                 Still have questions?
               </h3>
@@ -168,15 +121,13 @@ export function FAQAccordionBlock() {
                 Our team is here to help you dial in your communication practice.
               </p>
               <div className="flex flex-col justify-center gap-3 sm:flex-row">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
-                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 uppercase tracking-wider text-xs">
-                    Contact Support
-                  </Button>
-                </motion.div>
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 uppercase tracking-wider text-xs transition-transform hover:scale-105 active:scale-95">
+                  Contact Support
+                </Button>
               </div>
             </div>
           </Card>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

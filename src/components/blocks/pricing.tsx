@@ -11,7 +11,7 @@ import {
 import { cn } from '@/lib/utils';
 import { CheckCircleIcon, StarIcon } from 'lucide-react';
 import Link from 'next/link';
-import { motion, Transition } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 type FREQUENCY = 'monthly' | 'yearly';
 const frequencies: FREQUENCY[] = ['monthly', 'yearly'];
@@ -151,14 +151,7 @@ export function PricingCard({
       {...props}
     >
       {plan.highlighted && (
-        <BorderTrail
-          style={{
-            boxShadow:
-              '0px 0px 60px 30px rgba(0,243,141,0.2), 0 0 100px 60px rgba(0,243,141,0.2), 0 0 140px 90px rgba(0,243,141,0.2)',
-          }}
-          size={120}
-          className="bg-primary"
-        />
+        <div className="absolute inset-0 rounded-xl border border-primary/50 shadow-[0_0_20px_rgba(0,243,141,0.15)] pointer-events-none" />
       )}
       <div
         className={cn(
@@ -255,47 +248,3 @@ export function PricingCard({
   );
 }
 
-type BorderTrailProps = {
-  className?: string;
-  size?: number;
-  transition?: Transition;
-  delay?: number;
-  onAnimationComplete?: () => void;
-  style?: React.CSSProperties;
-};
-
-export function BorderTrail({
-  className,
-  size = 60,
-  transition,
-  delay,
-  onAnimationComplete,
-  style,
-}: BorderTrailProps) {
-  const BASE_TRANSITION = {
-    repeat: Infinity,
-    duration: 5,
-    ease: 'linear',
-  };
-
-  return (
-    <div className='pointer-events-none absolute inset-0 rounded-[inherit] border border-transparent [mask-clip:padding-box,border-box] [mask-composite:intersect] [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)]'>
-      <motion.div
-        className={cn('absolute aspect-square', className)}
-        style={{
-          width: size,
-          offsetPath: `rect(0 auto auto 0 round ${size}px)`,
-          ...style,
-        }}
-        animate={{
-          offsetDistance: ['0%', '100%'],
-        }}
-        transition={{
-          ...(transition ?? BASE_TRANSITION),
-          delay: delay,
-        }}
-        onAnimationComplete={onAnimationComplete}
-      />
-    </div>
-  );
-}

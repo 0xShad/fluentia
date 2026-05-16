@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { AnimatedSection, AnimatedHeading, StaggerContainer, StaggerItem } from "@/components/ui/animated-section";
-import { motion } from "framer-motion";
 import { Mic, BarChart, FileText, Bell, MessageSquare, LayoutDashboard } from "lucide-react";
 
 const features = [
@@ -30,22 +29,15 @@ export function FeaturesSection() {
         <StaggerContainer staggerDelay={0.1} delayStart={0.05} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature, i) => (
             <StaggerItem key={i}>
-              <motion.div
-                whileHover={{ y: -6, borderColor: "rgba(0,243,141,0.5)" }}
-                transition={{ duration: 0.25, ease: "easeOut" }}
-                className="h-full"
-              >
-                <Card className="bg-[#080808] border-white/10 transition-all duration-300 group cursor-pointer overflow-hidden relative min-h-[220px] h-full">
-                  <div className="absolute inset-0 bg-gradient-to-br from-primary/0 via-transparent to-primary/[0.03] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              {/* CSS hover only — no JS motion listeners */}
+              <div className="h-full transition-transform duration-200 ease-out hover:-translate-y-1.5">
+                <Card className="bg-[#080808] border-white/10 hover:border-primary/50 transition-all duration-300 group cursor-pointer overflow-hidden relative min-h-55 h-full">
+                  <div className="absolute inset-0 bg-linear-to-br from-primary/0 via-transparent to-primary/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <CardHeader className="pb-4 relative z-10">
                     <div className="flex justify-between items-start w-full">
-                      <motion.div
-                        className="w-12 h-12 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-primary mb-6 group-hover:bg-primary/10 transition-colors"
-                        whileHover={{ rotate: [0, -8, 8, 0] }}
-                        transition={{ duration: 0.4 }}
-                      >
+                      <div className="w-12 h-12 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-primary mb-6 group-hover:bg-primary/10 transition-colors">
                         {feature.icon}
-                      </motion.div>
+                      </div>
                       <div className="text-[10px] font-mono text-muted-foreground uppercase opacity-0 group-hover:opacity-100 transition-opacity">0{i + 1}</div>
                     </div>
                     <CardTitle className="text-lg font-medium text-white group-hover:text-primary transition-colors">{feature.title}</CardTitle>
@@ -56,7 +48,7 @@ export function FeaturesSection() {
                     </CardDescription>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </div>
             </StaggerItem>
           ))}
         </StaggerContainer>
