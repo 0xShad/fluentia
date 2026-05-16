@@ -1,7 +1,6 @@
 'use client';
 import { cn } from '@/lib/utils';
 import React, { useEffect, useRef } from 'react';
-import * as THREE from 'three';
 
 type DottedSurfaceProps = Omit<React.ComponentProps<'div'>, 'ref'>;
 
@@ -9,115 +8,93 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		if (!containerRef.current) return;
+		const container = containerRef.current;
+		if (!container) return;
 
-		const SEPARATION = 150;
-		const AMOUNTX = 40;
-		const AMOUNTY = 60;
+		const canvas = document.createElement('canvas');
+		const ctx = canvas.getContext('2d');
+		if (!ctx) return;
 
-		// Always use the full window for sizing
-		const getSize = () => ({
-			width: window.innerWidth,
-			height: window.innerHeight,
-		});
-
-		const { width, height } = getSize();
-
-		// Scene setup
-		const scene = new THREE.Scene();
-		// No fog — pure transparent background so dark page shows through
-		scene.background = null;
-
-		const camera = new THREE.PerspectiveCamera(75, width / height, 1, 10000);
-		// Position camera high and back so we see the full wave grid
-		camera.position.set(0, 600, 1500);
-		camera.lookAt(0, 0, 0);
-
-		const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-		renderer.setPixelRatio(window.devicePixelRatio);
-		renderer.setSize(width, height);
-		renderer.setClearColor(0x000000, 0); // fully transparent
-
-		const canvas = renderer.domElement;
-		// Canvas is fixed; the parent section clips it via overflow-hidden
 		canvas.style.position = 'absolute';
 		canvas.style.top = '0';
 		canvas.style.left = '0';
 		canvas.style.width = '100%';
 		canvas.style.height = '100%';
-		containerRef.current.appendChild(canvas);
+		container.appendChild(canvas);
 
-		// Geometry
-		const positions: number[] = [];
-		const colors: number[] = [];
-		const geometry = new THREE.BufferGeometry();
+		const COLS = 30;
+		const ROWS = 20;
+		const DOT_RADIUS = 1.8;
+		// Cap at 24 fps — smooth enough for a background, light on the CPU
+		const INTERVAL = 1000 / 24;
 
-		for (let ix = 0; ix < AMOUNTX; ix++) {
-			for (let iy = 0; iy < AMOUNTY; iy++) {
-				positions.push(
-					ix * SEPARATION - (AMOUNTX * SEPARATION) / 2,
-					0,
-					iy * SEPARATION - (AMOUNTY * SEPARATION) / 2,
-				);
-				// Fluentia Neon Green #00F38D
-				colors.push(0.0, 0.953, 0.553);
-			}
-		}
-
-		geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-		geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-
-		const material = new THREE.PointsMaterial({
-			size: 6,
-			vertexColors: true,
-			transparent: true,
-			opacity: 0.6,
-			sizeAttenuation: true,
-		});
-
-		const points = new THREE.Points(geometry, material);
-		scene.add(points);
+		const setSize = () => {
+			canvas.width = container.offsetWidth;
+			canvas.height = container.offsetHeight;
+		};
+		setSize();
 
 		let count = 0;
-		let animationId: number;
+		let animId = 0;
+		let lastTime = 0;
+		let inView = true;
 
-		const animate = () => {
-			animationId = requestAnimationFrame(animate);
+		const draw = (time: number) => {
+			animId = requestAnimationFrame(draw);
+			if (time - lastTime < INTERVAL) return;
+			lastTime = time;
 
-			const posAttr = geometry.attributes.position;
-			const pos = posAttr.array as Float32Array;
+			const w = canvas.width;
+			const h = canvas.height;
+			const colGap = w / COLS;
+			const rowGap = h / ROWS;
 
-			let i = 0;
-			for (let ix = 0; ix < AMOUNTX; ix++) {
-				for (let iy = 0; iy < AMOUNTY; iy++) {
-					pos[i * 3 + 1] =
-						Math.sin((ix + count) * 0.3) * 50 +
-						Math.sin((iy + count) * 0.5) * 50;
-					i++;
+			ctx.clearRect(0, 0, w, h);
+
+			for (let c = 0; c < COLS; c++) {
+				for (let r = 0; r < ROWS; r++) {
+					const wave = Math.sin((c + count) * 0.35) * 0.5 + Math.sin((r + count) * 0.55) * 0.5;
+					const x = c * colGap + colGap / 2;
+					const y = r * rowGap + rowGap / 2 + wave * 10;
+					const opacity = 0.12 + wave * 0.14;
+
+					ctx.beginPath();
+					ctx.arc(x, y, DOT_RADIUS, 0, Math.PI * 2);
+					ctx.fillStyle = `rgba(0,243,141,${Math.max(0.04, opacity)})`;
+					ctx.fill();
 				}
 			}
-			posAttr.needsUpdate = true;
-			renderer.render(scene, camera);
-			count += 0.1;
+
+			count += 0.035;
 		};
 
-		const handleResize = () => {
-			const { width, height } = getSize();
-			camera.aspect = width / height;
-			camera.updateProjectionMatrix();
-			renderer.setSize(width, height);
+		const start = () => { lastTime = 0; animId = requestAnimationFrame(draw); };
+		const stop = () => cancelAnimationFrame(animId);
+
+		start();
+
+		// Pause when hero scrolls out of view — no point animating off-screen
+		const observer = new IntersectionObserver(([entry]) => {
+			inView = entry.isIntersecting;
+			if (inView) start(); else stop();
+		}, { threshold: 0 });
+		observer.observe(container);
+
+		const onResize = () => setSize();
+		const onVisibility = () => {
+			if (document.hidden) stop();
+			else if (inView) start();
 		};
 
-		window.addEventListener('resize', handleResize);
-		animate();
+		window.addEventListener('resize', onResize);
+		document.addEventListener('visibilitychange', onVisibility);
 
 		return () => {
-			window.removeEventListener('resize', handleResize);
-			cancelAnimationFrame(animationId);
-			geometry.dispose();
-			material.dispose();
-			renderer.dispose();
-			if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+			stop();
+			observer.disconnect();
+			window.removeEventListener('resize', onResize);
+			document.removeEventListener('visibilitychange', onVisibility);
+			canvas.remove();
 		};
 	}, []);
 
@@ -126,6 +103,9 @@ export function DottedSurface({ className, ...props }: DottedSurfaceProps) {
 			ref={containerRef}
 			className={cn('pointer-events-none absolute inset-0 z-0 overflow-hidden', className)}
 			{...props}
-		/>
+		>
+			{/* Fade to page background at the bottom */}
+			<div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-[#0A0A0A]" />
+		</div>
 	);
 }

@@ -80,19 +80,38 @@ Always use canonical Tailwind v4 class names. Never use arbitrary bracket notati
 
 | Instead of | Write |
 |---|---|
+| `bg-white/[0.02]` | `bg-white/2` |
 | `bg-white/[0.04]` | `bg-white/4` |
 | `bg-white/[0.06]` | `bg-white/6` |
 | `border-white/[0.08]` | `border-white/8` |
 | `hover:bg-white/[0.03]` | `hover:bg-white/3` |
 | `bg-gradient-to-r` | `bg-linear-to-r` |
+| `bg-gradient-to-l` | `bg-linear-to-l` |
+| `bg-gradient-to-tr` | `bg-linear-to-tr` |
+| `bg-gradient-to-br` | `bg-linear-to-br` |
 | `flex-shrink-0` | `shrink-0` |
 | `min-w-[96px]` | `min-w-24` |
+| `max-w-[200px]` | `max-w-50` |
 | `max-w-[300px]` | `max-w-75` |
+| `max-w-[600px]` | `max-w-150` |
+| `max-w-[1000px]` | `max-w-250` |
+| `max-w-[1280px]` | `max-w-7xl` |
 | `min-h-[100px]` | `min-h-25` |
-| `blur-[40px]` | `blur-2xl` |
+| `min-h-[220px]` | `min-h-55` |
 | `w-[280px]` | `w-70` |
+| `w-[600px]` | `w-150` |
+| `h-[200px]` | `h-50` |
+| `blur-[40px]` | `blur-2xl` |
+| `aspect-[16/9]` | `aspect-video` |
+| `aspect-[16/10]` | `aspect-16/10` |
+| `aspect-[21/9]` | `aspect-21/9` |
+| `bg-[size:28px_28px]` | `bg-size-[28px_28px]` |
+| `[gap:var(--gap)]` | `gap-(--gap)` |
+| `[will-change:transform]` | `will-change-transform` |
+| `group-hover:[animation-play-state:paused]` | `group-hover:paused` |
+| `to-primary/[0.03]` | `to-primary/3` |
 
-General rule: if the value maps to a Tailwind scale step (multiples of 4px for spacing/sizing, standard opacity steps), use the scale token, not `[value]`.
+General rule: if the value maps to a Tailwind scale step (multiples of 4px for spacing/sizing, standard opacity steps), use the scale token, not `[value]`. For aspect ratios, gradients, and animation utilities, always prefer the canonical shorthand.
 
 Never put two conflicting border-color utilities on the same element (e.g. `border-white/10 border-red-500/20`). Use only the one that applies in context.
 
