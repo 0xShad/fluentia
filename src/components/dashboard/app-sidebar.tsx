@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { TrendingUp, Mic2, Clock, Settings, HelpCircle, Hexagon, User } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { TrendingUp, Mic2, Clock, Settings, FileText, Hexagon, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -14,46 +15,30 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { createClient } from "@/lib/client";
 
 const mainLinks = [
-  {
-    title: "Progress",
-    href: "/dashboard",
-    icon: TrendingUp,
-  },
-  {
-    title: "Practice",
-    href: "/dashboard/practice",
-    icon: Mic2,
-  },
-  {
-    title: "Sessions",
-    href: "/dashboard/sessions",
-    icon: Clock,
-  },
+  { title: "Progress",  href: "/dashboard",          icon: TrendingUp },
+  { title: "Practice",  href: "/dashboard/practice",  icon: Mic2 },
+  { title: "Sessions",  href: "/dashboard/sessions",  icon: Clock },
 ];
 
 const systemLinks = [
-  {
-    title: "Profile",
-    href: "/dashboard/profile",
-    icon: User,
-  },
-  {
-    title: "Preferences",
-    href: "/dashboard/preferences",
-    icon: Settings,
-  },
-  {
-    title: "Help Center",
-    href: "/dashboard/help-center",
-    icon: HelpCircle,
-  },
+  { title: "Profile",            href: "/dashboard/profile",     icon: User },
+  { title: "Preferences",        href: "/dashboard/preferences", icon: Settings },
+  { title: "Terms & Conditions", href: "/terms",                 icon: FileText },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+  };
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="bg-[#050505] border-r border-white/10 hidden md:flex" suppressHydrationWarning>
@@ -66,6 +51,7 @@ export function AppSidebar() {
           </div>
         </Link>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="text-xs text-white/40 font-bold uppercase tracking-wider mb-2">Menu</SidebarGroupLabel>
@@ -79,7 +65,7 @@ export function AppSidebar() {
                       "transition-all duration-200",
                       isActive ? "bg-white/[0.05] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.02]"
                     )}>
-                      <item.icon className={cn("w-4 h-4", isActive && "text-[#00F38D]")}/>
+                      <item.icon className={cn("w-4 h-4", isActive && "text-[#00F38D]")} />
                       <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -88,8 +74,8 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        
-        <SidebarGroup className="mt-auto pb-8">
+
+        <SidebarGroup className="mt-auto pb-2">
           <SidebarGroupLabel className="text-xs text-white/40 font-bold uppercase tracking-wider mb-2">System</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -101,7 +87,7 @@ export function AppSidebar() {
                       "transition-all duration-200",
                       isActive ? "bg-white/[0.05] text-white" : "text-white/60 hover:text-white hover:bg-white/[0.02]"
                     )}>
-                      <item.icon className={cn("w-4 h-4", isActive && "text-[#00F38D]")}/>
+                      <item.icon className={cn("w-4 h-4", isActive && "text-[#00F38D]")} />
                       <span>{item.title}</span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -111,6 +97,21 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      <SidebarFooter className="pb-4">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={handleLogout}
+              tooltip="Log out"
+              className="text-red-500/70 hover:text-red-400 hover:bg-red-500/[0.06] transition-all duration-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Log out</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
-  )
+  );
 }
