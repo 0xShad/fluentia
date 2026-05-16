@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { DottedSurface } from "@/components/ui/dotted-surface";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export function HeroSection() {
   return (
@@ -14,40 +15,27 @@ export function HeroSection() {
         {/* Static green glow */}
         <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-150 h-50 bg-primary/8 rounded-full blur-3xl -z-10 pointer-events-none" />
 
-        {/* Badge pill */}
-        <motion.div
-          initial={{ opacity: 0, y: -16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="flex items-center gap-3 text-xs md:text-sm text-muted-foreground mb-8 border border-white/10 rounded-full px-4 py-2 bg-white/5 backdrop-blur-md"
-        >
-          <span className="uppercase tracking-widest font-semibold text-primary">Voice Practice</span>
-          <span className="w-1 h-1 rounded-full bg-muted-foreground" />
-          <span>Scenario-based roleplay with an AI voice agent.</span>
-          <a href="#features" className="text-white underline decoration-white/30 hover:decoration-white underline-offset-4 ml-1">See features</a>
-        </motion.div>
-
         {/* Hero Heading */}
         <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.35, ease: [0.21, 0.47, 0.32, 0.98] }}
+          transition={{ duration: 0.8, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
           className="text-5xl md:text-7xl lg:text-[80px] font-bold tracking-tight text-white leading-[1.05] mb-6 max-w-4xl mx-auto"
         >
-          Practice the Conversations <br />
+          Get Fluent. <br />
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.65 }}
+            transition={{ duration: 0.7, delay: 0.5 }}
             className="text-muted-foreground font-medium"
           >
-            That Make You Nervous, with
+            Practice Your English with
           </motion.span>
           <br />
           <motion.span
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.7, delay: 0.85 }}
+            transition={{ duration: 0.7, delay: 0.7 }}
             className="uppercase text-white"
           >
             Fluentia
@@ -57,23 +45,25 @@ export function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 1.0 }}
+          transition={{ duration: 0.5, delay: 0.9 }}
           className="mb-10"
         >
           <p className="text-sm text-muted-foreground max-w-md mx-auto">
-            Pick a scenario, have a voice conversation with an AI, then review your transcript and session metrics. Simple loop — real improvement.
+            Pick a scenario, have a real voice conversation with an AI, and review your transcript afterward. Build your communication skills one session at a time.
           </p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 1.1 }}
+          transition={{ duration: 0.5, delay: 1.0 }}
           className="flex items-center gap-4 mb-20 relative z-10"
         >
-          <Button className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 h-12 text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(0,243,141,0.25)] transition-transform hover:scale-105 active:scale-95">
-            Start Practicing <Play className="w-4 h-4 ml-2" fill="currentColor" />
-          </Button>
+          <Link href="/authentication/register">
+            <Button className="rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 h-12 text-sm uppercase tracking-wider shadow-[0_0_30px_rgba(0,243,141,0.25)] transition-transform hover:scale-105 active:scale-95">
+              Start Practicing <Play className="w-4 h-4 ml-2" fill="currentColor" />
+            </Button>
+          </Link>
         </motion.div>
 
         {/* Video Placeholder */}
