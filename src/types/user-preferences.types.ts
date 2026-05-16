@@ -16,6 +16,9 @@ export interface UserPreferences {
   weekly_reports: boolean;
   realtime_alerts: boolean;
   email_notifications: boolean;
+
+  // Privacy
+  recording_consent: "always" | "never" | "ask";
 }
 
 export const DEFAULT_PREFERENCES: UserPreferences = {
@@ -31,4 +34,5 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   weekly_reports: true,
   realtime_alerts: false,
   email_notifications: true,
+  recording_consent: "ask",
 };
