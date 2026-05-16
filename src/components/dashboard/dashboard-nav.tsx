@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Search, Bell, LogOut, User as UserIcon, Settings, Home, ChevronRight } from "lucide-react";
+import { Bell, LogOut, User as UserIcon, Settings, Home, ChevronRight } from "lucide-react";
+import { GlobalSearch } from "@/components/dashboard/global-search";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 import {
@@ -92,14 +93,7 @@ export function DashboardNav() {
       </div>
 
       <div className="flex items-center gap-4">
-        <div className="relative group hidden sm:flex items-center">
-          <Search className="absolute left-3 w-4 h-4 text-muted-foreground group-focus-within:text-[#00F38D] transition-colors" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="w-56 h-9 bg-[#111] border border-white/10 rounded-md pl-9 pr-4 text-sm text-white placeholder:text-muted-foreground focus:outline-none focus:border-[#00F38D]/50 focus:ring-1 focus:ring-[#00F38D]/50 transition-all"
-          />
-        </div>
+        <GlobalSearch />
         
         <button className="p-2 text-muted-foreground hover:text-white transition-colors relative">
           <Bell className="w-5 h-5" />
