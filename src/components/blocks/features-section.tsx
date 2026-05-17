@@ -54,8 +54,8 @@ export function FeaturesSection() {
           {features.map((feature, i) => (
             <StaggerItem key={i}>
               <div className="h-full transition-transform duration-200 ease-out hover:-translate-y-1.5">
-                <Card className="bg-[#080808] border-white/10 hover:border-primary/50 transition-all duration-300 group cursor-pointer overflow-hidden relative min-h-55 h-full">
-                  <div className="absolute inset-0 bg-linear-to-br from-primary/0 via-transparent to-primary/3 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <Card className="bg-[#080808] border-white/10 hover:border-primary/50 transition-[colors,border-color] duration-200 group cursor-pointer overflow-hidden relative min-h-55 h-full">
+                  <div className="absolute inset-0 bg-linear-to-br from-primary/0 via-transparent to-primary/3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                   <CardHeader className="pb-4 relative z-10">
                     <div className="flex justify-between items-start w-full">
                       <div className="w-12 h-12 rounded-lg bg-zinc-900 border border-white/5 flex items-center justify-center text-primary mb-6 group-hover:bg-primary/10 transition-colors">

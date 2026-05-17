@@ -41,7 +41,7 @@ export function NavBar() {
           </Link>
           <Link
             href="/authentication/register"
-            className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-primary/70 text-primary hover:bg-primary hover:text-black font-bold px-4 h-8 text-[10px] uppercase tracking-widest transition-all duration-200"
+            className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-primary/70 text-primary hover:bg-primary hover:text-black font-bold px-4 h-8 text-[10px] uppercase tracking-widest transition-[colors,background-color,color] duration-150 active:scale-[0.97]"
           >
             Start Practicing <Play className="w-2.5 h-2.5" fill="currentColor" />
           </Link>

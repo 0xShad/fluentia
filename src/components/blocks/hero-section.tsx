@@ -60,7 +60,7 @@ export function HeroSection() {
           className="flex items-center gap-4 mb-20 relative z-10"
         >
           <Link href="/authentication/register">
-            <Button className="rounded-sm bg-primary hover:bg-primary/90 text-black font-bold px-6 h-10 text-[11px] uppercase tracking-widest shadow-[0_0_20px_rgba(0,243,141,0.2)] hover:shadow-[0_0_30px_rgba(0,243,141,0.4)] transition-all duration-200 group">
+            <Button className="rounded-sm bg-primary hover:bg-primary/90 text-black font-bold px-6 h-10 text-[11px] uppercase tracking-widest shadow-[0_0_20px_rgba(0,243,141,0.2)] hover:shadow-[0_0_30px_rgba(0,243,141,0.4)] transition-[colors,shadow,transform] duration-150 group">
               Start Practicing <Play className="w-3.5 h-3.5 ml-2 transition-transform duration-200 group-hover:translate-x-0.5" fill="currentColor" />
             </Button>
           </Link>
@@ -83,8 +83,8 @@ export function HeroSection() {
           </div>
 
           {/* Play Button Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors duration-300">
-            <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:bg-primary/90 group-hover:text-black group-hover:border-primary group-hover:scale-110 transition-all duration-300">
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors duration-200">
+            <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:bg-primary/90 group-hover:text-black group-hover:border-primary group-hover:scale-105 transition-[colors,transform,border-color,background-color] duration-200">
               <Play className="w-6 h-6 ml-1" fill="currentColor" />
             </div>
           </div>

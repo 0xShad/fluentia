@@ -112,7 +112,7 @@ export function ScenarioCard({
       <div
         onClick={onPreview}
         className={cn(
-          "group relative flex flex-col justify-between p-8 rounded-xl bg-gradient-to-br from-[#181818] to-[#0d0d0d] border border-white/10 hover:border-[#00F38D]/20 transition-all overflow-hidden cursor-pointer",
+          "group relative flex flex-col justify-between p-8 rounded-xl bg-gradient-to-br from-[#181818] to-[#0d0d0d] border border-white/10 hover:border-[#00F38D]/20 transition-[colors,border-color] overflow-hidden cursor-pointer active:scale-[0.99] transition-transform duration-150",
           className
         )}
       >
@@ -182,7 +182,7 @@ export function ScenarioCard({
               )}
               <button
                 onClick={(e) => { e.stopPropagation(); onStart?.(); }}
-                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00F38D] text-black text-sm font-bold hover:bg-[#00f38d]/90 transition-all hover:shadow-[0_0_24px_rgba(0,243,141,0.3)] active:scale-95"
+                className="flex items-center gap-2 px-5 py-2 rounded-lg bg-[#00F38D] text-black text-sm font-bold hover:bg-[#00f38d]/90 transition-[colors,background-color,shadow] hover:shadow-[0_0_24px_rgba(0,243,141,0.3)] active:scale-[0.97]"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
                 Start Session
@@ -199,7 +199,7 @@ export function ScenarioCard({
     <div
       onClick={onPreview}
       className={cn(
-        "group flex flex-col justify-between p-6 rounded-xl bg-[#111] border border-white/10 hover:border-[#00F38D]/20 hover:bg-white/[0.02] transition-all cursor-pointer",
+        "group flex flex-col justify-between p-6 rounded-xl bg-[#111] border border-white/10 hover:border-[#00F38D]/20 hover:bg-white/2 transition-[colors,border-color,background-color] cursor-pointer active:scale-[0.99] duration-150",
         className
       )}
     >
@@ -257,7 +257,7 @@ export function ScenarioCard({
           )}
           <button
             onClick={(e) => { e.stopPropagation(); onStart?.(); }}
-            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#00F38D]/10 border border-[#00F38D]/20 text-xs text-[#00F38D] font-bold hover:bg-[#00F38D]/20 transition-all"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#00F38D]/10 border border-[#00F38D]/20 text-xs text-[#00F38D] font-bold hover:bg-[#00F38D]/20 transition-colors active:scale-[0.97] duration-150"
           >
             <Play className="w-3 h-3 fill-current" />
             Start

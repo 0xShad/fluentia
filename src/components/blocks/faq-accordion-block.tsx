@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, HelpCircle, MessageCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { useState } from "react";
 
 const faqs = [
@@ -69,13 +70,13 @@ export function FAQAccordionBlock() {
                     <span className="pr-4 text-base font-semibold text-white md:text-lg group-hover:text-primary transition-colors">
                       {faq.question}
                     </span>
-                    <motion.div
-                      animate={{ rotate: isOpen ? 180 : 0 }}
-                      transition={{ duration: 0.3, ease: "easeInOut" }}
-                      className="shrink-0"
-                    >
-                      <ChevronDown className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                    </motion.div>
+                    <ChevronDown
+                      className={cn(
+                        "h-5 w-5 text-muted-foreground group-hover:text-primary transition-[colors,transform] duration-200 shrink-0",
+                        isOpen && "rotate-180"
+                      )}
+                      style={{ transitionTimingFunction: "cubic-bezier(0.23,1,0.32,1)" }}
+                    />
                   </button>
 
                   <AnimatePresence>
@@ -84,7 +85,7 @@ export function FAQAccordionBlock() {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
                         className="overflow-hidden"
                       >
                         <div className="border-t border-white/5 p-4 md:p-6">
@@ -113,7 +114,7 @@ export function FAQAccordionBlock() {
                 Reach out and we&apos;ll get back to you.
               </p>
               <div className="flex flex-col justify-center gap-3 sm:flex-row">
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 uppercase tracking-wider text-xs transition-transform hover:scale-105 active:scale-95">
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 uppercase tracking-wider text-xs active:scale-[0.97]">
                   Contact Support
                 </Button>
               </div>
