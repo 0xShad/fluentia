@@ -42,8 +42,7 @@ export function FooterSection() {
             </div>
             <div className="flex flex-col gap-4">
               <p className="text-white font-medium mb-1">Legal</p>
-              <Link href="/terms" className="text-muted-foreground hover:text-white transition-colors">Privacy Policy</Link>
-              <Link href="/terms" className="text-muted-foreground hover:text-white transition-colors">Terms of Service</Link>
+              <Link href="/terms" className="text-muted-foreground hover:text-white transition-colors">Terms &amp; Conditions</Link>
             </div>
           </div>
         </div>
