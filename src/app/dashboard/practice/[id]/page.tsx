@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { scenarios } from "@/data/scenarios";
 import { CategoryIcon } from "@/components/dashboard/scenario-card";
-import type { DifficultyLevel } from "@/types/scenario.types";
+import type { DifficultyLevel, PersonaId } from "@/types/scenario.types";
+import { getDefaultPersonaId } from "@/types/scenario.types";
+import { PersonaPicker } from "@/components/dashboard/persona-picker";
 import type { SessionFeedback } from "@/types/feedback.types";
 import type { UserPreferences } from "@/types/user-preferences.types";
 import {
@@ -272,6 +274,9 @@ export default function SessionPage() {
   const [feedback, setFeedback] = useState<SessionFeedback | null>(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
   const [userPrefs, setUserPrefs] = useState<Partial<UserPreferences>>({});
+  const [selectedPersona, setSelectedPersona] = useState<PersonaId>(
+    () => scenario ? getDefaultPersonaId(scenario.category) : "supportive"
+  );
 
   // Load user preferences once on mount
   useEffect(() => {
@@ -463,7 +468,7 @@ export default function SessionPage() {
               } else {
                 saveConsent("ask");
               }
-              startCall(scenario, userPrefs, recordingEnabled);
+              startCall(scenario, userPrefs, recordingEnabled, selectedPersona);
             }}
             onCancel={() => setShowConsentDialog(false)}
           />
@@ -475,11 +480,18 @@ export default function SessionPage() {
                 <Bot className="w-9 h-9 text-[#00F38D]" />
               </div>
               <h2 className="text-2xl font-extrabold text-white mb-3">Ready to begin?</h2>
-              <p className="text-sm text-white/45 leading-relaxed mb-8">
+              <p className="text-sm text-white/45 leading-relaxed mb-4">
                 The AI will take on the role of{" "}
                 <span className="text-white font-semibold">{scenario.aiRole}</span> and respond
                 dynamically to everything you say. Speak naturally.
               </p>
+              <div className="mb-8">
+                <PersonaPicker
+                  value={selectedPersona}
+                  onChange={setSelectedPersona}
+                  disabled={sessionState === "connecting"}
+                />
+              </div>
               <button
                 onClick={() => setShowConsentDialog(true)}
                 disabled={sessionState === "connecting" || consent === null}
