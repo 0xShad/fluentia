@@ -135,6 +135,16 @@ function FeedbackReport({
         <span className="text-xs text-white/30 font-mono">{fmt(elapsed)}</span>
       </div>
 
+      {/* Short session notice */}
+      {elapsed < 60 && (
+        <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-400/8 border border-amber-400/20">
+          <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-300/80 leading-relaxed">
+            Session was under 1 minute — scores reflect limited data. For accurate feedback, aim for at least 60 seconds of conversation.
+          </p>
+        </div>
+      )}
+
       {/* Score + Grade */}
       <div className="flex flex-col items-center gap-3 py-6 px-4 rounded-2xl bg-white/2 border border-white/8">
         <ScoreRing score={feedback.overallScore} />
