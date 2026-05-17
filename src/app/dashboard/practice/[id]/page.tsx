@@ -93,8 +93,8 @@ function CategoryBar({ name, score, feedback, delay }: { name: string; score: nu
       </div>
       <div className="h-1.5 bg-white/6 rounded-full overflow-hidden mb-1.5">
         <div
-          className={`h-full rounded-full transition-all duration-1000 ease-out ${color}`}
-          style={{ width: `${w}%`, transitionDelay: `${delay}ms` }}
+          className={`h-full w-full rounded-full transition-transform duration-1000 ease-out origin-left ${color}`}
+          style={{ transform: `scaleX(${w / 100})`, transitionDelay: `${delay}ms` }}
         />
       </div>
       <p className="text-[11px] text-white/30 leading-relaxed">{feedback}</p>
@@ -229,13 +229,13 @@ function FeedbackReport({
       <div className="flex gap-3">
         <button
           onClick={onPracticeAgain}
-          className="flex-1 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-white/60 font-semibold hover:bg-white/8 hover:text-white transition-all"
+          className="flex-1 py-2.5 rounded-xl bg-white/5 border border-white/10 text-sm text-white/60 font-semibold hover:bg-white/8 hover:text-white transition-[colors,background-color] duration-150 active:scale-[0.97]"
         >
           Practice Again
         </button>
         <button
           onClick={onBack}
-          className="flex-1 py-2.5 rounded-xl bg-[#00F38D] text-black text-sm font-bold hover:bg-[#00F38D]/90 transition-all"
+          className="flex-1 py-2.5 rounded-xl bg-[#00F38D] text-black text-sm font-bold hover:bg-[#00F38D]/90 transition-[colors,background-color] duration-150 active:scale-[0.97]"
         >
           Back to Scenarios
         </button>
@@ -484,10 +484,10 @@ export default function SessionPage() {
                 onClick={() => setShowConsentDialog(true)}
                 disabled={sessionState === "connecting" || consent === null}
                 className={cn(
-                  "flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-black font-bold text-base transition-all",
+                  "flex items-center gap-2.5 px-8 py-3.5 rounded-xl text-black font-bold text-base transition-[colors,transform,shadow,background-color] duration-150",
                   sessionState === "connecting" || consent === null
                     ? "bg-white/20 cursor-not-allowed"
-                    : "bg-[#00F38D] hover:bg-[#00f38d]/90 hover:shadow-[0_0_32px_rgba(0,243,141,0.35)] active:scale-95"
+                    : "bg-[#00F38D] hover:bg-[#00f38d]/90 hover:shadow-[0_0_32px_rgba(0,243,141,0.35)] active:scale-[0.97]"
                 )}
               >
                 {sessionState === "connecting" ? "Connecting…" : <><Mic className="w-4 h-4" /> Begin Session</>}

@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
                 <Button
                   type="button"
                   variant="outline"
-                  className="w-full h-11 border-white/10 text-white hover:bg-white/5 transition-all duration-300 rounded-lg"
+                  className="w-full h-11 border-white/10 text-white hover:bg-white/5 transition-[colors,shadow] duration-150 rounded-lg"
                 >
                   Back to login
                 </Button>
@@ -94,7 +94,7 @@ export default function ForgotPasswordPage() {
             <div className="mt-8 flex flex-col gap-4">
               <Button
                 type="submit"
-                className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-all duration-300 rounded-lg"
+                className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-[colors,shadow] duration-150 rounded-lg"
               >
                 Send Reset Link
               </Button>

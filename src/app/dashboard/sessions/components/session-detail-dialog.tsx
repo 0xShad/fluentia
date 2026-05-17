@@ -130,7 +130,7 @@ function AudioPlayer({ url, onDurationLoad }: { url: string; onDurationLoad?: (s
         onEnded={() => { setPlaying(false); setProgress(100); }}
       />
       <button onClick={togglePlay}
-        className="w-12 h-12 rounded-full bg-[#00F38D] flex items-center justify-center text-black hover:bg-[#00F38D]/90 active:scale-95 transition-all shrink-0 shadow-[0_0_20px_rgba(0,243,141,0.3)]"
+        className="w-12 h-12 rounded-full bg-[#00F38D] flex items-center justify-center text-black hover:bg-[#00F38D]/90 active:scale-[0.97] transition-[colors,transform,background-color] duration-150 shrink-0 shadow-[0_0_20px_rgba(0,243,141,0.3)]"
       >
         {playing ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
       </button>
@@ -148,8 +148,8 @@ function AudioPlayer({ url, onDurationLoad }: { url: string; onDurationLoad?: (s
           )}
         </div>
         <div className="h-2 bg-white/10 rounded-full cursor-pointer overflow-hidden" onClick={seek}>
-          <div className="h-full bg-[#00F38D] rounded-full transition-all duration-100"
-            style={{ width: `${progress}%` }} />
+          <div className="h-full w-full bg-[#00F38D] rounded-full transition-transform duration-100 origin-left"
+            style={{ transform: `scaleX(${progress / 100})` }} />
         </div>
         <div className="flex justify-between text-[11px] text-white/30 font-mono">
           <span>{fmt(currentTime)}</span>
@@ -174,8 +174,8 @@ function CategoryBar({ name, score, feedback, delay }: { name: string; score: nu
         <span className="text-sm font-bold tabular-nums" style={{ color: scoreColor(score) }}>{score}</span>
       </div>
       <div className="h-2 bg-white/6 rounded-full overflow-hidden">
-        <div className={`h-full rounded-full transition-all duration-1000 ease-out ${barColor}`}
-          style={{ width: `${w}%`, transitionDelay: `${delay}ms` }} />
+        <div className={`h-full w-full rounded-full transition-transform duration-1000 ease-out origin-left ${barColor}`}
+          style={{ transform: `scaleX(${w / 100})`, transitionDelay: `${delay}ms` }} />
       </div>
       <p className="text-xs text-white/35 leading-relaxed">{feedback}</p>
     </div>

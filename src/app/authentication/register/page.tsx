@@ -302,7 +302,7 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-all duration-300 rounded-lg mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-[colors,shadow] duration-150 rounded-lg mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Creating Account..." : "Create Account"}
               </Button>
@@ -333,7 +333,7 @@ export default function RegisterPage() {
               <Button
                 type="submit"
                 disabled={isLoading || otp.length < 6}
-                className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-all duration-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full h-11 bg-[#00F38D] text-black font-bold tracking-tight hover:bg-[#00F38D]/90 hover:shadow-[0_0_20px_rgba(0,243,141,0.35)] transition-[colors,shadow] duration-150 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? "Verifying..." : "Verify OTP"}
               </Button>

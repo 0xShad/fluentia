@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useRef } from "react";
-import { motion, useInView, type Variants } from "framer-motion";
+import { motion, useInView, useReducedMotion, type Variants } from "framer-motion";
 
 const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 
@@ -32,7 +32,15 @@ export function AnimatedSection({
 }: AnimatedSectionProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once, margin: "-80px 0px" });
-  const v = DIRECTION_VARIANTS[variant] ?? DIRECTION_VARIANTS.fadeUp;
+  const shouldReduce = useReducedMotion();
+
+  // Respect prefers-reduced-motion: keep a fast fade but remove all movement
+  const v = shouldReduce
+    ? { hidden: { opacity: 0 }, visible: { opacity: 1 } }
+    : (DIRECTION_VARIANTS[variant] ?? DIRECTION_VARIANTS.fadeUp);
+  const trans = shouldReduce
+    ? { duration: 0.2 }
+    : { duration, delay, ease: EASE_OUT };
 
   return (
     <motion.div
@@ -40,7 +48,7 @@ export function AnimatedSection({
       initial="hidden"
       animate={isInView ? "visible" : "hidden"}
       variants={v}
-      transition={{ duration, delay, ease: EASE_OUT }}
+      transition={trans}
       className={className}
     >
       {children}
@@ -67,6 +75,7 @@ export function StaggerContainer({
 }: StaggerContainerProps) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once, margin: "-60px 0px" });
+  const shouldReduce = useReducedMotion();
 
   return (
     <motion.div
@@ -76,7 +85,10 @@ export function StaggerContainer({
       variants={{
         hidden: {},
         visible: {
-          transition: { staggerChildren: staggerDelay, delayChildren: delayStart },
+          transition: {
+            staggerChildren: shouldReduce ? 0 : staggerDelay,
+            delayChildren: shouldReduce ? 0 : delayStart,
+          },
         },
       }}
       className={className}
