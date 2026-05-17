@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Search, X, LayoutGrid } from "lucide-react";
+import { Search, X, LayoutGrid, Bot } from "lucide-react";
 import { ScenarioCard } from "@/components/dashboard/scenario-card";
 import { ScenarioCategoryTile } from "@/components/dashboard/scenario-category-tile";
 import { ScenarioPreviewSheet } from "@/components/dashboard/scenario-preview-sheet";
@@ -125,7 +125,7 @@ export default function ScenariosPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search scenarios or skills…"
-                className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-8 py-2 text-sm text-white placeholder:text-white/25 outline-none focus:border-[#00F38D]/40 focus:bg-white/6 transition-all"
+                className="w-full bg-white/5 border border-white/10 rounded-lg pl-8 pr-8 py-2 text-sm text-white placeholder:text-white/25 outline-none focus:border-[#00F38D]/40 focus:bg-white/6 transition-[colors,border-color,background-color] duration-150"
               />
               {searchQuery && (
                 <button
@@ -156,7 +156,7 @@ export default function ScenariosPage() {
           {filtered.length === 0 && (
             <div className="flex flex-col items-center justify-center py-20 text-center animate-in fade-in duration-300">
               <div className="w-14 h-14 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-                <span className="text-xl">🤖</span>
+                <Bot className="w-6 h-6 text-white/30" />
               </div>
               <h3 className="text-lg font-bold text-white mb-2">No sessions found</h3>
               <p className="text-white/35 text-sm max-w-xs">

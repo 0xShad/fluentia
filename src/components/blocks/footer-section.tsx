@@ -16,7 +16,7 @@ export function FooterSection() {
         <p className="text-muted-foreground mb-10">Free to get started. No credit card required.</p>
 
         <Link href="/authentication/register">
-          <Button className="rounded-sm bg-primary hover:bg-primary/90 text-black font-bold px-6 h-10 text-[11px] uppercase tracking-widest shadow-[0_0_20px_rgba(0,243,141,0.2)] hover:shadow-[0_0_30px_rgba(0,243,141,0.4)] mb-24 transition-all duration-200 group">
+          <Button className="rounded-sm bg-primary hover:bg-primary/90 text-black font-bold px-6 h-10 text-[11px] uppercase tracking-widest shadow-[0_0_20px_rgba(0,243,141,0.2)] hover:shadow-[0_0_30px_rgba(0,243,141,0.4)] mb-24 transition-[colors,shadow,transform] duration-150 group">
             Start Practicing <Play className="w-3.5 h-3.5 ml-2 transition-transform duration-200 group-hover:translate-x-0.5" fill="currentColor" />
           </Button>
         </Link>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DashboardSkeleton } from "./components/dashboard-skeleton";
 import { ArrowUpRight, ArrowDownRight, Clock, CheckCircle2, Target, TrendingUp } from "lucide-react";
@@ -172,71 +173,69 @@ export default function DashboardPage() {
 
       {/* Stat Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {/* Total Practice Time */}
-        <Card className="bg-[#111] border-white/10 hover:border-white/20 text-white transition-all relative overflow-hidden group cursor-pointer duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Practice Time</CardTitle>
-            <div className="p-2 bg-white/5 rounded-md">
-              <Clock className="h-4 w-4 text-[#00F38D]" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-[#00F38D]">{formatDuration(totalSeconds)}</div>
-            <ChangeLabel change={timeChange} emptyMsg="No sessions last month" />
-          </CardContent>
-        </Card>
-
-        {/* Sessions Completed */}
-        <Card className="bg-[#111] border-white/10 hover:border-white/20 text-white transition-all relative overflow-hidden group cursor-pointer duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Sessions Completed</CardTitle>
-            <div className="p-2 bg-white/5 rounded-md">
-              <CheckCircle2 className="h-4 w-4 text-[#00F38D]" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-[#00F38D]">{sessionCount}</div>
-            <ChangeLabel change={countChange} emptyMsg="No sessions last month" />
-          </CardContent>
-        </Card>
-
-        {/* Focus Area */}
-        <Card className="bg-[#111] border-white/10 hover:border-white/20 text-white transition-all relative overflow-hidden group cursor-pointer duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Focus Area</CardTitle>
-            <div className="p-2 bg-white/5 rounded-md">
-              <Target className="h-4 w-4 text-yellow-400" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-yellow-400">{weakestSkill ?? "—"}</div>
-            <p className="text-xs flex items-center mt-1 text-yellow-500">
-              <ArrowDownRight className="w-3 h-3 mr-1" />
-              {weakestSkill ? "Your lowest scoring skill" : "Complete a session first"}
-            </p>
-          </CardContent>
-        </Card>
-
-        {/* Avg Overall Score */}
-        <Card className="bg-[#111] border-white/10 hover:border-white/20 text-white transition-all relative overflow-hidden group cursor-pointer duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Avg Overall Score</CardTitle>
-            <div className="p-2 bg-white/5 rounded-md">
-              <TrendingUp className="h-4 w-4 text-[#00F38D]" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-[#00F38D]">{sessionCount > 0 ? `${avgOverall}%` : "—"}</div>
-            {sessionCount > 0
+        {[
+          {
+            label: "Total Practice Time",
+            icon: <Clock className="h-4 w-4 text-[#00F38D]" />,
+            value: <div className="text-3xl font-bold text-[#00F38D]">{formatDuration(totalSeconds)}</div>,
+            sub: <ChangeLabel change={timeChange} emptyMsg="No sessions last month" />,
+          },
+          {
+            label: "Sessions Completed",
+            icon: <CheckCircle2 className="h-4 w-4 text-[#00F38D]" />,
+            value: <div className="text-3xl font-bold text-[#00F38D]">{sessionCount}</div>,
+            sub: <ChangeLabel change={countChange} emptyMsg="No sessions last month" />,
+          },
+          {
+            label: "Focus Area",
+            icon: <Target className="h-4 w-4 text-yellow-400" />,
+            value: <div className="text-3xl font-bold text-yellow-400">{weakestSkill ?? "—"}</div>,
+            sub: (
+              <p className="text-xs flex items-center mt-1 text-yellow-500">
+                <ArrowDownRight className="w-3 h-3 mr-1" />
+                {weakestSkill ? "Your lowest scoring skill" : "Complete a session first"}
+              </p>
+            ),
+          },
+          {
+            label: "Avg Overall Score",
+            icon: <TrendingUp className="h-4 w-4 text-[#00F38D]" />,
+            value: <div className="text-3xl font-bold text-[#00F38D]">{sessionCount > 0 ? `${avgOverall}%` : "—"}</div>,
+            sub: sessionCount > 0
               ? <ChangeLabel change={scoreChange} emptyMsg="No data from last month" />
-              : <p className="text-xs text-muted-foreground mt-1">Complete a session to see stats</p>
-            }
-          </CardContent>
-        </Card>
+              : <p className="text-xs text-muted-foreground mt-1">Complete a session to see stats</p>,
+          },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.08, duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+          >
+            <Card className="bg-[#111] border-white/10 hover:border-[#00F38D]/20 text-white transition-[colors,border-color] relative overflow-hidden group cursor-pointer">
+              <div className="absolute inset-0 bg-linear-to-br from-[#00F38D]/0 to-[#00F38D]/0 group-hover:from-[#00F38D]/3 transition-[background] duration-300 pointer-events-none" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative">
+                <CardTitle className="text-sm font-medium text-muted-foreground">{stat.label}</CardTitle>
+                <div className="p-2 bg-white/5 rounded-md group-hover:bg-[#00F38D]/10 transition-colors duration-200">
+                  {stat.icon}
+                </div>
+              </CardHeader>
+              <CardContent className="relative">
+                {stat.value}
+                {stat.sub}
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
       {/* Charts Row */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.36, duration: 0.55, ease: [0.23, 1, 0.32, 1] }}
+        className="grid gap-4 md:grid-cols-2 lg:grid-cols-7"
+      >
         <Card className="bg-[#111] border-white/10 text-white col-span-3 relative overflow-hidden">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
@@ -300,9 +299,14 @@ export default function DashboardPage() {
             )}
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
 
       {/* Monthly trend */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.44, duration: 0.55, ease: [0.23, 1, 0.32, 1] }}
+      >
       <Card className="bg-[#111] border-white/10 text-white relative overflow-hidden">
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2">
@@ -326,6 +330,7 @@ export default function DashboardPage() {
           </ChartContainer>
         </CardContent>
       </Card>
+      </motion.div>
     </div>
   );
 }

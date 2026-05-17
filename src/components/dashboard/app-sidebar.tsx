@@ -59,8 +59,8 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton render={<Link href={item.href} />} isActive={isActive} tooltip={item.title} className={cn(
-                      "transition-all duration-200",
-                      isActive ? "bg-white/5 text-white" : "text-white/60 hover:text-white hover:bg-white/2"
+                      "transition-[colors,background-color] duration-150",
+                      isActive ? "bg-[#00F38D]/8 text-white border-l-2 border-[#00F38D] rounded-l-none" : "text-white/55 hover:text-white hover:bg-white/4 border-l-2 border-transparent rounded-l-none"
                     )}>
                       <item.icon className={cn("w-4 h-4", isActive && "text-[#00F38D]")} />
                       <span>{item.title}</span>
@@ -81,8 +81,8 @@ export function AppSidebar() {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton render={<Link href={item.href} />} isActive={isActive} tooltip={item.title} className={cn(
-                      "transition-all duration-200",
-                      isActive ? "bg-white/5 text-white" : "text-white/60 hover:text-white hover:bg-white/2"
+                      "transition-[colors,background-color] duration-150",
+                      isActive ? "bg-[#00F38D]/8 text-white border-l-2 border-[#00F38D] rounded-l-none" : "text-white/55 hover:text-white hover:bg-white/4 border-l-2 border-transparent rounded-l-none"
                     )}>
                       <item.icon className={cn("w-4 h-4", isActive && "text-[#00F38D]")} />
                       <span>{item.title}</span>
@@ -101,7 +101,7 @@ export function AppSidebar() {
             <SidebarMenuButton
               onClick={handleLogout}
               tooltip="Log out"
-              className="text-red-500/70 hover:text-red-400 hover:bg-red-500/6 transition-all duration-200"
+              className="text-red-500/70 hover:text-red-400 hover:bg-red-500/6 transition-[colors,background-color] duration-150"
             >
               <LogOut className="w-4 h-4" />
               <span>Log out</span>
