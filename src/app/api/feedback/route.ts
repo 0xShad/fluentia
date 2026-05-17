@@ -35,10 +35,14 @@ export async function POST(req: NextRequest) {
       } satisfies SessionFeedback);
     }
 
-    // ── Fetch user profile + preferences ───────────────────────────────────
+    // ── Auth guard ─────────────────────────────────────────────────────────
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
+    // ── Fetch user profile + preferences ───────────────────────────────────
     let skillLevel = "intermediate";
     let coachingStyle = "balanced";
     let speakingGoals: string[] = [];
@@ -46,21 +50,19 @@ export async function POST(req: NextRequest) {
     let feedbackDetail = "standard";
     let correctionSensitivity = 60;
 
-    if (user) {
-      const { data: prefs } = await supabase
-        .from("user_preferences")
-        .select("skill_level, coaching_style, speaking_goals, coaching_tone, feedback_detail, correction_sensitivity")
-        .eq("user_id", user.id)
-        .single();
+    const { data: prefs } = await supabase
+      .from("user_preferences")
+      .select("skill_level, coaching_style, speaking_goals, coaching_tone, feedback_detail, correction_sensitivity")
+      .eq("user_id", user.id)
+      .single();
 
-      if (prefs) {
-        skillLevel = prefs.skill_level ?? skillLevel;
-        coachingStyle = prefs.coaching_style ?? coachingStyle;
-        speakingGoals = prefs.speaking_goals ?? [];
-        coachingTone = prefs.coaching_tone ?? coachingTone;
-        feedbackDetail = prefs.feedback_detail ?? feedbackDetail;
-        correctionSensitivity = prefs.correction_sensitivity ?? correctionSensitivity;
-      }
+    if (prefs) {
+      skillLevel = prefs.skill_level ?? skillLevel;
+      coachingStyle = prefs.coaching_style ?? coachingStyle;
+      speakingGoals = prefs.speaking_goals ?? [];
+      coachingTone = prefs.coaching_tone ?? coachingTone;
+      feedbackDetail = prefs.feedback_detail ?? feedbackDetail;
+      correctionSensitivity = prefs.correction_sensitivity ?? correctionSensitivity;
     }
 
     // ── Build context strings from preferences ─────────────────────────────
@@ -219,30 +221,28 @@ Rules:
     // ── Save to DB ─────────────────────────────────────────────────────────
     let sessionId: string | null = null;
     try {
-      if (user) {
-        const { data: inserted } = await supabase
-          .from("session_feedback")
-          .insert({
-            user_id: user.id,
-            scenario_id: scenarioId ?? "unknown",
-            scenario_title: scenarioTitle,
-            category,
-            overall_score: feedback.overallScore,
-            grade: feedback.grade,
-            summary: feedback.summary,
-            strengths: feedback.strengths,
-            improvements: feedback.improvements,
-            filler_words: feedback.fillerWords,
-            categories: feedback.categories,
-            transcript,
-            elapsed_seconds: elapsedSeconds ?? 0,
-            vapi_call_id: vapiCallId ?? null,
-            recording_enabled: recordingEnabled !== false,
-          })
-          .select("id")
-          .single();
-        sessionId = inserted?.id ?? null;
-      }
+      const { data: inserted } = await supabase
+        .from("session_feedback")
+        .insert({
+          user_id: user.id,
+          scenario_id: scenarioId ?? "unknown",
+          scenario_title: scenarioTitle,
+          category,
+          overall_score: feedback.overallScore,
+          grade: feedback.grade,
+          summary: feedback.summary,
+          strengths: feedback.strengths,
+          improvements: feedback.improvements,
+          filler_words: feedback.fillerWords,
+          categories: feedback.categories,
+          transcript,
+          elapsed_seconds: elapsedSeconds ?? 0,
+          vapi_call_id: vapiCallId ?? null,
+          recording_enabled: recordingEnabled !== false,
+        })
+        .select("id")
+        .single();
+      sessionId = inserted?.id ?? null;
     } catch (dbErr) {
       console.error("Failed to save feedback to DB:", dbErr);
     }

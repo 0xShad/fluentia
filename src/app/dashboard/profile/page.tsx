@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Save, Key, Trash2, Loader2 } from "lucide-react";
+import { Camera, Save, Key, Trash2, Loader2, MicOff } from "lucide-react";
 import { toast } from "sonner";
 import { ProfileSkeleton } from "./components/profile-skeleton";
 
@@ -21,6 +21,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [revertingAvatar, setRevertingAvatar] = useState(false);
+  const [deletingRecordings, setDeletingRecordings] = useState(false);
 
   const [fullName, setFullName] = useState("");
   const [nameError, setNameError] = useState("");
@@ -145,6 +146,33 @@ export default function ProfilePage() {
     toast.success("Profile picture removed", {
       style: { background: "#050505", border: "1px solid rgba(0,243,141,0.2)", color: "white" },
     });
+  };
+
+  const handleDeleteAllRecordings = async () => {
+    const confirmed = window.confirm(
+      "Permanently delete all your voice recordings? This cannot be undone. Your transcripts and session scores will be kept."
+    );
+    if (!confirmed) return;
+
+    setDeletingRecordings(true);
+    const res = await fetch("/api/recordings", { method: "DELETE" });
+    const data = await res.json();
+    setDeletingRecordings(false);
+
+    if (!res.ok) {
+      toast.error("Failed to delete recordings", {
+        description: data.error ?? "Something went wrong.",
+        style: { background: "#050505", border: "1px solid rgba(255,0,0,0.2)", color: "white" },
+      });
+      return;
+    }
+
+    toast.success(
+      data.deleted === 0
+        ? "No recordings to delete"
+        : `${data.deleted} recording${data.deleted === 1 ? "" : "s"} deleted`,
+      { style: { background: "#050505", border: "1px solid rgba(0,243,141,0.2)", color: "white" } }
+    );
   };
 
   const handleSaveProfile = async () => {
@@ -407,7 +435,21 @@ export default function ProfilePage() {
                   </div>
                 )}
               </div>
-              <div className="pt-4 mt-4 border-t border-white/5">
+              <div className="pt-4 mt-4 border-t border-white/5 space-y-3">
+                <Button
+                  onClick={handleDeleteAllRecordings}
+                  disabled={deletingRecordings}
+                  variant="outline"
+                  className="w-full border-white/10 bg-[#050505] hover:bg-white/5 text-white/70 hover:text-white justify-start gap-3 transition-colors disabled:opacity-50"
+                >
+                  {deletingRecordings
+                    ? <Loader2 className="w-4 h-4 animate-spin" />
+                    : <MicOff className="w-4 h-4 text-zinc-400" />}
+                  {deletingRecordings ? "Deleting..." : "Delete All Recordings"}
+                </Button>
+                <p className="text-[10px] text-zinc-500 leading-relaxed">
+                  Permanently removes all voice recordings from storage. Transcripts and session scores are kept.
+                </p>
                 <Button
                   onClick={handleDeleteAccount}
                   variant="outline"

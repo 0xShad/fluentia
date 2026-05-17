@@ -137,6 +137,7 @@ function AudioPlayer({ url, onDurationLoad }: { url: string; onDurationLoad?: (s
       <div className="flex-1 space-y-2 min-w-0">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-[#00F38D]">Session Recording</span>
+          <span className="text-[10px] text-white/20 ml-auto">Resets on the 1st of each month</span>
           {playing && (
             <span className="flex gap-0.5 items-end h-3">
               {[0, 1, 2, 3].map((i) => (
