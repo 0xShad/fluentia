@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Camera, Save, Key, Trash2, Loader2, MicOff } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Camera, Save, Key, Trash2, Loader2, MicOff, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { ProfileSkeleton } from "./components/profile-skeleton";
 
@@ -29,6 +30,8 @@ export default function ProfilePage() {
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
 
+  const [showDeleteRecordingsDialog, setShowDeleteRecordingsDialog] = useState(false);
+  const [showDeleteAccountDialog, setShowDeleteAccountDialog] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -148,12 +151,8 @@ export default function ProfilePage() {
     });
   };
 
-  const handleDeleteAllRecordings = async () => {
-    const confirmed = window.confirm(
-      "Permanently delete all your voice recordings? This cannot be undone. Your transcripts and session scores will be kept."
-    );
-    if (!confirmed) return;
-
+  const confirmDeleteAllRecordings = async () => {
+    setShowDeleteRecordingsDialog(false);
     setDeletingRecordings(true);
     const res = await fetch("/api/recordings", { method: "DELETE" });
     const data = await res.json();
@@ -252,10 +251,8 @@ export default function ProfilePage() {
     setNewPassword("");
   };
 
-  const handleDeleteAccount = async () => {
-    const confirmDelete = window.confirm("Are you absolutely sure you want to permanently delete your account?");
-    if (!confirmDelete) return;
-
+  const confirmDeleteAccount = async () => {
+    setShowDeleteAccountDialog(false);
     const supabase = createClient();
     const { error } = await supabase.rpc("delete_user");
 
@@ -437,7 +434,7 @@ export default function ProfilePage() {
               </div>
               <div className="pt-4 mt-4 border-t border-white/5 space-y-3">
                 <Button
-                  onClick={handleDeleteAllRecordings}
+                  onClick={() => setShowDeleteRecordingsDialog(true)}
                   disabled={deletingRecordings}
                   variant="outline"
                   className="w-full border-white/10 bg-[#050505] hover:bg-white/5 text-white/70 hover:text-white justify-start gap-3 transition-colors disabled:opacity-50"
@@ -451,7 +448,7 @@ export default function ProfilePage() {
                   Permanently removes all voice recordings from storage. Transcripts and session scores are kept.
                 </p>
                 <Button
-                  onClick={handleDeleteAccount}
+                  onClick={() => setShowDeleteAccountDialog(true)}
                   variant="outline"
                   className="w-full border-red-500/30 bg-red-500/5 hover:bg-red-500/20 hover:text-red-500 text-red-500/80 justify-start gap-3 transition-colors"
                 >
@@ -466,6 +463,74 @@ export default function ProfilePage() {
           </Card>
         </div>
       </div>
+
+      {/* Delete Recordings Dialog */}
+      <Dialog open={showDeleteRecordingsDialog} onOpenChange={setShowDeleteRecordingsDialog}>
+        <DialogContent className="bg-[#111] border-white/10 text-white max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-10 h-10 rounded-full bg-orange-500/10 border border-orange-500/20 flex items-center justify-center shrink-0">
+                <MicOff className="w-5 h-5 text-orange-400" />
+              </div>
+              <DialogTitle className="text-white text-lg">Delete All Recordings</DialogTitle>
+            </div>
+            <DialogDescription className="text-zinc-400 leading-relaxed">
+              This will permanently remove all your voice recordings from storage. Your transcripts, session scores, and feedback will not be affected.
+              <span className="block mt-3 text-orange-400/80 text-xs font-medium">This action cannot be undone.</span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setShowDeleteRecordingsDialog(false)}
+              className="text-zinc-400 hover:text-white hover:bg-white/5"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDeleteAllRecordings}
+              className="bg-orange-500/20 text-orange-400 border border-orange-500/30 hover:bg-orange-500/30 hover:text-orange-300"
+            >
+              <MicOff className="w-4 h-4 mr-2" />
+              Delete All Recordings
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Account Dialog */}
+      <Dialog open={showDeleteAccountDialog} onOpenChange={setShowDeleteAccountDialog}>
+        <DialogContent className="bg-[#111] border-red-500/20 text-white max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-1">
+              <div className="w-10 h-10 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center shrink-0">
+                <AlertTriangle className="w-5 h-5 text-red-400" />
+              </div>
+              <DialogTitle className="text-red-400 text-lg">Delete Account</DialogTitle>
+            </div>
+            <DialogDescription className="text-zinc-400 leading-relaxed">
+              This will permanently delete your account along with all session history, communication metrics, feedback, and recordings from Fluentia.
+              <span className="block mt-3 text-red-400/80 text-xs font-medium">This action is irreversible and cannot be undone.</span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setShowDeleteAccountDialog(false)}
+              className="text-zinc-400 hover:text-white hover:bg-white/5"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDeleteAccount}
+              className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 hover:text-red-300"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Yes, Delete My Account
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

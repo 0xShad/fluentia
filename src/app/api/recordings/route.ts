@@ -28,12 +28,12 @@ export async function DELETE(_req: NextRequest) {
       if (storageErr) console.error("Storage bulk delete error:", storageErr.message);
     }
 
-    // Clear recording_url references in DB
+    // Clear recording_url AND vapi_call_id so the recording route
+    // cannot re-fetch and re-upload from Vapi on the next dialog open.
     await supabase
       .from("session_feedback")
-      .update({ recording_url: null })
-      .eq("user_id", user.id)
-      .not("recording_url", "is", null);
+      .update({ recording_url: null, vapi_call_id: null })
+      .eq("user_id", user.id);
 
     return NextResponse.json({ success: true, deleted: paths.length });
   } catch (err: any) {
