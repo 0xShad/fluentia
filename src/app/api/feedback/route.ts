@@ -40,10 +40,9 @@ export async function POST(req: NextRequest) {
         ],
         fillerWords: [],
         categories: [
-          { name: "Fluency",         score: 0, feedback: "No data." },
-          { name: "Clarity",         score: 0, feedback: "No data." },
-          { name: "Confidence",      score: 0, feedback: "No data." },
-          { name: "Professionalism", score: 0, feedback: "No data." },
+          { name: "Clarity",     score: 0, feedback: "No data." },
+          { name: "Relevance",   score: 0, feedback: "No data." },
+          { name: "Conciseness", score: 0, feedback: "No data." },
         ],
       } satisfies SessionFeedback);
     }
