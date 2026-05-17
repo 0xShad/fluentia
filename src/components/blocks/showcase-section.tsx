@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export function ShowcaseSection() {
   return (
-    <section id="how-it-works" className="py-32 relative px-6 border-t border-white/5 bg-[#050505]">
+    <section id="how-it-works" className="py-32 relative px-6 border-t border-white/5 bg-[#050505] scroll-mt-20">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(0,243,141,0.05),transparent_70%)] pointer-events-none" />
 
       <div className="container mx-auto flex flex-col items-center text-center relative z-10 max-w-6xl">

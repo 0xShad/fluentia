@@ -20,9 +20,9 @@ export function NavBar() {
       className="fixed top-0 w-full z-50 border-b border-white/5 bg-background/60 backdrop-blur-xl"
     >
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+        <a href="#" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
           <span className="text-xl font-bold tracking-tight text-white uppercase">fluentia</span>
-        </Link>
+        </a>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted-foreground">
           {navLinks.map((link) => (
@@ -42,9 +42,9 @@ export function NavBar() {
           </Link>
           <Link
             href="/authentication/register"
-            className="inline-flex items-center justify-center rounded-md bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 py-2 h-9 text-xs uppercase tracking-wider transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 rounded-sm border border-primary/70 text-primary hover:bg-primary hover:text-black font-bold px-4 h-8 text-[10px] uppercase tracking-widest transition-all duration-200"
           >
-            Start Practicing <Play className="w-3 h-3 ml-1" />
+            Start Practicing <Play className="w-2.5 h-2.5" fill="currentColor" />
           </Link>
         </div>
       </div>

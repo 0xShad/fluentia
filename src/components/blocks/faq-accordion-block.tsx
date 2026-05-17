@@ -43,7 +43,7 @@ export function FAQAccordionBlock() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="w-full bg-[#050505] border-t border-white/5 px-6 py-24 relative overflow-hidden">
+    <section id="faq" className="w-full bg-[#050505] border-t border-white/5 px-6 py-24 relative overflow-hidden scroll-mt-20">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-36 bg-primary/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="mx-auto max-w-4xl relative z-10">
