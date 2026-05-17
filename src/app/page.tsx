@@ -4,7 +4,6 @@ import { HeroSection } from "@/components/blocks/hero-section";
 import { FeaturesSection } from "@/components/blocks/features-section";
 import { ShowcaseSection } from "@/components/blocks/showcase-section";
 import { TestimonialsSection } from "@/components/blocks/testimonials-with-marquee";
-import { PricingBlock } from "@/components/blocks/pricing-block";
 import { FAQAccordionBlock } from "@/components/blocks/faq-accordion-block";
 import { FooterSection } from "@/components/blocks/footer-section";
 import { testimonials } from "@/data/testimonials";
@@ -22,7 +21,6 @@ export default function Home() {
           description="People using Fluentia to prepare for interviews, presentations, and everyday conversations."
           testimonials={testimonials}
         />
-        <PricingBlock />
         <FAQAccordionBlock />
         <FooterSection />
       </main>

@@ -37,7 +37,6 @@ export function FooterSection() {
             <div className="flex flex-col gap-4">
               <p className="text-white font-medium mb-1">Product</p>
               <a href="#features" className="text-muted-foreground hover:text-white transition-colors">Features</a>
-              <a href="#pricing" className="text-muted-foreground hover:text-white transition-colors">Pricing</a>
               <a href="#faq" className="text-muted-foreground hover:text-white transition-colors">FAQ</a>
             </div>
             <div className="flex flex-col gap-4">

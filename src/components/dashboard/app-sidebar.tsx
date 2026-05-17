@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { TrendingUp, Mic2, Clock, Settings, FileText, Hexagon, User, LogOut } from "lucide-react";
+import { TrendingUp, Mic2, Clock, Settings, FileText, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Sidebar,
@@ -43,12 +43,9 @@ export function AppSidebar() {
   return (
     <Sidebar variant="inset" collapsible="icon" className="bg-[#050505] border-r border-white/10 hidden md:flex" suppressHydrationWarning>
       <SidebarHeader className="p-4 pt-6">
-        <Link href="/dashboard" className="flex items-center gap-2 mb-2 transition-transform hover:scale-105 px-2">
-          <Hexagon className="w-6 h-6 text-[#00F38D]" />
-          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="text-xl font-bold tracking-tight text-white leading-none">Fluentia</span>
-            <span className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">AI Communication</span>
-          </div>
+        <Link href="/dashboard" className="flex items-center mb-2 px-2 hover:opacity-80 transition-opacity">
+          <span className="text-xl font-bold tracking-tight text-white uppercase group-data-[collapsible=icon]:hidden">fluentia</span>
+          <span className="text-xl font-bold tracking-tight text-white uppercase hidden group-data-[collapsible=icon]:block">F</span>
         </Link>
       </SidebarHeader>
 

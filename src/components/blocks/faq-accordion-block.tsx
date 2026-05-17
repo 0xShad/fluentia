@@ -32,11 +32,6 @@ const faqs = [
     answer:
       "Just a browser and a microphone. A built-in laptop mic works fine. A headset gives you cleaner audio and a better transcript, but it's not required to get started.",
   },
-  {
-    question: "Is there a free tier?",
-    answer:
-      "Yes. The free plan gives you 3 voice sessions per month along with basic transcripts and an overall confidence score — enough to try the full loop and see if Fluentia fits your workflow.",
-  },
 ];
 
 export function FAQAccordionBlock() {

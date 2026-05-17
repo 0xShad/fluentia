@@ -239,27 +239,8 @@ export default function ProfilePage() {
 
         </div>
 
-        {/* Right Column: Security & Subscription */}
+        {/* Right Column: Security */}
         <div className="space-y-6">
-          <Card className="bg-[#111] border-white/10 text-white shadow-xl shadow-black/20">
-            <CardHeader>
-              <CardTitle>Subscription Plan</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-lg border border-[#8b5cf6]/30 bg-[#8b5cf6]/5 p-4 relative overflow-hidden">
-                <div className="relative z-10">
-                  <h4 className="text-sm font-bold text-[#8b5cf6] uppercase tracking-wider mb-1">Fluentia Pro</h4>
-                  <p className="text-2xl font-black text-white mb-1">Active</p>
-                  <p className="text-xs text-zinc-400">Renews on May 24, 2026</p>
-                </div>
-                <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-[#8b5cf6] blur-2xl opacity-20 rounded-full" />
-              </div>
-              <Button variant="outline" className="w-full mt-4 border-white/10 bg-transparent hover:bg-white/5 text-white">
-                Manage Billing
-              </Button>
-            </CardContent>
-          </Card>
-
           <Card className="bg-[#111] border-red-500/20 text-white shadow-xl shadow-black/20">
             <CardHeader>
               <CardTitle className="text-red-500 flex items-center gap-2">

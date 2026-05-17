@@ -55,56 +55,10 @@ export function ProfileSkeleton() {
             </div>
           </Card>
 
-          {/* AI Coaching Card Skeleton */}
-          <Card className="bg-[#111] border-white/10 shadow-xl shadow-black/20">
-            <CardHeader className="pb-6">
-              <Skeleton className="h-6 w-48 bg-white/10 mb-2" />
-              <Skeleton className="h-3 w-72 bg-white/5" />
-            </CardHeader>
-            <CardContent className="space-y-8">
-              {/* Speaking Goals */}
-              <div className="space-y-3">
-                <Skeleton className="h-3 w-28 bg-white/5" />
-                <div className="flex flex-wrap gap-2">
-                  <Skeleton className="h-9 w-28 bg-white/10 rounded-md" />
-                  <Skeleton className="h-9 w-32 bg-white/10 rounded-md" />
-                  <Skeleton className="h-9 w-24 bg-white/10 rounded-md" />
-                  <Skeleton className="h-9 w-36 bg-white/10 rounded-md" />
-                </div>
-              </div>
-
-              {/* Skill Level & Coaching Style */}
-              <div className="grid gap-6 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Skeleton className="h-3 w-24 bg-white/5" />
-                  <Skeleton className="h-10 w-full bg-white/10 rounded-md" />
-                </div>
-                <div className="space-y-2">
-                  <Skeleton className="h-3 w-28 bg-white/5" />
-                  <Skeleton className="h-10 w-full bg-white/10 rounded-md" />
-                </div>
-              </div>
-            </CardContent>
-            {/* Footer */}
-            <div className="border-t border-white/5 bg-[#0A0A0A] p-4 flex justify-end">
-              <Skeleton className="h-9 w-36 bg-white/10 rounded-md" />
-            </div>
-          </Card>
         </div>
 
-        {/* Right Column - Subscription & Security */}
+        {/* Right Column - Security */}
         <div className="space-y-6">
-          {/* Subscription Card Skeleton */}
-          <Card className="bg-[#111] border-white/10 shadow-xl shadow-black/20">
-            <CardHeader className="pb-4">
-              <Skeleton className="h-5 w-36 bg-white/10" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Skeleton className="h-24 w-full bg-[#8b5cf6]/5 rounded-lg border border-[#8b5cf6]/20" />
-              <Skeleton className="h-10 w-full bg-white/10 rounded-md" />
-            </CardContent>
-          </Card>
-
           {/* Security Card Skeleton */}
           <Card className="bg-[#111] border-white/10 shadow-xl shadow-black/20">
             <CardHeader className="pb-4">
