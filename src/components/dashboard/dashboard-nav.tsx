@@ -33,13 +33,25 @@ export function DashboardNav() {
   const router = useRouter();
   const { toggleSidebar } = useSidebar();
   const [user, setUser] = useState<User | null>(null);
+  const [profileAvatarUrl, setProfileAvatarUrl] = useState("");
+
+  const fetchProfile = async (userId: string) => {
+    const supabase = createClient();
+    const { data } = await supabase
+      .from("profiles")
+      .select("avatar_url")
+      .eq("id", userId)
+      .single();
+    setProfileAvatarUrl(data?.avatar_url || "");
+  };
 
   useEffect(() => {
     const supabase = createClient();
-    
+
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      if (user) fetchProfile(user.id);
     };
 
     fetchUser();
@@ -47,6 +59,7 @@ export function DashboardNav() {
     const { data: authListener } = supabase.auth.onAuthStateChange(
       (_event, session) => {
         setUser(session?.user ?? null);
+        if (session?.user) fetchProfile(session.user.id);
       }
     );
 
@@ -67,7 +80,7 @@ export function DashboardNav() {
   const name = user?.user_metadata?.full_name || "Guest User";
   const initials = name.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase() || "US";
   const email = user?.email || "";
-  const avatarUrl = user?.user_metadata?.avatar_url || `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`;
+  const avatarUrl = profileAvatarUrl;
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/5">
