@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getVapiClient } from "@/lib/voice/vapi-client";
 import { buildScenarioPrompt } from "@/lib/prompts/vapi-prompts";
-import type { Scenario } from "@/types/scenario.types";
+import type { PersonaId, Scenario } from "@/types/scenario.types";
 import type { UserPreferences } from "@/types/user-preferences.types";
 import { getVoiceOption, DEFAULT_VOICE_ID } from "@/lib/voice/voice-options";
 
@@ -175,14 +175,15 @@ export function useVapiSession() {
   const startCall = useCallback(async (
     scenario: Scenario,
     prefs?: Partial<UserPreferences>,
-    recordingEnabled: boolean = true
+    recordingEnabled: boolean = true,
+    personaId?: PersonaId
   ) => {
     try {
       setStatus("connecting");
       setError(null);
       setTranscript([]);
 
-      const systemPrompt = buildScenarioPrompt(scenario, prefs);
+      const systemPrompt = buildScenarioPrompt(scenario, prefs, personaId);
       const voice = getVoiceOption(prefs?.preferred_voice ?? DEFAULT_VOICE_ID);
       const vapi = getVapiClient();
 

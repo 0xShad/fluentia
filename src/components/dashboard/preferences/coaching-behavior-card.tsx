@@ -2,7 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Volume2, User, Check, Play, Square, Brain } from "lucide-react";
+import { Volume2, User, Check, Play, Square, Brain, Info } from "lucide-react";
 import { VOICE_OPTIONS, type VoiceOption } from "@/lib/voice/voice-options";
 import { cn } from "@/lib/utils";
 import { useState, useRef, useCallback } from "react";
@@ -128,11 +128,20 @@ export function CoachingBehaviorCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Volume2 className="w-5 h-5 text-purple-400" />
-          AI Coaching Settings
+          Feedback & Scoring Settings
         </CardTitle>
-        <CardDescription className="text-zinc-400">Personalize your AI coach and how it evaluates your performance.</CardDescription>
+        <CardDescription className="text-zinc-400">Controls how your performance is scored and how your post-session feedback report reads.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+
+        {/* ── Info callout ─────────────────────────────────────── */}
+        <div className="flex items-start gap-3 rounded-lg border border-white/8 bg-white/3 px-4 py-3">
+          <Info className="w-4 h-4 text-white/30 shrink-0 mt-0.5" />
+          <p className="text-xs text-white/40 leading-relaxed">
+            These settings control <span className="text-white/60 font-medium">scoring and post-session feedback</span> only.
+            To change how the AI sounds during a live session, use the <span className="text-white/60 font-medium">persona picker</span> on the practice page before starting.
+          </p>
+        </div>
 
         {/* ── Learning Profile ─────────────────────────────────── */}
         <div className="space-y-4 pb-5 border-b border-white/5">
@@ -155,11 +164,11 @@ export function CoachingBehaviorCard({
                   <SelectItem value="native" className="focus:bg-white/10 focus:text-white">Native / Fluent</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-[10px] text-zinc-500">Controls how the AI calibrates difficulty and scoring during sessions.</p>
+              <p className="text-[10px] text-zinc-500">Calibrates scoring difficulty — beginner scores are scaled up, advanced scores are held to a higher bar.</p>
             </div>
 
             <div className="space-y-2">
-              <Label className="text-xs text-zinc-400">Session Demeanor</Label>
+              <Label className="text-xs text-zinc-400">Evaluation Style</Label>
               <Select value={coachingStyle || undefined} onValueChange={(val) => val && setCoachingStyle(val)}>
                 <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-purple-500/20 focus:border-purple-500">
                   <SelectValue placeholder="Select Style" />
@@ -171,7 +180,7 @@ export function CoachingBehaviorCard({
                   <SelectItem value="strict" className="focus:bg-white/10 focus:text-white">Strict & Demanding</SelectItem>
                 </SelectContent>
               </Select>
-              <p className="text-[10px] text-zinc-500">How the AI coach behaves and responds during the live session.</p>
+              <p className="text-[10px] text-zinc-500">How the AI weighs and frames your scores and written feedback after each session.</p>
             </div>
           </div>
 
@@ -197,7 +206,7 @@ export function CoachingBehaviorCard({
                 );
               })}
             </div>
-            <p className="text-[10px] text-zinc-500">The AI weights its coaching and feedback toward your selected goals.</p>
+            <p className="text-[10px] text-zinc-500">Your feedback report focuses on and weights scores toward these areas.</p>
           </div>
         </div>
 

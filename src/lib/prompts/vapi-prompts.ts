@@ -1,5 +1,6 @@
-import type { Scenario } from "@/types/scenario.types";
+import type { PersonaId, Scenario } from "@/types/scenario.types";
 import type { UserPreferences } from "@/types/user-preferences.types";
+import { PERSONAS } from "@/data/personas";
 
 const SKILL_INSTRUCTIONS: Record<string, string> = {
   beginner:     "The user is a BEGINNER. Use simple vocabulary, speak at a relaxed pace, and be patient. Gently rephrase questions if they seem confused. Do not use jargon or complex sentence structures.",
@@ -17,20 +18,29 @@ const STYLE_INSTRUCTIONS: Record<string, string> = {
 
 export function buildScenarioPrompt(
   scenario: Scenario,
-  prefs?: Partial<UserPreferences>
+  prefs?: Partial<UserPreferences>,
+  personaId?: PersonaId
 ): string {
   const skillNote = SKILL_INSTRUCTIONS[prefs?.skill_level ?? "intermediate"];
   const styleNote = STYLE_INSTRUCTIONS[prefs?.coaching_style ?? "balanced"];
+
+  const persona = personaId ? PERSONAS[personaId] : null;
 
   const goalsNote =
     prefs?.speaking_goals && prefs.speaking_goals.length > 0
       ? `The user's speaking goals include: ${prefs.speaking_goals.join(", ")}. Weight your interactions toward those areas when natural.`
       : "";
 
+  const toneBlock = persona
+    ? `[Tone & Personality]\n${persona.promptInstruction}`
+    : `[Coaching Demeanor]\n${styleNote}`;
+
   return `
 [Identity]
 You are playing the role of: ${scenario.aiRole}.
 Maintain this persona at all times. Do not break character. Do not introduce yourself as an AI.
+
+${toneBlock}
 
 [Context]
 The user is practicing a communication scenario titled: "${scenario.title}".
@@ -44,14 +54,10 @@ ${goalsNote ? `\n${goalsNote}` : ""}
 [User Level]
 ${skillNote}
 
-[Coaching Demeanor]
-${styleNote}
-
 [Style & Behavior]
-- Keep your responses conversational, natural, and realistic for the given role.
-- Do not monologue. Keep your turns brief (1-3 sentences) so the user can speak.
-- React authentically to what the user says. If they give a vague answer in an interview, probe for details. If they are assertive in a negotiation, counter them realistically.
-- Allow for awkward silences if appropriate for the role.
+- Keep your turns brief (1-3 sentences) so the user can speak.
+- React authentically to what the user says.
+- Stay fully in character for both your role and your tone — do not slip into a neutral or generic assistant voice.
 
 [Session Structure]
 1. Open the conversation naturally as your persona (e.g., greet them, ask the first question, or set the scene).

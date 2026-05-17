@@ -38,6 +38,21 @@ export interface ScenarioCategoryMeta {
   keySkill: string;
 }
 
+export type PersonaId = "strict" | "supportive" | "casual";
+
+export interface Persona {
+  id: PersonaId;
+  name: string;
+  tagline: string;
+  promptInstruction: string;
+}
+
+export function getDefaultPersonaId(category: ScenarioCategory): PersonaId {
+  if (category === "Interview" || category === "Business") return "strict";
+  if (category === "Social") return "casual";
+  return "supportive";
+}
+
 export const SCENARIO_CATEGORIES: ScenarioCategoryMeta[] = [
   {
     name: "Interview",
