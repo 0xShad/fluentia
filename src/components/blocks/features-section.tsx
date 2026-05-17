@@ -39,7 +39,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-24 relative px-6">
+    <section id="features" className="py-24 relative px-6 scroll-mt-20">
       <div className="container mx-auto max-w-6xl">
         <div className="mb-16">
           <AnimatedSection variant="fadeLeft" delay={0}>
