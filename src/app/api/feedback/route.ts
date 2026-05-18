@@ -264,7 +264,7 @@ Rules:
       console.error("Failed to save feedback to DB:", dbErr);
     }
 
-    return NextResponse.json({ ...feedback, sessionId });
+    return NextResponse.json({ ...feedback, sessionId, cappedAt: hardCap ?? null });
   } catch (err: any) {
     console.error("Feedback API error:", err);
     return NextResponse.json({ error: "Failed to analyse session. Please try again." }, { status: 500 });

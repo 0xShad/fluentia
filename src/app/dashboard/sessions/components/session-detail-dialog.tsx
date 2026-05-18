@@ -369,6 +369,20 @@ export function SessionDetailDialog({ sessionId, onClose }: Props) {
                 {(session.categories ?? []).length > 0 && (
                   <div>
                     <p className="text-[11px] font-bold text-white/25 uppercase tracking-widest mb-4">Performance</p>
+                    {(() => {
+                      const cappedAt =
+                        session.elapsed_seconds < 30 ? 35
+                        : session.elapsed_seconds < 60 ? 55
+                        : null;
+                      return cappedAt != null ? (
+                        <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-400/8 border border-amber-400/20 mb-4">
+                          <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+                          <p className="text-xs text-amber-300/80 leading-relaxed">
+                            Overall capped at <span className="font-bold text-amber-300">{cappedAt}/100</span> — session too short for a full evaluation. Category scores below reflect your actual quality.
+                          </p>
+                        </div>
+                      ) : null;
+                    })()}
                     <div className="space-y-5">
                       {session.categories.map((cat, i) => (
                         <CategoryBar key={cat.name} name={cat.name} score={cat.score} feedback={cat.feedback} delay={100 + i * 80} />
