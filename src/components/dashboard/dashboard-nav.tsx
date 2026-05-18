@@ -34,14 +34,20 @@ export function DashboardNav() {
   const { toggleSidebar } = useSidebar();
   const [user, setUser] = useState<User | null>(null);
   const [profileAvatarUrl, setProfileAvatarUrl] = useState("");
+  const [profileName, setProfileName] = useState("");
 
   const fetchProfile = async (userId: string) => {
     const supabase = createClient();
     const { data } = await supabase
       .from("profiles")
-      .select("avatar_url")
+      .select("full_name, first_name, last_name, avatar_url")
       .eq("id", userId)
       .single();
+    const derivedName =
+      data?.full_name ||
+      [data?.first_name, data?.last_name].filter(Boolean).join(" ") ||
+      "";
+    setProfileName(derivedName);
     setProfileAvatarUrl(data?.avatar_url || "");
   };
 
@@ -77,10 +83,11 @@ export function DashboardNav() {
   const pathSegments = pathname.split('/').filter(p => p);
   const breadcrumbName = pathSegments.length > 1 ? pathSegments[1].charAt(0).toUpperCase() + pathSegments[1].slice(1) : "Overview";
 
-  const name = user?.user_metadata?.full_name || "Guest User";
+  const metaName = [user?.user_metadata?.first_name, user?.user_metadata?.last_name].filter(Boolean).join(" ");
+  const name = profileName || user?.user_metadata?.full_name || metaName || "Guest User";
   const initials = name.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase() || "US";
   const email = user?.email || "";
-  const avatarUrl = profileAvatarUrl;
+  const avatarUrl = profileAvatarUrl || user?.user_metadata?.avatar_url || "";
 
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/5">
@@ -116,7 +123,7 @@ export function DashboardNav() {
         <DropdownMenu>
           <DropdownMenuTrigger className="w-8 h-8 rounded-full overflow-hidden border border-white/20 hover:border-[#00F38D] transition-colors outline-none focus:ring-2 focus:ring-[#00F38D]/50 flex items-center justify-center bg-[#111]">
             <Avatar className="w-full h-full">
-              <AvatarImage src={avatarUrl} alt={name} />
+              {avatarUrl && <AvatarImage src={avatarUrl} alt={name} referrerPolicy="no-referrer" />}
               <AvatarFallback className="bg-[#111] text-xs">{initials}</AvatarFallback>
             </Avatar>
           </DropdownMenuTrigger>
