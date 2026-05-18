@@ -141,6 +141,14 @@ function FeedbackReport({
         <div className={cn("px-3 py-1 rounded-full border text-xs font-extrabold tracking-wide", gradeColor(feedback.grade))}>
           {feedback.grade}
         </div>
+        {feedback.cappedAt != null && (
+          <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-400/8 border border-amber-400/20 w-full max-w-sm">
+            <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0 mt-0.5" />
+            <p className="text-[11px] text-amber-300/80 leading-relaxed">
+              Overall capped at <span className="font-bold text-amber-300">{feedback.cappedAt}/100</span> — session too short for a full evaluation. Category scores below reflect your actual quality.
+            </p>
+          </div>
+        )}
         <p className="text-sm text-white/50 text-center leading-relaxed max-w-md">
           {feedback.summary}
         </p>

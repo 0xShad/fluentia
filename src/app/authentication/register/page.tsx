@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/input-otp";
 
 const NAME_REGEX = /^[A-Za-z\s]+$/;
-const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|<>?,./`~]).{8,}$/;
 const EMAIL_REGEX = /\S+@\S+\.\S+/;
 
 export default function RegisterPage() {
@@ -63,7 +63,7 @@ export default function RegisterPage() {
   const handlePasswordChange = (v: string) => {
     setPassword(v);
     if (!v) setErrors(prev => ({ ...prev, password: "Required" }));
-    else if (!PASSWORD_REGEX.test(v)) setErrors(prev => ({ ...prev, password: "Min 8 chars, 1 uppercase, 1 special character" }));
+    else if (!PASSWORD_REGEX.test(v)) setErrors(prev => ({ ...prev, password: "Min 8 chars, 1 uppercase, 1 lowercase, 1 number, 1 special character" }));
     else { const { password, ...rest } = Object.assign({}, errors, { password: undefined }); setErrors(JSON.parse(JSON.stringify(rest))); }
     
     // Check confirm password if it's already typed

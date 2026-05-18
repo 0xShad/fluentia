@@ -5,6 +5,19 @@ import type { SessionFeedback } from "@/types/feedback.types";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+function gradeFromScore(score: number): string {
+  if (score >= 97) return "A+";
+  if (score >= 93) return "A";
+  if (score >= 90) return "A-";
+  if (score >= 87) return "B+";
+  if (score >= 83) return "B";
+  if (score >= 80) return "B-";
+  if (score >= 77) return "C+";
+  if (score >= 70) return "C";
+  if (score >= 60) return "D";
+  return "F";
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { transcript, scenarioTitle, aiRole, category, scenarioId, elapsedSeconds, vapiCallId, recordingEnabled } = await req.json();
@@ -27,10 +40,9 @@ export async function POST(req: NextRequest) {
         ],
         fillerWords: [],
         categories: [
-          { name: "Fluency",         score: 0, feedback: "No data." },
-          { name: "Clarity",         score: 0, feedback: "No data." },
-          { name: "Confidence",      score: 0, feedback: "No data." },
-          { name: "Professionalism", score: 0, feedback: "No data." },
+          { name: "Clarity",     score: 0, feedback: "No data." },
+          { name: "Relevance",   score: 0, feedback: "No data." },
+          { name: "Conciseness", score: 0, feedback: "No data." },
         ],
       } satisfies SessionFeedback);
     }
@@ -107,15 +119,18 @@ export async function POST(req: NextRequest) {
 
     const deadAirCount = (transcript as { speaker: string }[]).filter(l => l.speaker === "System").length;
     const sessionMinutes = elapsedSeconds ? Math.round(elapsedSeconds / 60) : null;
+    const userWordCount = userLines.reduce(
+      (acc, l) => acc + l.text.split(/\s+/).filter(Boolean).length, 0
+    );
 
     const categoryWeights: Record<string, string> = {
-      Interview:        "Professionalism 30%, Clarity 30%, Confidence 25%, Fluency 15%",
-      Business:         "Clarity 30%, Professionalism 30%, Confidence 25%, Fluency 15%",
-      Social:           "Fluency 35%, Confidence 30%, Clarity 25%, Professionalism 10%",
-      "Public Speaking": "Fluency 30%, Clarity 30%, Confidence 30%, Professionalism 10%",
-      Everyday:         "Fluency 30%, Clarity 30%, Confidence 25%, Professionalism 15%",
+      Interview:         "Relevance 40%, Clarity 35%, Conciseness 25%",
+      Business:          "Clarity 35%, Relevance 35%, Conciseness 30%",
+      Social:            "Clarity 40%, Conciseness 35%, Relevance 25%",
+      "Public Speaking": "Clarity 40%, Conciseness 35%, Relevance 25%",
+      Everyday:          "Clarity 35%, Relevance 35%, Conciseness 30%",
     };
-    const weights = categoryWeights[category] ?? "Fluency 25%, Clarity 25%, Confidence 25%, Professionalism 25%";
+    const weights = categoryWeights[category] ?? "Clarity 34%, Relevance 33%, Conciseness 33%";
 
     const prompt = `You are a rigorous professional communication coach evaluating a "${scenarioTitle}" (${category}) practice session. Score honestly — a weak session should score below 55, a strong one above 80. Do NOT cluster scores around 40-55.
 
@@ -130,17 +145,9 @@ ${sensitivityNote}
 TRANSCRIPT:
 ${formatted}
 
-SESSION CONTEXT: ${sessionMinutes ? `~${sessionMinutes} min session` : "duration unknown"}, ${deadAirCount} dead-air / silence marker(s) detected.
+SESSION CONTEXT: ${sessionMinutes ? `~${sessionMinutes} min session` : "duration unknown"}, ${userWordCount} words from user, ${deadAirCount} dead-air / silence marker(s) detected.
 
 ━━ SCORING RUBRICS ━━
-
-Fluency — smoothness and rhythm of speech:
-  90-100 Consistently smooth, natural pacing, near-zero fillers or pauses
-  75-89  Mostly fluent; 1-2 minor hesitations per minute
-  60-74  Noticeable pauses/fillers but ideas still land
-  45-59  Frequent disruptions; multiple long pauses or fillers per exchange
-  30-44  Highly fragmented; hard to follow the thread
-  0-29   Incoherent; dominated by dead air or broken sentences
 
 Clarity — how well ideas are conveyed and understood:
   90-100 All points specific, structured, and instantly understood
@@ -150,29 +157,29 @@ Clarity — how well ideas are conveyed and understood:
   30-44  Responses lack key details; understanding is difficult
   0-29   Off-topic, missing, or nearly impossible to follow
 
-Confidence — assertiveness and self-assurance in delivery:
-  90-100 Highly assured tone, direct assertions, no hedging
-  75-89  Confident overall; occasional soft qualifiers
-  60-74  Some confident moments; clear uncertainty elsewhere
-  45-59  Mostly hesitant; trailing off or over-qualifying
-  30-44  Sounds unsure throughout; lacks assertiveness
-  0-29   Almost no confidence evident in any response
+Relevance — how well responses address what was asked or said:
+  90-100 Every response directly addresses the question/prompt; fully on-topic
+  75-89  Mostly on-topic; minor tangents that return to the point
+  60-74  Some relevance gaps; occasionally drifts or misses the direct question
+  45-59  Frequently off-topic or only partially answers questions
+  30-44  Most responses miss the mark; weak connection to what was asked
+  0-29   Responses bear almost no relation to the conversation
 
-Professionalism — appropriateness of language, tone, and content:
-  90-100 Perfectly appropriate; structured, no informalities
-  75-89  Professional throughout; at most one minor lapse
-  60-74  Mostly professional; noticeable lapses
-  45-59  Multiple lapses; some inappropriate phrasing
-  30-44  Largely informal; does not meet workplace standards
-  0-29   Language or content entirely inappropriate
+Conciseness — how efficiently ideas are expressed without unnecessary padding:
+  90-100 Every sentence adds value; no rambling, filler, or repetition
+  75-89  Mostly efficient; minor over-explanation in one or two areas
+  60-74  Some unnecessary padding or repetition; ideas still come through
+  45-59  Noticeable over-explanation or filler; key points get diluted
+  30-44  Heavy rambling; important ideas buried in unnecessary content
+  0-29   Extremely wordy with almost no efficient communication
 
 ━━ OVERALL SCORE FORMULA ━━
 1. Apply category weights for ${category}: ${weights}
 2. Compute the weighted average (this is your base score).
 3. Apply these modifiers:
-   - Any single category below 30 → subtract 5
    - ${deadAirCount >= 3 ? `${deadAirCount} dead-air markers detected → subtract ${Math.min(deadAirCount, 5)}` : "Fewer than 3 dead-air markers → no penalty"}
-   - Session under 60 seconds → cap overall at 65
+   - Session under 30 seconds or fewer than 20 user words → too little data. Score each category honestly per the rubrics for what was said, but cap overall at 35. The summary must note the session was too brief for a full evaluation.
+   - Session 30–59 seconds → limited data. Score each category honestly per the rubrics, but cap overall at 55. The summary must note the session was short.
 4. Apply skill-level adjustment as instructed above.
 5. Round to nearest integer. This is overallScore.
 
@@ -199,10 +206,9 @@ Return ONLY a valid JSON object — no markdown, no code fences, no extra text:
     { "word": "<filler word>", "count": <exact count in transcript> }
   ],
   "categories": [
-    { "name": "Fluency",         "score": <0-100 per rubric>, "feedback": "<per detail level instruction above>" },
-    { "name": "Clarity",         "score": <0-100 per rubric>, "feedback": "<per detail level instruction above>" },
-    { "name": "Confidence",      "score": <0-100 per rubric>, "feedback": "<per detail level instruction above>" },
-    { "name": "Professionalism", "score": <0-100 per rubric>, "feedback": "<per detail level instruction above>" }
+    { "name": "Clarity",     "score": <0-100 per rubric>, "feedback": "<per detail level instruction above>" },
+    { "name": "Relevance",   "score": <0-100 per rubric>, "feedback": "<per detail level instruction above>" },
+    { "name": "Conciseness", "score": <0-100 per rubric>, "feedback": "<per detail level instruction above>" }
   ]
 }
 
@@ -217,6 +223,17 @@ Rules:
 
     const json = text.startsWith("```") ? text.replace(/^```[a-z]*\n?/, "").replace(/```$/, "").trim() : text;
     const feedback = JSON.parse(json) as SessionFeedback;
+
+    // Server-side enforcement — LLMs don't reliably apply prompt-embedded caps
+    const hardCap =
+      (elapsedSeconds != null && elapsedSeconds < 30) || userWordCount < 20 ? 35
+      : elapsedSeconds != null && elapsedSeconds < 60 ? 55
+      : null;
+
+    if (hardCap !== null && feedback.overallScore > hardCap) {
+      feedback.overallScore = hardCap;
+      feedback.grade = gradeFromScore(hardCap);
+    }
 
     // ── Save to DB ─────────────────────────────────────────────────────────
     let sessionId: string | null = null;
@@ -247,7 +264,7 @@ Rules:
       console.error("Failed to save feedback to DB:", dbErr);
     }
 
-    return NextResponse.json({ ...feedback, sessionId });
+    return NextResponse.json({ ...feedback, sessionId, cappedAt: hardCap ?? null });
   } catch (err: any) {
     console.error("Feedback API error:", err);
     return NextResponse.json({ error: "Failed to analyse session. Please try again." }, { status: 500 });

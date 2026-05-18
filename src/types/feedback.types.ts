@@ -23,4 +23,5 @@ export interface SessionFeedback {
   improvements: ImprovementPoint[];
   fillerWords: FillerWord[];
   categories: FeedbackCategory[];
+  cappedAt?: number | null;
 }

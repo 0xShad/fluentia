@@ -25,7 +25,7 @@ interface SessionRow {
   created_at: string;
 }
 
-const SKILL_NAMES = ["Fluency", "Clarity", "Confidence", "Professionalism"];
+const SKILL_NAMES = ["Clarity", "Relevance", "Conciseness"];
 const MONTH_LABELS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 function formatDuration(seconds: number): string {
