@@ -56,10 +56,12 @@ export default function ProfilePage() {
         if (error) console.error("Failed to fetch profile:", error);
 
         if (profile) {
+          const metaName = [user.user_metadata?.first_name, user.user_metadata?.last_name].filter(Boolean).join(" ");
           const derivedFullName =
             profile.full_name ||
             [profile.first_name, profile.last_name].filter(Boolean).join(" ") ||
             user.user_metadata?.full_name ||
+            metaName ||
             "";
           setFullName(derivedFullName);
           setBio(profile.bio || "");
@@ -293,7 +295,7 @@ export default function ProfilePage() {
                 <div className="flex flex-col items-center gap-2">
                   <div className="relative group cursor-pointer" onClick={handleAvatarClick}>
                     <Avatar className="w-24 h-24 border-2 border-white/10 group-hover:border-[#00F38D] transition-colors">
-                      <AvatarImage src={avatarUrl} alt={fullName} />
+                      {avatarUrl && <AvatarImage src={avatarUrl} alt={fullName} referrerPolicy="no-referrer" />}
                       <AvatarFallback className="bg-[#050505] text-xl">{initials}</AvatarFallback>
                     </Avatar>
                     <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full z-10">

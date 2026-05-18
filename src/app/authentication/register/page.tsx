@@ -130,17 +130,25 @@ export default function RegisterPage() {
     setAuthError("");
     
     const supabase = createClient();
-    const { error } = await supabase.auth.verifyOtp({
+    const { data: verifyData, error } = await supabase.auth.verifyOtp({
       email,
       token: otp,
       type: 'signup'
     });
-    
+
     setIsLoading(false);
-    
+
     if (error) {
       setAuthError("Invalid or expired code. Please request a new one.");
     } else {
+      if (verifyData.user) {
+        await supabase.from("profiles").upsert({
+          id: verifyData.user.id,
+          first_name: firstName,
+          last_name: lastName,
+          full_name: `${firstName} ${lastName}`.trim(),
+        });
+      }
       toast.success("Registered successfully!");
       router.push("/dashboard");
     }

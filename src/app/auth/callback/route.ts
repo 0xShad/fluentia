@@ -18,6 +18,31 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (!error) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const oauthAvatar = user.user_metadata?.avatar_url || user.user_metadata?.picture || ""
+        const oauthFullName = user.user_metadata?.full_name || user.user_metadata?.name || ""
+        const nameParts = oauthFullName.trim().split(/\s+/)
+        const oauthFirst = user.user_metadata?.first_name || nameParts[0] || ""
+        const oauthLast = user.user_metadata?.last_name || nameParts.slice(1).join(" ") || ""
+
+        const { data: existing } = await supabase
+          .from("profiles")
+          .select("avatar_url, full_name, first_name, last_name")
+          .eq("id", user.id)
+          .maybeSingle()
+
+        const patch: Record<string, string> = { id: user.id }
+        if (!existing?.avatar_url && oauthAvatar) patch.avatar_url = oauthAvatar
+        if (!existing?.full_name && oauthFullName) patch.full_name = oauthFullName
+        if (!existing?.first_name && oauthFirst) patch.first_name = oauthFirst
+        if (!existing?.last_name && oauthLast) patch.last_name = oauthLast
+
+        if (Object.keys(patch).length > 1) {
+          await supabase.from("profiles").upsert(patch)
+        }
+      }
+
       return NextResponse.redirect(`${origin}${next}`)
     }
   }
