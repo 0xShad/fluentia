@@ -1,12 +1,39 @@
 "use client";
 
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { DottedSurface } from "@/components/ui/dotted-surface";
-import { motion } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 
+const DEMO_VIDEO_URL =
+  "https://sltsyadsiuwfbtcgtczz.supabase.co/storage/v1/object/sign/public-assets/demo.mp4?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV85ZjkwODYwMy0zNzJlLTQyNTUtOWM3Ni1mNDg1ZGRmYjI5NTYiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJwdWJsaWMtYXNzZXRzL2RlbW8ubXA0IiwiaWF0IjoxNzc5MjAwMzc5LCJleHAiOjE4MTA3MzYzNzl9.IK-6w_jrazhpU5a4990I_WMl7rzADrLFoRuzGCSqGQ8";
+
 export function HeroSection() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const shouldReduce = useReducedMotion();
+
+  const shouldLoadInView = useInView(containerRef, { once: true, margin: "400px 0px" });
+  const isInView = useInView(containerRef, { once: false, margin: "-80px 0px" });
+
+  useEffect(() => {
+    if (shouldLoadInView) setShouldLoad(true);
+  }, [shouldLoadInView]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (isInView && !shouldReduce) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }, [isInView, shouldLoad, shouldReduce]); // shouldLoad re-triggers when the video element mounts
+
   return (
     <section className="relative px-6 flex flex-col items-center text-center pb-32 overflow-hidden min-h-[90vh]">
       <DottedSurface />
@@ -66,40 +93,56 @@ export function HeroSection() {
           </Link>
         </motion.div>
 
-        {/* Video Placeholder */}
+        {/* Video Container */}
         <motion.div
+          ref={containerRef}
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, delay: 1.25, ease: [0.21, 0.47, 0.32, 0.98] }}
-          className="w-full max-w-250 mx-auto aspect-16/10 relative rounded-xl border border-white/10 bg-[#070707] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,243,141,0.1)] group cursor-pointer z-10"
+          className="w-full max-w-250 mx-auto aspect-16/10 relative rounded-xl border border-white/10 bg-[#070707] overflow-hidden shadow-[0_20px_60px_-15px_rgba(0,243,141,0.1)] z-10"
         >
-          <div className="absolute inset-0 bg-linear-to-tr from-primary/5 via-transparent to-primary/5 opacity-50" />
+          {/* Top gradient overlay */}
+          <div className="absolute inset-0 bg-linear-to-tr from-primary/5 via-transparent to-primary/5 opacity-50 pointer-events-none z-10" />
 
-          {/* Fake UI Header */}
-          <div className="absolute top-0 w-full h-8 border-b border-white/5 flex items-center px-4 gap-2 bg-[#0a0a0a]">
+          {/* Browser chrome header */}
+          <div className="absolute top-0 w-full h-8 border-b border-white/5 flex items-center px-4 gap-2 bg-[#0a0a0a] z-20">
             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
             <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
             <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
           </div>
 
-          {/* Play Button Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/10 transition-colors duration-200">
-            <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 group-hover:bg-primary/90 group-hover:text-black group-hover:border-primary group-hover:scale-105 transition-[colors,transform,border-color,background-color] duration-200">
-              <Play className="w-6 h-6 ml-1" fill="currentColor" />
+          {/* Skeleton — visible until onCanPlay fires */}
+          {!isReady && (
+            <div className="absolute inset-0 top-8 bg-[#070707] z-10">
+              <div className="absolute inset-0 bg-linear-to-br from-white/3 via-transparent to-white/3 animate-pulse" />
+              <div className="absolute inset-0 bg-linear-to-b from-transparent to-[#0A0A0A]/60" />
             </div>
-          </div>
+          )}
 
-          {/* UI mockup lines */}
-          <div className="absolute inset-8 top-16 border-l border-white/5 flex gap-4">
-            <div className="w-64 h-full border-r border-white/5 opacity-50 rounded bg-white/2" />
-            <div className="flex-1 h-full opacity-50 flex flex-col gap-4">
-              <div className="w-full h-1/2 rounded bg-white/2 border border-white/5" />
-              <div className="w-full h-1/2 rounded bg-white/2 border border-white/5 relative overflow-hidden">
-                <div className="absolute bottom-0 right-0 p-4">
-                  <div className="bg-primary/20 text-primary border border-primary/30 rounded px-2 py-1 text-[10px] font-mono uppercase">Session Ready</div>
-                </div>
-              </div>
-            </div>
+          {/* Video — not mounted until shouldLoad is true */}
+          {shouldLoad && (
+            <video
+              ref={videoRef}
+              src={DEMO_VIDEO_URL}
+              muted
+              loop
+              playsInline
+              preload="none"
+              onCanPlay={() => setIsReady(true)}
+              className="absolute inset-0 w-full h-full object-cover top-8"
+              aria-hidden="true"
+            />
+          )}
+
+          {/* Bottom fade */}
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-[#0A0A0A] to-transparent pointer-events-none z-10" />
+
+          {/* Side vignette */}
+          <div className="absolute inset-0 bg-linear-to-r from-[#0A0A0A]/40 via-transparent to-[#0A0A0A]/40 pointer-events-none z-10" />
+
+          {/* DEMO badge */}
+          <div className="absolute bottom-3 right-3 z-20 px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+            demo
           </div>
         </motion.div>
 
