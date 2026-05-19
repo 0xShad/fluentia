@@ -103,11 +103,7 @@ export function AuthLayout({ children }: AuthLayoutProps) {
         <p className="text-xs text-white/25 text-center mt-auto">
           By continuing you agree to our{" "}
           <Link href="/terms" className="underline hover:text-white/50 transition-colors">
-            Terms
-          </Link>{" "}
-          &amp;{" "}
-          <Link href="/privacy" className="underline hover:text-white/50 transition-colors">
-            Privacy Policy
+            Terms & Condition
           </Link>
           .
         </p>
