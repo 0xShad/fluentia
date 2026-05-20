@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import {
-  Search, Filter, MoreHorizontal, Download, BarChart2, Mic, Play,
+  Search, Filter, MoreHorizontal, BarChart2, Mic, Play,
   Trash2, Loader2, Check, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -195,10 +195,6 @@ export default function HistoryPage() {
             <h2 className="text-3xl font-bold tracking-tight text-white mb-2">Session History</h2>
             <p className="text-muted-foreground text-sm">Click any session to view details, transcript, and play the recording.</p>
           </div>
-          <Button className="bg-[#00F38D] text-black hover:bg-[#00F38D]/90 font-semibold gap-2 border-0 shadow-[0_0_15px_rgba(0,243,141,0.3)]">
-            <Download className="w-4 h-4" />
-            Export Report
-          </Button>
         </div>
 
         <div className="bg-[#111] border border-white/10 rounded-xl shadow-2xl relative">

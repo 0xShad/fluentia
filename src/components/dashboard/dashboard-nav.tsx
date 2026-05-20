@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import { Bell, LogOut, User as UserIcon, Settings, Home, ChevronRight } from "lucide-react";
+import { LogOut, User as UserIcon, Settings, Home, ChevronRight } from "lucide-react";
 import { GlobalSearch } from "@/components/dashboard/global-search";
 import { cn } from "@/lib/utils";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
@@ -114,11 +114,6 @@ export function DashboardNav() {
 
       <div className="flex items-center gap-4">
         <GlobalSearch />
-        
-        <button className="p-2 text-muted-foreground hover:text-white transition-colors relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#00F38D] rounded-full"></span>
-        </button>
         
         <DropdownMenu>
           <DropdownMenuTrigger className="w-8 h-8 rounded-full overflow-hidden border border-white/20 hover:border-[#00F38D] transition-colors outline-none focus:ring-2 focus:ring-[#00F38D]/50 flex items-center justify-center bg-[#111]">

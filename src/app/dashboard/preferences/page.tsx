@@ -9,7 +9,6 @@ import { createClient } from "@/lib/client";
 
 import { LanguageRegionCard } from "@/components/dashboard/preferences/language-region-card";
 import { CoachingBehaviorCard } from "@/components/dashboard/preferences/coaching-behavior-card";
-import { NotificationsCard } from "@/components/dashboard/preferences/notifications-card";
 
 export default function SystemPreferencesPage() {
   const [pageLoading, setPageLoading] = useState(true);
@@ -19,12 +18,6 @@ export default function SystemPreferencesPage() {
   const [interfaceLanguage, setInterfaceLanguage] = useState<string | null>("en-US");
   const [aiVoiceLanguage, setAiVoiceLanguage] = useState<string | null>("en-US-Neural2-F");
   const [timezone, setTimezone] = useState<string | null>("auto");
-
-  // Notifications State
-  const [sessionReminders, setSessionReminders] = useState(true);
-  const [weeklyReports, setWeeklyReports] = useState(true);
-  const [realtimeAlerts, setRealtimeAlerts] = useState(false);
-  const [emailNotifications, setEmailNotifications] = useState(true);
 
   // AI Coaching Behavior State
   const [skillLevel, setSkillLevel] = useState<string | null>("intermediate");
@@ -53,10 +46,6 @@ export default function SystemPreferencesPage() {
           setCoachingTone(data.coaching_tone ?? "encouraging");
           setFeedbackDetail(data.feedback_detail ?? "standard");
           setCorrectionSensitivity([data.correction_sensitivity ?? 60]);
-          setSessionReminders(data.session_reminders ?? true);
-          setWeeklyReports(data.weekly_reports ?? true);
-          setRealtimeAlerts(data.realtime_alerts ?? false);
-          setEmailNotifications(data.email_notifications ?? true);
           setPreferredVoice(data.preferred_voice ?? "burt");
         }
       }
@@ -84,10 +73,6 @@ export default function SystemPreferencesPage() {
       coaching_tone: coachingTone ?? "encouraging",
       feedback_detail: feedbackDetail ?? "standard",
       correction_sensitivity: correctionSensitivity[0] ?? 60,
-      session_reminders: sessionReminders,
-      weekly_reports: weeklyReports,
-      realtime_alerts: realtimeAlerts,
-      email_notifications: emailNotifications,
       preferred_voice: preferredVoice,
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id" });
@@ -119,10 +104,6 @@ export default function SystemPreferencesPage() {
     setInterfaceLanguage("en-US");
     setAiVoiceLanguage("en-US-Neural2-F");
     setTimezone("auto");
-    setSessionReminders(true);
-    setWeeklyReports(true);
-    setRealtimeAlerts(false);
-    setEmailNotifications(true);
     setFeedbackDetail("standard");
     setCoachingTone("encouraging");
     setPreferredVoice("burt");
@@ -138,10 +119,6 @@ export default function SystemPreferencesPage() {
         coaching_tone: "encouraging",
         feedback_detail: "standard",
         correction_sensitivity: 60,
-        session_reminders: true,
-        weekly_reports: true,
-        realtime_alerts: false,
-        email_notifications: true,
         preferred_voice: "burt",
         updated_at: new Date().toISOString(),
       }, { onConflict: "user_id" });
@@ -160,7 +137,7 @@ export default function SystemPreferencesPage() {
     <div className="flex-1 p-6 md:p-8 space-y-8 animate-in fade-in duration-500 w-full max-w-5xl mx-auto pb-24">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-white mb-2">System Preferences</h2>
-        <p className="text-muted-foreground text-sm">Customize your AI coach behavior, voice, language settings, and notifications.</p>
+        <p className="text-muted-foreground text-sm">Customize your AI coach behavior, voice, and language settings.</p>
       </div>
 
       <div className="grid gap-8 md:grid-cols-2">
@@ -175,16 +152,6 @@ export default function SystemPreferencesPage() {
             setTimezone={setTimezone}
           />
 
-          <NotificationsCard
-            sessionReminders={sessionReminders}
-            setSessionReminders={setSessionReminders}
-            weeklyReports={weeklyReports}
-            setWeeklyReports={setWeeklyReports}
-            realtimeAlerts={realtimeAlerts}
-            setRealtimeAlerts={setRealtimeAlerts}
-            emailNotifications={emailNotifications}
-            setEmailNotifications={setEmailNotifications}
-          />
         </div>
 
         {/* Column 2 */}
