@@ -183,6 +183,15 @@ export function useVapiSession() {
       setError(null);
       setTranscript([]);
 
+      // Server-side rate limit gate — must pass before Vapi is contacted
+      const gate = await fetch("/api/session/start", { method: "POST" });
+      if (!gate.ok) {
+        const data = await gate.json().catch(() => ({}));
+        setStatus("idle");
+        setError(data.error ?? "Too many sessions. Please wait before starting another.");
+        return;
+      }
+
       const systemPrompt = buildScenarioPrompt(scenario, prefs, personaId);
       const voice = getVoiceOption(prefs?.preferred_voice ?? DEFAULT_VOICE_ID);
       const vapi = getVapiClient();

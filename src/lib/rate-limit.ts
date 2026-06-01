@@ -1,4 +1,9 @@
-const store = new Map<string, number[]>();
+declare global {
+  var __rateLimitStore: Map<string, number[]> | undefined;
+}
+
+const store: Map<string, number[]> = globalThis.__rateLimitStore ?? new Map();
+globalThis.__rateLimitStore = store;
 
 /**
  * Sliding-window in-memory rate limiter.

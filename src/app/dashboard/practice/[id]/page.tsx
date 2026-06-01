@@ -281,6 +281,7 @@ export default function SessionPage() {
   const [textInput, setTextInput] = useState("");
   const [feedback, setFeedback] = useState<SessionFeedback | null>(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackError, setFeedbackError] = useState<string | null>(null);
   const [userPrefs, setUserPrefs] = useState<Partial<UserPreferences>>({});
   const [selectedPersona, setSelectedPersona] = useState<PersonaId>(
     () => scenario ? getDefaultPersonaId(scenario.category) : "supportive"
@@ -313,6 +314,7 @@ export default function SessionPage() {
   useEffect(() => {
     if (sessionState !== "ended" || feedback || feedbackLoading || !scenario) return;
     setFeedbackLoading(true);
+    setFeedbackError(null);
     fetch("/api/feedback", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -327,9 +329,12 @@ export default function SessionPage() {
         recordingEnabled: isRecording,
       }),
     })
-      .then((r) => r.json())
-      .then((data) => {
-        if (data.error) throw new Error(data.error);
+      .then(async (r) => {
+        const data = await r.json();
+        if (!r.ok) {
+          setFeedbackError(data.error ?? "Failed to analyse session. Please try again.");
+          return;
+        }
         setFeedback(data);
         // Fire-and-forget: upload recording only if user consented
         if (data.sessionId && isRecording) {
@@ -340,7 +345,10 @@ export default function SessionPage() {
           }).catch((e) => console.error("Recording upload error:", e));
         }
       })
-      .catch((e) => console.error("Feedback error:", e))
+      .catch((e) => {
+        console.error("Feedback error:", e);
+        setFeedbackError("Failed to analyse session. Please try again.");
+      })
       .finally(() => setFeedbackLoading(false));
   }, [sessionState]);
 
@@ -512,9 +520,17 @@ export default function SessionPage() {
               >
                 {sessionState === "connecting" ? "Connecting…" : <><Mic className="w-4 h-4" /> Begin Session</>}
               </button>
-              <p className="text-xs text-white/20 mt-4">
-                Your microphone will be requested when you click Begin.
-              </p>
+              {error && (
+                <div className="flex items-start gap-2 mt-4 px-4 py-3 rounded-xl bg-red-500/8 border border-red-500/20 w-full max-w-sm text-left">
+                  <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-red-300/80 leading-relaxed">{error}</p>
+                </div>
+              )}
+              {!error && (
+                <p className="text-xs text-white/20 mt-4">
+                  Your microphone will be requested when you click Begin.
+                </p>
+              )}
             </div>
           )}
 
@@ -647,9 +663,15 @@ export default function SessionPage() {
                 <div className="flex flex-col items-center text-center max-w-sm mx-auto py-16 animate-in fade-in duration-500">
                   <CheckCircle2 className="w-10 h-10 text-[#00F38D] mb-4" />
                   <h2 className="text-2xl font-extrabold text-white mb-2">Session Complete</h2>
-                  <p className="text-sm text-white/40 mb-8">
+                  <p className="text-sm text-white/40 mb-6">
                     Duration: <span className="text-white font-mono">{formatTime(elapsed)}</span>
                   </p>
+                  {feedbackError && (
+                    <div className="flex items-start gap-2.5 w-full px-4 py-3 rounded-xl bg-red-500/8 border border-red-500/20 mb-6 text-left">
+                      <AlertCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                      <p className="text-sm text-red-300/80 leading-relaxed">{feedbackError}</p>
+                    </div>
+                  )}
                   <div className="flex gap-3 w-full">
                     <button onClick={() => window.location.reload()} className="flex-1 py-2.5 rounded-lg bg-white/5 border border-white/10 text-sm text-white/60 font-semibold hover:bg-white/10 transition-all">
                       Practice Again
