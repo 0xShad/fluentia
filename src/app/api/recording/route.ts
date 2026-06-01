@@ -43,8 +43,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Rate limit: 10 recording fetches per 10 minutes per user
-    if (!rateLimit(`recording:${user.id}`, 10, 10 * 60 * 1000)) {
+    // Rate limit: 3 recording fetches per 10 minutes per user
+    if (!rateLimit(`recording:${user.id}`, 3, 10 * 60 * 1000)) {
       return NextResponse.json({ error: "Too many requests. Please wait before retrying." }, { status: 429 });
     }
 

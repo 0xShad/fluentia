@@ -35,8 +35,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // ── Rate limit: 5 analyses per 10 minutes per user ─────────────────────
-    if (!rateLimit(`feedback:${user.id}`, 5, 10 * 60 * 1000)) {
+    // ── Rate limit: 3 analyses per 10 minutes per user ─────────────────────
+    if (!rateLimit(`feedback:${user.id}`, 3, 10 * 60 * 1000)) {
       return NextResponse.json(
         { error: "Too many requests. Please wait before analysing another session." },
         { status: 429 }
