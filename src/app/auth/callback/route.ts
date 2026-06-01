@@ -4,7 +4,9 @@ import { createClient } from '@/lib/server'
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+  const rawNext = searchParams.get('next') ?? '/dashboard'
+  // Reject absolute URLs and protocol-relative URLs to prevent open redirect
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
 
   // Use the Host header so redirects work from any device on the network.
   // request.url resolves to localhost on the server even when the client

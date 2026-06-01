@@ -1,7 +1,15 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/server";
+import { rateLimit } from "@/lib/rate-limit";
 import type { SessionFeedback } from "@/types/feedback.types";
+
+const VALID_CATEGORIES = ["Interview", "Business", "Social", "Public Speaking", "Everyday"] as const;
+
+/** Strip control characters and cap length to prevent oversized prompt injection. */
+function sanitize(s: unknown, maxLen = 2000): string {
+  return String(s ?? "").replace(/[\x00-\x1F\x7F]/g, "").slice(0, maxLen);
+}
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -20,7 +28,37 @@ function gradeFromScore(score: number): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const { transcript, scenarioTitle, aiRole, category, scenarioId, elapsedSeconds, vapiCallId, recordingEnabled } = await req.json();
+    // ── Auth guard (must be first — before any body parsing) ───────────────
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // ── Rate limit: 5 analyses per 10 minutes per user ─────────────────────
+    if (!rateLimit(`feedback:${user.id}`, 5, 10 * 60 * 1000)) {
+      return NextResponse.json(
+        { error: "Too many requests. Please wait before analysing another session." },
+        { status: 429 }
+      );
+    }
+
+    // ── Parse + validate body ──────────────────────────────────────────────
+    const body = await req.json();
+    const { transcript, scenarioTitle, aiRole, category, scenarioId, elapsedSeconds, vapiCallId, recordingEnabled } = body;
+
+    if (!Array.isArray(transcript)) {
+      return NextResponse.json({ error: "Invalid transcript" }, { status: 400 });
+    }
+    if (typeof scenarioTitle !== "string" || !scenarioTitle.trim() || scenarioTitle.length > 300) {
+      return NextResponse.json({ error: "Invalid scenarioTitle" }, { status: 400 });
+    }
+    if (typeof aiRole !== "string" || !aiRole.trim() || aiRole.length > 300) {
+      return NextResponse.json({ error: "Invalid aiRole" }, { status: 400 });
+    }
+    if (!VALID_CATEGORIES.includes(category)) {
+      return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+    }
 
     const userLines = (transcript as { speaker: string; text: string }[]).filter(
       (l) => l.speaker === "User"
@@ -45,13 +83,6 @@ export async function POST(req: NextRequest) {
           { name: "Conciseness", score: 0, feedback: "No data." },
         ],
       } satisfies SessionFeedback);
-    }
-
-    // ── Auth guard ─────────────────────────────────────────────────────────
-    const supabase = await createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // ── Fetch user profile + preferences ───────────────────────────────────
@@ -110,9 +141,11 @@ export async function POST(req: NextRequest) {
         ? `The user's speaking goals are: ${speakingGoals.join(", ")}. Weight your feedback toward these areas when relevant.`
         : "";
 
-    // ── Format transcript ──────────────────────────────────────────────────
+    // ── Format transcript (sanitize user-controlled text before LLM interpolation) ──
+    const safeTitle = sanitize(scenarioTitle, 300);
+    const safeRole  = sanitize(aiRole, 300);
     const formatted = (transcript as { speaker: string; text: string }[])
-      .map((l) => `${l.speaker === "AI" ? aiRole : "You"}: ${l.text}`)
+      .map((l) => `${l.speaker === "AI" ? safeRole : "You"}: ${sanitize(l.text)}`)
       .join("\n");
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
@@ -132,7 +165,7 @@ export async function POST(req: NextRequest) {
     };
     const weights = categoryWeights[category] ?? "Clarity 34%, Relevance 33%, Conciseness 33%";
 
-    const prompt = `You are a rigorous professional communication coach evaluating a "${scenarioTitle}" (${category}) practice session. Score honestly — a weak session should score below 55, a strong one above 80. Do NOT cluster scores around 40-55.
+    const prompt = `You are a rigorous professional communication coach evaluating a "${safeTitle}" (${category}) practice session. Score honestly — a weak session should score below 55, a strong one above 80. Do NOT cluster scores around 40-55.
 
 ━━ USER PROFILE & PREFERENCES ━━
 ${skillLevelNote[skillLevel] ?? skillLevelNote["intermediate"]}

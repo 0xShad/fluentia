@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/server";
+import { rateLimit } from "@/lib/rate-limit";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const SIGNED_URL_TTL = 900; // 15 minutes
 const MAX_RECORDING_BYTES = 50 * 1024 * 1024; // 50 MB — ~60 min MP3 at 128 kbps
@@ -34,15 +37,20 @@ function detectAudio(buf: ArrayBuffer): { ext: string; mime: string } | null {
 
 export async function POST(req: NextRequest) {
   try {
-    const { sessionId } = await req.json();
-    if (!sessionId) {
-      return NextResponse.json({ error: "sessionId required" }, { status: 400 });
-    }
-
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate limit: 10 recording fetches per 10 minutes per user
+    if (!rateLimit(`recording:${user.id}`, 10, 10 * 60 * 1000)) {
+      return NextResponse.json({ error: "Too many requests. Please wait before retrying." }, { status: 429 });
+    }
+
+    const { sessionId } = await req.json();
+    if (!sessionId || !UUID_RE.test(sessionId)) {
+      return NextResponse.json({ error: "sessionId required" }, { status: 400 });
     }
 
     const { data: session, error: sessionErr } = await supabase
@@ -87,6 +95,17 @@ export async function POST(req: NextRequest) {
 
     if (!vapiAudioUrl) {
       return NextResponse.json({ status: "processing" });
+    }
+
+    // Only fetch from Vapi-owned domains to prevent SSRF
+    try {
+      const audioHost = new URL(vapiAudioUrl).hostname;
+      if (!audioHost.endsWith(".vapi.ai") && audioHost !== "vapi.ai") {
+        console.error("Recording rejected: audio URL not on vapi.ai domain", audioHost);
+        return NextResponse.json({ error: "Invalid recording source" }, { status: 422 });
+      }
+    } catch {
+      return NextResponse.json({ error: "Invalid recording URL" }, { status: 422 });
     }
 
     // Download audio from Vapi CDN

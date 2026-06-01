@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/server";
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function DELETE(req: NextRequest) {
   try {
     let body: { sessionId?: string };
@@ -11,7 +13,7 @@ export async function DELETE(req: NextRequest) {
     }
 
     const { sessionId } = body;
-    if (!sessionId) {
+    if (!sessionId || !UUID_RE.test(sessionId)) {
       return NextResponse.json({ error: "sessionId required" }, { status: 400 });
     }
 
