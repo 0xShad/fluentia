@@ -9,7 +9,7 @@ export async function POST() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  if (!rateLimit(`session:${user.id}`, 3, 10 * 60 * 1000)) {
+  if (!await rateLimit(`session:${user.id}`)) {
     return NextResponse.json(
       { error: "Too many sessions. Please wait a few minutes before starting another." },
       { status: 429 }

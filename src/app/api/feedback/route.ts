@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     }
 
     // ── Rate limit: 3 analyses per 10 minutes per user ─────────────────────
-    if (!rateLimit(`feedback:${user.id}`, 3, 10 * 60 * 1000)) {
+    if (!await rateLimit(`feedback:${user.id}`)) {
       return NextResponse.json(
         { error: "Too many requests. Please wait before analysing another session." },
         { status: 429 }

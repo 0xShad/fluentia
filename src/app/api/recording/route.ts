@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Rate limit: 3 recording fetches per 10 minutes per user
-    if (!rateLimit(`recording:${user.id}`, 3, 10 * 60 * 1000)) {
+    if (!await rateLimit(`recording:${user.id}`)) {
       return NextResponse.json({ error: "Too many requests. Please wait before retrying." }, { status: 429 });
     }
 

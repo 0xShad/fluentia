@@ -1,19 +1,12 @@
-declare global {
-  var __rateLimitStore: Map<string, number[]> | undefined;
-}
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
 
-const store: Map<string, number[]> = globalThis.__rateLimitStore ?? new Map();
-globalThis.__rateLimitStore = store;
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(3, "10 m"),
+});
 
-/**
- * Sliding-window in-memory rate limiter.
- * Returns true if the request is allowed, false if it exceeds the limit.
- * Works within a single serverless instance — sufficient for per-user quota protection.
- */
-export function rateLimit(key: string, max: number, windowMs: number): boolean {
-  const now = Date.now();
-  const hits = (store.get(key) ?? []).filter((t) => now - t < windowMs);
-  if (hits.length >= max) return false;
-  store.set(key, [...hits, now]);
-  return true;
+export async function rateLimit(key: string): Promise<boolean> {
+  const { success } = await ratelimit.limit(key);
+  return success;
 }

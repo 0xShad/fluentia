@@ -18,6 +18,8 @@
     "@splinetool/runtime": "^1.12.68",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.99.3",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "@vapi-ai/web": "^2.5.2",
     "@vercel/analytics": "^2.0.1",
     "class-variance-authority": "^0.7.1",
