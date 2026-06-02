@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/server";
-import { rateLimitRecording } from "@/lib/rate-limit";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -41,11 +40,6 @@ export async function POST(req: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    // Rate limit: 15 recording fetches per 10 minutes per user
-    if (!await rateLimitRecording(`recording:${user.id}`)) {
-      return NextResponse.json({ error: "Too many requests. Please wait before retrying." }, { status: 429 });
     }
 
     const { sessionId } = await req.json();
