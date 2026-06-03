@@ -257,9 +257,22 @@ Rules:
 ${formatted}
 ---END TRANSCRIPT---`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash", systemInstruction });
-    const result = await model.generateContent(userContent);
-    const text = result.response.text().trim();
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction });
+
+    let result;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        result = await model.generateContent(userContent);
+        break;
+      } catch (e: any) {
+        if ((e?.status === 429 || e?.statusText === "Too Many Requests") && attempt < 2) {
+          await new Promise((r) => setTimeout(r, (attempt + 1) * 2000));
+          continue;
+        }
+        throw e;
+      }
+    }
+    const text = result!.response.text().trim();
 
     const json = text.startsWith("```") ? text.replace(/^```[a-z]*\n?/, "").replace(/```$/, "").trim() : text;
     const feedback = JSON.parse(json) as SessionFeedback;
@@ -307,6 +320,12 @@ ${formatted}
     return NextResponse.json({ ...feedback, sessionId, cappedAt: hardCap ?? null });
   } catch (err: any) {
     console.error("Feedback API error:", err);
+    if (err?.status === 429 || err?.statusText === "Too Many Requests") {
+      return NextResponse.json(
+        { error: "The AI service is currently rate-limited. Please wait a moment and try again." },
+        { status: 429 }
+      );
+    }
     return NextResponse.json({ error: "Failed to analyse session. Please try again." }, { status: 500 });
   }
 }
