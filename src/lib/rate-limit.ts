@@ -5,7 +5,7 @@ const redis = Redis.fromEnv();
 
 const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(3, "10 m"),
+  limiter: Ratelimit.slidingWindow(10, "10 m"),
 });
 
 export async function rateLimit(key: string): Promise<boolean> {

@@ -17,8 +17,6 @@ const SPEAKING_GOALS = [
 interface CoachingBehaviorCardProps {
   skillLevel: string | null;
   setSkillLevel: (val: string) => void;
-  coachingStyle: string | null;
-  setCoachingStyle: (val: string) => void;
   speakingGoals: string[];
   setSpeakingGoals: (val: string[]) => void;
   feedbackDetail: string | null;
@@ -30,8 +28,6 @@ interface CoachingBehaviorCardProps {
 export function CoachingBehaviorCard({
   skillLevel,
   setSkillLevel,
-  coachingStyle,
-  setCoachingStyle,
   speakingGoals,
   setSpeakingGoals,
   feedbackDetail,
@@ -74,38 +70,20 @@ export function CoachingBehaviorCard({
             <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">Your Learning Profile</span>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label className="text-xs text-zinc-400">Skill Level</Label>
-              <Select value={skillLevel || undefined} onValueChange={(val) => val && setSkillLevel(val)}>
-                <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-purple-500/20 focus:border-purple-500">
-                  <SelectValue placeholder="Select Level" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#111] border-white/10 text-white">
-                  <SelectItem value="beginner" className="focus:bg-white/10 focus:text-white">Beginner</SelectItem>
-                  <SelectItem value="intermediate" className="focus:bg-white/10 focus:text-white">Intermediate</SelectItem>
-                  <SelectItem value="advanced" className="focus:bg-white/10 focus:text-white">Advanced</SelectItem>
-                  <SelectItem value="native" className="focus:bg-white/10 focus:text-white">Native / Fluent</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-[10px] text-zinc-500">Calibrates scoring difficulty — beginner scores are scaled up, advanced scores are held to a higher bar.</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label className="text-xs text-zinc-400">Evaluation Style</Label>
-              <Select value={coachingStyle || undefined} onValueChange={(val) => val && setCoachingStyle(val)}>
-                <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-purple-500/20 focus:border-purple-500">
-                  <SelectValue placeholder="Select Style" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#111] border-white/10 text-white">
-                  <SelectItem value="encouraging" className="focus:bg-white/10 focus:text-white">Encouraging & Patient</SelectItem>
-                  <SelectItem value="balanced" className="focus:bg-white/10 focus:text-white">Balanced & Natural</SelectItem>
-                  <SelectItem value="analytical" className="focus:bg-white/10 focus:text-white">Analytical & Precise</SelectItem>
-                  <SelectItem value="strict" className="focus:bg-white/10 focus:text-white">Strict & Demanding</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-[10px] text-zinc-500">How the AI weighs and frames your scores and written feedback after each session.</p>
-            </div>
+          <div className="space-y-2 sm:max-w-sm">
+            <Label className="text-xs text-zinc-400">Skill Level</Label>
+            <Select value={skillLevel || undefined} onValueChange={(val) => val && setSkillLevel(val)}>
+              <SelectTrigger className="bg-[#050505] border-white/10 text-white focus:ring-purple-500/20 focus:border-purple-500">
+                <SelectValue placeholder="Select Level" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#111] border-white/10 text-white">
+                <SelectItem value="beginner" className="focus:bg-white/10 focus:text-white">Beginner</SelectItem>
+                <SelectItem value="intermediate" className="focus:bg-white/10 focus:text-white">Intermediate</SelectItem>
+                <SelectItem value="advanced" className="focus:bg-white/10 focus:text-white">Advanced</SelectItem>
+                <SelectItem value="native" className="focus:bg-white/10 focus:text-white">Native / Fluent</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-[10px] text-zinc-500">Calibrates scoring difficulty — beginner scores are scaled up, advanced scores are held to a higher bar.</p>
           </div>
 
           <div className="space-y-2">

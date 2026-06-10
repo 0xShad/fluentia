@@ -1,7 +1,6 @@
 export interface UserPreferences {
   // Learning profile (affects AI session behavior & difficulty)
   skill_level: "beginner" | "intermediate" | "advanced" | "native";
-  coaching_style: "encouraging" | "balanced" | "analytical" | "strict";
   speaking_goals: string[];
 
   // Session behavior
@@ -23,7 +22,6 @@ export interface UserPreferences {
 
 export const DEFAULT_PREFERENCES: UserPreferences = {
   skill_level: "intermediate",
-  coaching_style: "balanced",
   speaking_goals: [],
   coaching_tone: "encouraging",
   feedback_detail: "standard",
