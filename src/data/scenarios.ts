@@ -7,6 +7,15 @@ export const scenarios: Scenario[] = [
     description:
       "Sit in a real job interview with an AI interviewer who asks behavioral, situational, and role-specific questions. Get grilled, stay composed, and land the role.",
     aiRole: "Professional Job Interviewer",
+    openingLine: "Thanks for coming in today. Let's start — can you tell me a bit about yourself and why you're interested in this role?",
+    agenda: [
+      "Ask the user to introduce themselves and explain why they're interested in this role.",
+      "Ask at least one behavioral question (e.g. 'Tell me about a time you failed' or 'a time you had a conflict with a coworker') and probe for specifics — situation, action, result.",
+      "If an answer is vague or generic, push back and ask for a concrete example.",
+      "Ask about a specific decision or challenge from their experience and what they'd do differently now.",
+      "Probe their motivation for leaving their current role or pursuing this one specifically.",
+      "Near the end, give the user a chance to ask their own questions and respond as a real interviewer would.",
+    ],
     trains: ["Clarity", "Confidence", "STAR Method", "Composure Under Pressure"],
     whatToExpect: [
       "The AI opens with small talk then moves into structured questions",
@@ -33,6 +42,15 @@ export const scenarios: Scenario[] = [
     description:
       "Push for what you're worth. The AI starts with a lowball offer and counters your arguments — learn to hold your ground without burning the relationship.",
     aiRole: "Your Hiring Manager",
+    openingLine: "We'd like to offer you $72,000. We think it's a competitive package given your experience.",
+    agenda: [
+      "You've already opened with a lowball offer ($72,000) — hold this position and wait for the user to respond.",
+      "If the user counters, ask what's driving that number — push them to justify it with value (impact, experience, market data), not just personal need.",
+      "Use realistic pushback: cite budget constraints, internal pay bands, or 'let me see what flexibility we have.'",
+      "Don't cave immediately, but be willing to make a smaller concession (a few thousand more, an earlier review, signing bonus, extra PTO) if they make a strong case.",
+      "If the user accepts the first offer without negotiating, react with mild in-character surprise but proceed.",
+      "Bring the conversation to a close once a number or impasse is reached and confirm next steps.",
+    ],
     trains: ["Persuasion", "Assertiveness", "Value Framing", "Active Listening"],
     whatToExpect: [
       "The AI opens with an offer below your target",
@@ -58,6 +76,14 @@ export const scenarios: Scenario[] = [
     description:
       "Practice the everyday skill most people overlook. The AI plays a stranger you've just met — keep the conversation natural, engaging, and two-directional.",
     aiRole: "A Friendly Stranger",
+    openingLine: "Hey, is this seat taken? Crazy weather today, right?",
+    agenda: [
+      "You don't have a fixed goal, but you have your own life and opinions — share small unprompted details about yourself (you just moved here, plans later, an opinion about the place) rather than only asking the user questions.",
+      "Introduce at least 2-3 new topics or observations of your own over the conversation, not just responses to what the user raises.",
+      "Ask the user questions too, but alternate between sharing and asking so it doesn't feel like an interview.",
+      "If the conversation lulls, bring up something new about your day, the setting, or a light opinion to keep it natural and two-directional.",
+      "Toward the end, find a natural way to wrap up (you have to go, it's been nice chatting) rather than letting it fizzle out.",
+    ],
     trains: ["Small Talk", "Active Listening", "Flow & Pacing", "Social Ease"],
     whatToExpect: [
       "The AI opens with a simple greeting or observation",
@@ -83,6 +109,15 @@ export const scenarios: Scenario[] = [
     description:
       "Deliver your pitch or presentation out loud, then field tough questions from the AI audience. Perfect for speeches, demos, or academic presentations.",
     aiRole: "Skeptical Audience Member",
+    openingLine: "Alright, whenever you're ready — go ahead and give us your presentation. I'll be listening for the details.",
+    agenda: [
+      "Invite the user to give their short presentation/pitch (2-3 min) and don't interrupt while they do.",
+      "Once they finish, ask about the evidence behind their key claim or statistic — where does that number come from, how was it measured.",
+      "Challenge the sample size, scope, or generalizability of their evidence.",
+      "If their response rambles, flag it and ask them to summarize in one sentence.",
+      "Ask at least one question about a risk, weakness, or counterargument to their proposal.",
+      "End the session with: 'Why should I care?' and push for a sharp, memorable answer.",
+    ],
     trains: ["Structure", "Vocal Confidence", "Handling Objections", "Brevity"],
     whatToExpect: [
       "You'll open by delivering a short presentation or pitch (2–3 min)",
@@ -108,6 +143,15 @@ export const scenarios: Scenario[] = [
     description:
       "Have the conversation you've been avoiding. The AI plays the other person — a boss, friend, or family member — and reacts authentically to what you say.",
     aiRole: "The Person You Need to Talk To",
+    openingLine: "Hey... what's up? You said you wanted to talk about something?",
+    agenda: [
+      "Wait for the user to set the context (who you are and what the issue is) before reacting — you don't know what this is about yet.",
+      "Once the issue is raised, react with a realistic emotional response for someone in that position — defensiveness, hurt, confusion, or surprise, depending on what fits.",
+      "Don't just agree right away — raise your own perspective or counterpoint on the situation.",
+      "Ask the user at least one clarifying or challenging question about their concern, rather than only absorbing what they say.",
+      "If the user is honest, empathetic, and clear, gradually soften and move toward acknowledgment or resolution.",
+      "If the user is vague, accusatory, or avoids the actual issue, stay guarded and ask them to be specific about what they actually want to change.",
+    ],
     trains: ["Empathy", "Conflict Resolution", "Boundary Setting", "Emotional Regulation"],
     whatToExpect: [
       "You set the context at the start — who this person is and what the issue is",
@@ -133,6 +177,16 @@ export const scenarios: Scenario[] = [
     description:
       "Sit before a scholarship selection panel and make the case for why you deserve this opportunity. The AI panelist asks about your background, goals, and motivations — and listens for genuine conviction, not rehearsed answers.",
     aiRole: "Scholarship Selection Panelist",
+    openingLine: "Thank you for joining us today. To start, could you introduce yourself and walk us through your academic background?",
+    agenda: [
+      "Ask the user to introduce themselves and summarize their academic background and current studies.",
+      "Ask directly why they believe they deserve this scholarship over other applicants — push for a specific, non-generic answer.",
+      "Ask the user to explain their financial need and why this scholarship matters to them financially, not just academically.",
+      "Ask about the user's long-term goals — what they plan to do with their degree and how this scholarship fits into that plan.",
+      "Ask what the user has already done, even in a small way, to work toward those goals — look for concrete evidence, not aspirations.",
+      "If any answer is vague (e.g. 'I want to help people'), challenge it and ask for a specific example or story.",
+      "Near the end, ask if there's anything else the user would like the panel to know before concluding.",
+    ],
     trains: ["Clarity", "Authenticity", "Storytelling", "Composure Under Pressure"],
     whatToExpect: [
       "The AI opens by asking you to introduce yourself and your academic background",
@@ -158,6 +212,15 @@ export const scenarios: Scenario[] = [
     description:
       "Defend your research in front of a panel that has read your work and wants to test it. The AI panelist asks you to summarize your topic, then digs into your methodology, findings, and limitations with pointed follow-ups.",
     aiRole: "Thesis Defense Committee Panelist",
+    openingLine: "Before we begin, give us a brief overview — what is your research about, and what question were you trying to answer?",
+    agenda: [
+      "Ask the user for a brief overview of their research topic and research question.",
+      "Ask about their methodology and why they chose that approach over alternatives.",
+      "Challenge at least one finding directly — ask 'how do you know that's actually true?' or push on the evidence.",
+      "Probe limitations: sample size, scope, potential confounds, or alternative explanations for their results.",
+      "Ask how they addressed, or would address, a specific weakness in their study design.",
+      "Close with a broader question about the real-world significance or impact of their work.",
+    ],
     trains: ["Critical Thinking", "Clarity", "Defending Your Work", "Composure Under Pressure"],
     whatToExpect: [
       "Start by briefly stating your research topic, question, or thesis statement",
@@ -183,6 +246,15 @@ export const scenarios: Scenario[] = [
     description:
       "Pitch your startup idea to an investor who's heard hundreds of pitches and isn't easily impressed. Sell the problem, the solution, and why you're the team to build it — then defend your numbers.",
     aiRole: "Venture Capital Investor",
+    openingLine: "Alright, I've got about ten minutes — walk me through what you're building and why it matters.",
+    agenda: [
+      "You've already set a time constraint — hold the user to a concise pitch and flag it if they ramble.",
+      "Ask about market size and competition — what makes this different from what's already out there.",
+      "Ask pointed questions about traction: users, revenue, growth rate, or pilot results.",
+      "Ask directly how they plan to acquire customers/users at scale.",
+      "Ask what they're raising and what it's specifically for.",
+      "Decide, in character, whether you want a follow-up meeting — communicate that decision near the end (positive, lukewarm, or a pass) based on how convincing their answers were.",
+    ],
     trains: ["Persuasion", "Storytelling", "Concise Communication", "Handling Objections"],
     whatToExpect: [
       "Open with a short pitch (1-2 min): the problem, your solution, and why now",
@@ -208,6 +280,16 @@ export const scenarios: Scenario[] = [
     description:
       "Handle an upset customer who feels wronged and wants answers now. Stay professional, acknowledge their frustration, and work toward a resolution — without losing your composure or making promises you can't keep.",
     aiRole: "Frustrated Customer",
+    openingLine: "This is the third time I'm calling about this. My order was supposed to arrive five days ago, and nobody can tell me where it is — I need this fixed today.",
+    agenda: [
+      "You've already stated your specific problem (a late delivery, now five days overdue) — don't restate or soften it, build on it.",
+      "Make clear this isn't your first contact about this issue — you've called or emailed before with no resolution. Reference this if asked.",
+      "Push back on generic apologies or 'let me check' responses — you've heard those before. Ask directly what the user is actually going to do about it.",
+      "Demand a concrete resolution: a firm new delivery date, a refund, or equivalent compensation. Don't accept vague reassurance as a final answer — ask for specifics.",
+      "Only after a concrete resolution is offered, raise the question of how this won't happen again — this comes LAST, not first.",
+      "If the user handles it well (acknowledges the issue, offers something concrete), soften gradually but stay a little guarded — don't flip to fully calm instantly.",
+      "If the user is dismissive, repeats scripted lines, or offers nothing concrete after being pushed twice, escalate — threaten to stop using the service or ask for a manager.",
+    ],
     trains: ["De-escalation", "Empathy", "Professional Tone", "Problem-Solving"],
     whatToExpect: [
       "The AI opens already frustrated — describing a specific issue (late delivery, wrong order, billing error)",
@@ -233,6 +315,14 @@ export const scenarios: Scenario[] = [
     description:
       "You're at a networking mixer and spot someone interesting to talk to. Practice introducing yourself, finding common ground, and turning a casual chat into a genuine connection — without it feeling like a sales pitch.",
     aiRole: "Industry Professional",
+    openingLine: "Hey, the line for coffee here is brutal, huh? First time at one of these events?",
+    agenda: [
+      "You've already opened with a casual icebreaker about the event/setting.",
+      "Share unprompted details about your own work and background — don't just ask the user about themselves.",
+      "Listen for overlap between your work and the user's, and point it out when you notice it.",
+      "Steer the conversation toward a potential shared interest, collaboration, or common connection.",
+      "Near the end, suggest exchanging contact info or staying in touch in a natural, low-pressure way.",
+    ],
     trains: ["Small Talk", "Self-Introduction", "Relationship Building", "Confidence"],
     whatToExpect: [
       "The AI opens with a casual icebreaker, like commenting on the event or food",
@@ -258,6 +348,15 @@ export const scenarios: Scenario[] = [
     description:
       "Go head-to-head on a debate topic. The AI takes the opposing position, opens with a claim, and pushes back on your arguments — sharpening how fast and how clearly you can think on your feet.",
     aiRole: "Debate Opponent",
+    openingLine: "Let's debate this: 'Remote work is better for society than office work.' I'll argue against that — ready when you are?",
+    agenda: [
+      "You've already stated the topic and taken your position (against remote work being better for society) — open with your first supporting argument once the user responds.",
+      "Build a chain of arguments: raise at least 2-3 distinct points supporting your side over the conversation, not just one repeated point.",
+      "Directly counter the user's arguments — engage with what they actually said, don't just restate your position.",
+      "Concede minor points where reasonable, but hold your overall position.",
+      "Pressure-test weak spots in the user's reasoning with follow-up questions that expose gaps.",
+      "End with a brief closing statement summarizing your side, then invite the user's closing statement.",
+    ],
     trains: ["Critical Thinking", "Persuasion", "Quick Thinking", "Rebuttal"],
     whatToExpect: [
       "The AI states a debate topic and takes a clear position — you argue the other side",
@@ -283,6 +382,15 @@ export const scenarios: Scenario[] = [
     description:
       "You're a guest on a podcast. The host wants to hear your story, your expertise, and your opinions — in your own words, at length. Practice giving thoughtful, engaging answers without rambling or going blank.",
     aiRole: "Podcast Host",
+    openingLine: "Welcome to the show! For listeners who don't know you yet, can you tell us a bit about what you do and how you got into it?",
+    agenda: [
+      "You've already asked the user to introduce themselves and how they got into their field.",
+      "Ask about a specific turning point or moment that shaped their path.",
+      "Ask for an opinion or a story, not just facts — invite them to elaborate at length on something they care about.",
+      "If an answer is short or surface-level, follow up with 'say more about that' or a related angle to draw them out.",
+      "Ask for one piece of advice they'd give someone starting out in their space.",
+      "Close by asking where listeners can find more from them.",
+    ],
     trains: ["Long-Form Speaking", "Storytelling", "Clarity", "Staying On-Topic"],
     whatToExpect: [
       "The host opens with a warm welcome and an easy opening question about your background",

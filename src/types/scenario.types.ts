@@ -21,6 +21,10 @@ export interface Scenario {
   trains: string[];
   /** What role the AI voice agent takes in this session */
   aiRole: string;
+  /** The AI's literal first utterance, spoken in-character before any LLM turn (used as Vapi firstMessage) */
+  openingLine: string;
+  /** Ordered, AI-facing instructions: what the AI should proactively raise/ask/push for during the session */
+  agenda: string[];
   /** What the user should expect going into this session */
   whatToExpect: string[];
   /** A short sample exchange shown in the preview */
