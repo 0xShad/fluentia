@@ -1,4 +1,4 @@
-import type { PersonaId, Scenario } from "@/types/scenario.types";
+import { getDefaultPersonaId, type PersonaId, type Scenario } from "@/types/scenario.types";
 import type { UserPreferences } from "@/types/user-preferences.types";
 import { PERSONAS } from "@/data/personas";
 
@@ -9,22 +9,14 @@ const SKILL_INSTRUCTIONS: Record<string, string> = {
   native:       "The user is NATIVE/FLUENT. Maintain the most realistic, high-pressure version of this scenario. Do not simplify anything. Hold them to a professional standard.",
 };
 
-const STYLE_INSTRUCTIONS: Record<string, string> = {
-  encouraging: "Your demeanor is warm and supportive. Nod along with the user, give subtle positive cues, and react gently to mistakes — don't make them feel bad.",
-  balanced:    "Your demeanor is neutral and professional. React authentically — positive when warranted, critical when appropriate. Don't over-encourage or over-criticize.",
-  analytical:  "Your demeanor is precise and analytical. Ask pointed follow-up questions. If an answer is vague, press for specifics. Be professional but demanding in quality.",
-  strict:      "Your demeanor is strict and exacting. Hold the user to a very high standard. Challenge weak answers directly. Don't let poor responses slide — push back firmly.",
-};
-
 export function buildScenarioPrompt(
   scenario: Scenario,
   prefs?: Partial<UserPreferences>,
   personaId?: PersonaId
 ): string {
   const skillNote = SKILL_INSTRUCTIONS[prefs?.skill_level ?? "intermediate"];
-  const styleNote = STYLE_INSTRUCTIONS[prefs?.coaching_style ?? "balanced"];
 
-  const persona = personaId ? PERSONAS[personaId] : null;
+  const persona = PERSONAS[personaId ?? getDefaultPersonaId(scenario.category)];
 
   const safeGoals = (prefs?.speaking_goals ?? [])
     .map((g) => String(g).replace(/[\x00-\x1F\x7F]/g, "").slice(0, 200));
@@ -33,9 +25,7 @@ export function buildScenarioPrompt(
       ? `The user's speaking goals include: ${safeGoals.join(", ")}. Weight your interactions toward those areas when natural.`
       : "";
 
-  const toneBlock = persona
-    ? `[Tone & Personality]\n${persona.promptInstruction}`
-    : `[Coaching Demeanor]\n${styleNote}`;
+  const toneBlock = `[Tone & Personality]\n${persona.promptInstruction}`;
 
   return `
 [Identity]

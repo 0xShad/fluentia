@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/client";
 
 import { CoachingBehaviorCard } from "@/components/dashboard/preferences/coaching-behavior-card";
-import { SessionDefaultsCard } from "@/components/dashboard/preferences/session-defaults-card";
 
 export default function SystemPreferencesPage() {
   const [pageLoading, setPageLoading] = useState(true);
@@ -16,7 +15,6 @@ export default function SystemPreferencesPage() {
 
   // AI Coaching Behavior State
   const [skillLevel, setSkillLevel] = useState<string | null>("intermediate");
-  const [coachingStyle, setCoachingStyle] = useState<string | null>("balanced");
   const [speakingGoals, setSpeakingGoals] = useState<string[]>([]);
   const [feedbackDetail, setFeedbackDetail] = useState<string | null>("standard");
   const [coachingTone, setCoachingTone] = useState<string | null>("encouraging");
@@ -34,7 +32,6 @@ export default function SystemPreferencesPage() {
 
         if (data) {
           setSkillLevel(data.skill_level ?? "intermediate");
-          setCoachingStyle(data.coaching_style ?? "balanced");
           setSpeakingGoals(data.speaking_goals ?? []);
           setCoachingTone(data.coaching_tone ?? "encouraging");
           setFeedbackDetail(data.feedback_detail ?? "standard");
@@ -59,7 +56,6 @@ export default function SystemPreferencesPage() {
     const { error } = await supabase.from("user_preferences").upsert({
       user_id: user.id,
       skill_level: skillLevel ?? "intermediate",
-      coaching_style: coachingStyle ?? "balanced",
       speaking_goals: speakingGoals,
       coaching_tone: coachingTone ?? "encouraging",
       feedback_detail: feedbackDetail ?? "standard",
@@ -87,7 +83,6 @@ export default function SystemPreferencesPage() {
     if (!confirmReset) return;
 
     setSkillLevel("intermediate");
-    setCoachingStyle("balanced");
     setSpeakingGoals([]);
     setFeedbackDetail("standard");
     setCoachingTone("encouraging");
@@ -98,7 +93,6 @@ export default function SystemPreferencesPage() {
       await supabase.from("user_preferences").upsert({
         user_id: user.id,
         skill_level: "intermediate",
-        coaching_style: "balanced",
         speaking_goals: [],
         coaching_tone: "encouraging",
         feedback_detail: "standard",
@@ -119,7 +113,7 @@ export default function SystemPreferencesPage() {
     <div className="flex-1 p-6 md:p-8 space-y-8 animate-in fade-in duration-500 w-full max-w-2xl mx-auto pb-24">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-white mb-2">System Preferences</h2>
-        <p className="text-muted-foreground text-sm">Customize how your AI coach scores, frames feedback, and behaves by default during sessions.</p>
+        <p className="text-muted-foreground text-sm">Customize how your AI coach scores and frames your post-session feedback.</p>
       </div>
 
       <CoachingBehaviorCard
@@ -131,11 +125,6 @@ export default function SystemPreferencesPage() {
         setFeedbackDetail={setFeedbackDetail}
         coachingTone={coachingTone}
         setCoachingTone={setCoachingTone}
-      />
-
-      <SessionDefaultsCard
-        coachingStyle={coachingStyle}
-        setCoachingStyle={setCoachingStyle}
       />
 
       {/* Floating Action Bar */}
