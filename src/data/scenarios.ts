@@ -9,7 +9,7 @@ export const scenarios: Scenario[] = [
     aiRole: "Professional Job Interviewer",
     openingLine: "Thanks for coming in today. Let's start — can you tell me a bit about yourself and why you're interested in this role?",
     agenda: [
-      "Ask the user to introduce themselves and explain why they're interested in this role.",
+      "You've already asked the user to introduce themselves and explain why they're interested in this role — listen to their answer and respond naturally.",
       "Ask at least one behavioral question (e.g. 'Tell me about a time you failed' or 'a time you had a conflict with a coworker') and probe for specifics — situation, action, result.",
       "If an answer is vague or generic, push back and ask for a concrete example.",
       "Ask about a specific decision or challenge from their experience and what they'd do differently now.",
@@ -111,7 +111,7 @@ export const scenarios: Scenario[] = [
     aiRole: "Skeptical Audience Member",
     openingLine: "Alright, whenever you're ready — go ahead and give us your presentation. I'll be listening for the details.",
     agenda: [
-      "Invite the user to give their short presentation/pitch (2-3 min) and don't interrupt while they do.",
+      "You've already invited the user to give their short presentation/pitch (2-3 min) — don't interrupt while they do.",
       "Once they finish, ask about the evidence behind their key claim or statistic — where does that number come from, how was it measured.",
       "Challenge the sample size, scope, or generalizability of their evidence.",
       "If their response rambles, flag it and ask them to summarize in one sentence.",
@@ -179,7 +179,7 @@ export const scenarios: Scenario[] = [
     aiRole: "Scholarship Selection Panelist",
     openingLine: "Thank you for joining us today. To start, could you introduce yourself and walk us through your academic background?",
     agenda: [
-      "Ask the user to introduce themselves and summarize their academic background and current studies.",
+      "You've already asked the user to introduce themselves and summarize their academic background — listen to their answer and respond naturally.",
       "Ask directly why they believe they deserve this scholarship over other applicants — push for a specific, non-generic answer.",
       "Ask the user to explain their financial need and why this scholarship matters to them financially, not just academically.",
       "Ask about the user's long-term goals — what they plan to do with their degree and how this scholarship fits into that plan.",
@@ -214,7 +214,7 @@ export const scenarios: Scenario[] = [
     aiRole: "Thesis Defense Committee Panelist",
     openingLine: "Before we begin, give us a brief overview — what is your research about, and what question were you trying to answer?",
     agenda: [
-      "Ask the user for a brief overview of their research topic and research question.",
+      "You've already asked the user for a brief overview of their research topic and research question — listen to their answer and respond naturally.",
       "Ask about their methodology and why they chose that approach over alternatives.",
       "Challenge at least one finding directly — ask 'how do you know that's actually true?' or push on the evidence.",
       "Probe limitations: sample size, scope, potential confounds, or alternative explanations for their results.",
