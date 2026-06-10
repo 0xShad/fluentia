@@ -206,16 +206,6 @@ export default function ScenariosPage() {
                       onStart={() => handleStart(scenario)}
                     />
                   ))}
-
-                  {activeCategory === "All" && (
-                    <ScenarioCard
-                      title="Need a custom scenario?"
-                      description=""
-                      category="Everyday"
-                      duration=""
-                      isNewRequest
-                    />
-                  )}
                 </div>
               )}
             </div>

@@ -5,8 +5,6 @@ import {
   Sparkles,
   Building2,
   Users,
-  Code,
-  ArrowRight,
   Coffee,
   Briefcase,
   Bot,
@@ -25,7 +23,6 @@ interface ScenarioCardProps {
   duration: string;
   difficulty?: DifficultyLevel;
   isFeatured?: boolean;
-  isNewRequest?: boolean;
   className?: string;
   /** Called when user clicks "Preview" */
   onPreview?: () => void;
@@ -73,39 +70,10 @@ export function ScenarioCard({
   duration,
   difficulty,
   isFeatured,
-  isNewRequest,
   className,
   onPreview,
   onStart,
 }: ScenarioCardProps) {
-  // ── Custom Session Request Card ──────────────────────────────────────────────
-  if (isNewRequest) {
-    return (
-      <div
-        className={cn(
-          "group flex flex-col justify-between p-6 rounded-xl bg-[#0d0d0d] border border-dashed border-white/15 hover:border-[#00F38D]/40 transition-all cursor-pointer relative overflow-hidden",
-          className
-        )}
-      >
-        <div>
-          <div className="w-9 h-9 rounded-lg bg-[#00F38D]/10 border border-[#00F38D]/20 flex items-center justify-center mb-5">
-            <Code className="w-4 h-4 text-[#00F38D]" />
-          </div>
-          <h3 className="text-lg font-bold text-white mb-2 leading-snug">
-            Need a custom scenario?
-          </h3>
-          <p className="text-sm text-white/40 leading-relaxed">
-            Describe your situation and the AI builds a tailored session —
-            upcoming interview, presentation, or difficult conversation.
-          </p>
-        </div>
-        <div className="flex items-center mt-6 text-sm font-semibold text-[#00F38D] group-hover:translate-x-1 transition-transform">
-          Generate Custom Session <ArrowRight className="w-4 h-4 ml-2" />
-        </div>
-      </div>
-    );
-  }
-
   // ── Featured Card ────────────────────────────────────────────────────────────
   if (isFeatured) {
     return (

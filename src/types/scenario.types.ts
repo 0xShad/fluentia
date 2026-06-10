@@ -56,8 +56,8 @@ export function getDefaultPersonaId(category: ScenarioCategory): PersonaId {
 export const SCENARIO_CATEGORIES: ScenarioCategoryMeta[] = [
   {
     name: "Interview",
-    label: "Job Interview",
-    description: "Practice answering interview questions with an AI interviewer who probes and challenges you in real time.",
+    label: "Interview",
+    description: "Practice job, scholarship, and academic interviews with an AI panelist who probes and challenges you in real time.",
     keySkill: "Confidence under pressure",
   },
   {
