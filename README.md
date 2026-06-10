@@ -4,7 +4,7 @@
 
 Fluentia lets you practice high-stakes conversations — job interviews, client calls, presentations, everyday social situations — with an AI coach that listens, responds, and gives you a detailed performance report after every session.
 
-![Landing Page](./docs/screenshots/landing.jpg)
+![Landing Page](./docs/screenshots/fluentia-page.jpg)
 
 ---
 
