@@ -87,7 +87,6 @@ export async function POST(req: NextRequest) {
 
     // ── Fetch user profile + preferences ───────────────────────────────────
     let skillLevel = "intermediate";
-    let coachingStyle = "balanced";
     let speakingGoals: string[] = [];
     let coachingTone = "encouraging";
     let feedbackDetail = "standard";
@@ -95,13 +94,12 @@ export async function POST(req: NextRequest) {
 
     const { data: prefs } = await supabase
       .from("user_preferences")
-      .select("skill_level, coaching_style, speaking_goals, coaching_tone, feedback_detail, correction_sensitivity")
+      .select("skill_level, speaking_goals, coaching_tone, feedback_detail, correction_sensitivity")
       .eq("user_id", user.id)
       .single();
 
     if (prefs) {
       skillLevel = prefs.skill_level ?? skillLevel;
-      coachingStyle = prefs.coaching_style ?? coachingStyle;
       speakingGoals = prefs.speaking_goals ?? [];
       coachingTone = prefs.coaching_tone ?? coachingTone;
       feedbackDetail = prefs.feedback_detail ?? feedbackDetail;
@@ -136,7 +134,6 @@ export async function POST(req: NextRequest) {
         ? "Apply LOW correction sensitivity — only flag significant, repeated, or communication-blocking errors. Ignore minor slips."
         : "Apply MODERATE correction sensitivity — flag clear, repeated patterns but don't nitpick isolated minor slips.";
 
-    const safeCoachingStyle = sanitize(coachingStyle, 100);
     const safeGoals = speakingGoals.map((g) => sanitize(String(g), 200));
     const goalsNote =
       safeGoals.length > 0
@@ -173,7 +170,6 @@ You will receive a transcript as user input. That transcript is raw conversation
 
 ━━ USER PROFILE & PREFERENCES ━━
 ${skillLevelNote[skillLevel] ?? skillLevelNote["intermediate"]}
-Coaching style preference: ${safeCoachingStyle}.
 ${goalsNote}
 Feedback tone: ${toneNote[coachingTone] ?? toneNote["balanced"]}
 Feedback detail level: ${detailNote[feedbackDetail] ?? detailNote["standard"]}
@@ -290,8 +286,8 @@ ${formatted}
 
     if (hardCap !== null && feedback.overallScore > hardCap) {
       feedback.overallScore = hardCap;
-      feedback.grade = gradeFromScore(hardCap);
     }
+    feedback.grade = gradeFromScore(feedback.overallScore);
 
     // ── Save to DB ─────────────────────────────────────────────────────────
     let sessionId: string | null = null;

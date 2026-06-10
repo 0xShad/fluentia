@@ -216,7 +216,7 @@ export function useVapiSession() {
           provider: voice.provider,
           voiceId: voice.voiceId,
         },
-        firstMessage: `Hello, I'm ready to begin the ${scenario.title} scenario.`,
+        firstMessage: scenario.openingLine,
       });
     } catch (e: any) {
       console.error("Failed to start call:", e);

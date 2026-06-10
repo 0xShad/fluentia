@@ -295,7 +295,7 @@ export default function SessionPage() {
       if (!user) return;
       const { data: prefs } = await supabase
         .from("user_preferences")
-        .select("skill_level, coaching_style, speaking_goals, coaching_tone, feedback_detail, correction_sensitivity, realtime_hints, preferred_voice")
+        .select("skill_level, speaking_goals, coaching_tone, feedback_detail, correction_sensitivity, realtime_hints, preferred_voice")
         .eq("user_id", user.id)
         .single();
       if (prefs) setUserPrefs(prefs as Partial<UserPreferences>);

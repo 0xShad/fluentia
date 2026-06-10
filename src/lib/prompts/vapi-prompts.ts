@@ -1,4 +1,4 @@
-import type { PersonaId, Scenario } from "@/types/scenario.types";
+import { getDefaultPersonaId, type PersonaId, type Scenario } from "@/types/scenario.types";
 import type { UserPreferences } from "@/types/user-preferences.types";
 import { PERSONAS } from "@/data/personas";
 
@@ -9,22 +9,14 @@ const SKILL_INSTRUCTIONS: Record<string, string> = {
   native:       "The user is NATIVE/FLUENT. Maintain the most realistic, high-pressure version of this scenario. Do not simplify anything. Hold them to a professional standard.",
 };
 
-const STYLE_INSTRUCTIONS: Record<string, string> = {
-  encouraging: "Your demeanor is warm and supportive. Nod along with the user, give subtle positive cues, and react gently to mistakes — don't make them feel bad.",
-  balanced:    "Your demeanor is neutral and professional. React authentically — positive when warranted, critical when appropriate. Don't over-encourage or over-criticize.",
-  analytical:  "Your demeanor is precise and analytical. Ask pointed follow-up questions. If an answer is vague, press for specifics. Be professional but demanding in quality.",
-  strict:      "Your demeanor is strict and exacting. Hold the user to a very high standard. Challenge weak answers directly. Don't let poor responses slide — push back firmly.",
-};
-
 export function buildScenarioPrompt(
   scenario: Scenario,
   prefs?: Partial<UserPreferences>,
   personaId?: PersonaId
 ): string {
   const skillNote = SKILL_INSTRUCTIONS[prefs?.skill_level ?? "intermediate"];
-  const styleNote = STYLE_INSTRUCTIONS[prefs?.coaching_style ?? "balanced"];
 
-  const persona = personaId ? PERSONAS[personaId] : null;
+  const persona = PERSONAS[personaId ?? getDefaultPersonaId(scenario.category)];
 
   const safeGoals = (prefs?.speaking_goals ?? [])
     .map((g) => String(g).replace(/[\x00-\x1F\x7F]/g, "").slice(0, 200));
@@ -33,9 +25,7 @@ export function buildScenarioPrompt(
       ? `The user's speaking goals include: ${safeGoals.join(", ")}. Weight your interactions toward those areas when natural.`
       : "";
 
-  const toneBlock = persona
-    ? `[Tone & Personality]\n${persona.promptInstruction}`
-    : `[Coaching Demeanor]\n${styleNote}`;
+  const toneBlock = `[Tone & Personality]\n${persona.promptInstruction}`;
 
   return `
 [Identity]
@@ -50,6 +40,12 @@ ${toneBlock}
 [Context]
 The user is practicing a communication scenario titled: "${scenario.title}".
 Background context: ${scenario.description}
+You already opened the conversation with this line: "${scenario.openingLine}"
+
+[Your Agenda]
+Your job for the rest of this session is to work through the following points, in roughly this order, while staying responsive to what the user says:
+${scenario.agenda.map((item, i) => `${i + 1}. ${item}`).join("\n")}
+Do not read these out as a checklist or announce that you have an agenda. Weave them into the conversation naturally. If the user's answer raises something worth a brief follow-up, follow up — then return to your agenda.
 
 [Goals]
 Your goal is to help the user train the following skills:
@@ -61,12 +57,13 @@ ${skillNote}
 
 [Style & Behavior]
 - Keep your turns brief (1-3 sentences) so the user can speak.
-- React authentically to what the user says.
+- You have your own agenda (see [Your Agenda]) — drive toward it. Don't become purely reactive: if the user's response doesn't lead anywhere useful, steer back to your next agenda item.
+- React authentically to what the user says, but don't let reacting replace pursuing your own goals — a real person in this role would do both.
 - Stay fully in character for both your role and your tone — do not slip into a neutral or generic assistant voice.
 
 [Session Structure]
-1. Open the conversation naturally as your persona (e.g., greet them, ask the first question, or set the scene).
-2. Follow the natural flow of the conversation.
-3. If the user seems stuck or the conversation reaches a natural conclusion, wrap up the interaction gracefully.
+1. The conversation has already opened with your line above — respond to whatever the user says next as your character would.
+2. Work through your agenda while following the natural flow of the conversation.
+3. If the user seems stuck, the conversation reaches a natural conclusion, or you've worked through your agenda, wrap up gracefully and in character.
 `.trim();
 }

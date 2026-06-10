@@ -15,7 +15,6 @@ export default function SystemPreferencesPage() {
 
   // AI Coaching Behavior State
   const [skillLevel, setSkillLevel] = useState<string | null>("intermediate");
-  const [coachingStyle, setCoachingStyle] = useState<string | null>("balanced");
   const [speakingGoals, setSpeakingGoals] = useState<string[]>([]);
   const [feedbackDetail, setFeedbackDetail] = useState<string | null>("standard");
   const [coachingTone, setCoachingTone] = useState<string | null>("encouraging");
@@ -33,7 +32,6 @@ export default function SystemPreferencesPage() {
 
         if (data) {
           setSkillLevel(data.skill_level ?? "intermediate");
-          setCoachingStyle(data.coaching_style ?? "balanced");
           setSpeakingGoals(data.speaking_goals ?? []);
           setCoachingTone(data.coaching_tone ?? "encouraging");
           setFeedbackDetail(data.feedback_detail ?? "standard");
@@ -58,7 +56,6 @@ export default function SystemPreferencesPage() {
     const { error } = await supabase.from("user_preferences").upsert({
       user_id: user.id,
       skill_level: skillLevel ?? "intermediate",
-      coaching_style: coachingStyle ?? "balanced",
       speaking_goals: speakingGoals,
       coaching_tone: coachingTone ?? "encouraging",
       feedback_detail: feedbackDetail ?? "standard",
@@ -86,7 +83,6 @@ export default function SystemPreferencesPage() {
     if (!confirmReset) return;
 
     setSkillLevel("intermediate");
-    setCoachingStyle("balanced");
     setSpeakingGoals([]);
     setFeedbackDetail("standard");
     setCoachingTone("encouraging");
@@ -97,7 +93,6 @@ export default function SystemPreferencesPage() {
       await supabase.from("user_preferences").upsert({
         user_id: user.id,
         skill_level: "intermediate",
-        coaching_style: "balanced",
         speaking_goals: [],
         coaching_tone: "encouraging",
         feedback_detail: "standard",
@@ -124,8 +119,6 @@ export default function SystemPreferencesPage() {
       <CoachingBehaviorCard
         skillLevel={skillLevel}
         setSkillLevel={setSkillLevel}
-        coachingStyle={coachingStyle}
-        setCoachingStyle={setCoachingStyle}
         speakingGoals={speakingGoals}
         setSpeakingGoals={setSpeakingGoals}
         feedbackDetail={feedbackDetail}

@@ -21,6 +21,10 @@ export interface Scenario {
   trains: string[];
   /** What role the AI voice agent takes in this session */
   aiRole: string;
+  /** The AI's literal first utterance, spoken in-character before any LLM turn (used as Vapi firstMessage) */
+  openingLine: string;
+  /** Ordered, AI-facing instructions: what the AI should proactively raise/ask/push for during the session */
+  agenda: string[];
   /** What the user should expect going into this session */
   whatToExpect: string[];
   /** A short sample exchange shown in the preview */
@@ -56,8 +60,8 @@ export function getDefaultPersonaId(category: ScenarioCategory): PersonaId {
 export const SCENARIO_CATEGORIES: ScenarioCategoryMeta[] = [
   {
     name: "Interview",
-    label: "Job Interview",
-    description: "Practice answering interview questions with an AI interviewer who probes and challenges you in real time.",
+    label: "Interview",
+    description: "Practice job, scholarship, and academic interviews with an AI panelist who probes and challenges you in real time.",
     keySkill: "Confidence under pressure",
   },
   {
