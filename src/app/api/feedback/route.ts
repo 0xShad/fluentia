@@ -286,8 +286,8 @@ ${formatted}
 
     if (hardCap !== null && feedback.overallScore > hardCap) {
       feedback.overallScore = hardCap;
-      feedback.grade = gradeFromScore(hardCap);
     }
+    feedback.grade = gradeFromScore(feedback.overallScore);
 
     // ── Save to DB ─────────────────────────────────────────────────────────
     let sessionId: string | null = null;
