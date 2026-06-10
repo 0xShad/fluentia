@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/client";
 
 import { CoachingBehaviorCard } from "@/components/dashboard/preferences/coaching-behavior-card";
+import { SessionDefaultsCard } from "@/components/dashboard/preferences/session-defaults-card";
 
 export default function SystemPreferencesPage() {
   const [pageLoading, setPageLoading] = useState(true);
@@ -118,20 +119,23 @@ export default function SystemPreferencesPage() {
     <div className="flex-1 p-6 md:p-8 space-y-8 animate-in fade-in duration-500 w-full max-w-2xl mx-auto pb-24">
       <div>
         <h2 className="text-3xl font-bold tracking-tight text-white mb-2">System Preferences</h2>
-        <p className="text-muted-foreground text-sm">Customize how your AI coach scores and frames your post-session feedback.</p>
+        <p className="text-muted-foreground text-sm">Customize how your AI coach scores, frames feedback, and behaves by default during sessions.</p>
       </div>
 
       <CoachingBehaviorCard
         skillLevel={skillLevel}
         setSkillLevel={setSkillLevel}
-        coachingStyle={coachingStyle}
-        setCoachingStyle={setCoachingStyle}
         speakingGoals={speakingGoals}
         setSpeakingGoals={setSpeakingGoals}
         feedbackDetail={feedbackDetail}
         setFeedbackDetail={setFeedbackDetail}
         coachingTone={coachingTone}
         setCoachingTone={setCoachingTone}
+      />
+
+      <SessionDefaultsCard
+        coachingStyle={coachingStyle}
+        setCoachingStyle={setCoachingStyle}
       />
 
       {/* Floating Action Bar */}
