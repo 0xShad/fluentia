@@ -257,7 +257,15 @@ Rules:
 ${formatted}
 ---END TRANSCRIPT---`;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash", systemInstruction });
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash",
+      systemInstruction,
+      generationConfig: {
+        responseMimeType: "application/json",
+        // Disable extended thinking — it adds 20-30s latency for no benefit on a structured extraction task
+        thinkingConfig: { thinkingBudget: 0 },
+      } as any,
+    });
 
     let result;
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -272,10 +280,7 @@ ${formatted}
         throw e;
       }
     }
-    const text = result!.response.text().trim();
-
-    const json = text.startsWith("```") ? text.replace(/^```[a-z]*\n?/, "").replace(/```$/, "").trim() : text;
-    const feedback = JSON.parse(json) as SessionFeedback;
+    const feedback = JSON.parse(result!.response.text()) as SessionFeedback;
 
     // Server-side enforcement — LLMs don't reliably apply prompt-embedded caps
     const hardCap =
